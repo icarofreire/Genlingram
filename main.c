@@ -125,6 +125,51 @@ int se_token_primario(int tokens_primarios_gramatica[TAM_XP], int token){
 	return -1;
 }
 
+/*\/ procura se cada token de uma linha, pertence a primeira linha da gramatica,
+ * e se cada token subsequente ao token anterior, pertencem a mesma sequencia definida
+ * na gramatica do token da primeira linha na gramatica; 
+ * 
+ * ******************
+ * (1) {A -> Z -> Y -> K}
+ * (2) {B -> A -> T -> J}
+ * (3) {C -> B -> A -> Z} << 'B' é subsequente de 'C'(3), que na sequencia 'A' é subsequente de 'B'(2); Que na sequencia 'Z' é subsequente de 'A'(1);
+ *  O que torna toda a sequencia (3) correta.
+ * ******************
+ * 
+ * */
+int transversal_grammar(int linha[], const int tam_linha){
+	int i, err=0;
+	const int tam_linha_varrer = 100;
+	int acertos = 0, acertos_totais = 0;
+	int erros[100] = {0};
+	for(i=0; i<tam_linha; i++){
+		int indice_token_primario = se_token_primario(tokens_primarios_gramatica, linha[i]);
+		if( (linha[i] != 0) && indice_token_primario != -1 ){
+			printf("T: %d\n", linha[i] );
+			acertos++;
+			int ini = indice_token_primario;
+			int g; // << coluna_gramatica;
+			int i2 = i+1;
+			for(g=1; g<tam_linha_varrer; g++){
+				if( (grammar[ini][g] != FIM_PARTE_EXPRESSAO ) && (linha[i2] != 0) && grammar[ini][g] == linha[i2] ){
+					acertos++;
+					printf("[%d] - [%d] => g[%d] - l[%d]\n", g, i2, grammar[ini][g], linha[i2] );
+					i2++;
+				}
+			}
+		/*\/ se determinado token da linha não se encontra predefinido no inicio da gramatica de tokens (grammar); */
+		}else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){
+			printf("Erro: [%d] -> (%d)\n", i, linha[i] );
+			erros[err] = i;
+			err++;
+		} 
+		printf(">>%d\n", acertos );
+		acertos_totais += acertos;
+		acertos = 0;
+	}
+	printf("total -> %d\n", acertos_totais );
+	return acertos_totais;
+}
 
 // DRIVER FUNCTION
 int main()
@@ -137,36 +182,9 @@ int main()
 
 	const int tam_linha = 11;
 	//~ int linha[11] = {4, 5, 6, 7, 8, 9, 6, 5, 5, 4};
-	int linha[11] = {Finally, TOKEN_PALAVRA_CHAVE, Block, FIM_PARTE_EXPRESSAO};
+	int linha[11] = {LeftHandSideExpression, CallExpression, MemberExpression, FIM_PARTE_EXPRESSAO};
 	
-	//~ printf("%d\n", Name );
-	//~ printf("%d\n", se_token_primario(tokens_primarios_gramatica, Name) );
-	
-	int i=0;
-	int acertos = 0;
-	for(i=0; i<tam_linha; i++){
-		int indice_token_primario = se_token_primario(tokens_primarios_gramatica, linha[i]);
-		if( (linha[i] != 0) && indice_token_primario != -1 ){
-			acertos++;
-			int ini = indice_token_primario;
-			int g; // << coluna_gramatica;
-			int i2 = i+1;
-			for(g=1; g<100; g++){
-				if( (grammar[ini][g] != FIM_PARTE_EXPRESSAO ) && (linha[i2] != 0) && grammar[ini][g] == linha[i2] ){
-					acertos++;
-					printf("l[%d]\n", g );
-					printf("i2[%d]\n", i2 );
-					i2++;
-					//~ printf("l[%d]\n", grammar[ini][g] );
-				}
-			}
-			
-			printf("%d\n", ini );
-			
-		} 
-		printf(">>%d\n", acertos );
-		acertos = 0;
-	}
+	transversal_grammar(linha, tam_linha);
 	
 	
 	
