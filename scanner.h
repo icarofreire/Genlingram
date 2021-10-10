@@ -28,6 +28,19 @@ bool isID(char *str)
   return true;
 }
 
+bool isString(char *str)
+{
+  int fim = strlen(str);
+  if(
+	(str[0] == '"' || str[0] == '\'') &&
+	(str[fim-1] == '"' || str[fim-1] == '\'')
+   ){
+	return true;
+   }else{
+	return false;
+   }
+}
+
 // Returns 'true' if the character is an OPERATOR.
 bool isOperator(char ch)
 {
@@ -72,6 +85,17 @@ bool isKeyword(char* str)
 		|| !strcmp(str, "struct") || !strcmp(str, "goto"))
 		return (true);
 	return (false);*/
+}
+
+// Returns 'true' if the string is a OPERATOR.
+bool isOpetatorLanguage(char* str)
+{
+	bool f = false;
+	int i, tam = TAMANHO(operators);
+	for (i = 0; i < tam; i++) {
+		if (strcmp(str, operators[i]) == 0){ f = true; }
+	}
+	return f;
 }
 
 // Returns 'true' if the string is an INTEGER.
