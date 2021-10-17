@@ -3,7 +3,9 @@
 /* tamanho dos elementos de um array */
 #define TAMANHO(x) (sizeof(x) / sizeof((x)[0]))
 
+/*\/ TOKEN_OPERADOR*/
 char *operators[] = {
+" ",
 "=", /* EQ */
 "+", /* ADD */
 "-", /* SUB */
@@ -56,7 +58,34 @@ char *operators[] = {
 ">>>=" /* URSHFEQ */
 };
 
+char delimiters[] = {
+'=', /* EQ */
+'+', /* ADD */
+'-', /* SUB */
+'!', /* NOT */
+'&', /* AND */
+'*', /* MUL */
+'/', /* DIV */
+'(', /* LPAREN */
+')', /* RPAREN */
+'.', /* DOT */
+',', /* COMMA */
+'?', /* QUESTION */
+'~', /* TILDE */
+':', /* COLON */
+';', /* SEMICOLON */
+'{', /* LBRACE */
+'}', /* RBRACE */
+'[', /* LBRACK */
+']', /* RBRACK */
+'<', /* LESSER */
+'|', /* OR */
+'^', /* XOR */
+'%', /* MOD */
+'>' /* GREATER */
+};
 
+/*\/ TOKEN_PALAVRA_CHAVE*/
 char *reserved_words[] = {
 "do", /* DO */
 "in", /* IN */

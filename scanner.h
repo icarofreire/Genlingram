@@ -2,6 +2,16 @@
 #include <ctype.h>
 #include "symbols.h"
 
+struct numbers_tokens_grammar {
+	int ponto;
+	int number_tokens_grammar[1000];
+} numers_grammar;
+
+void push_tokens_grammar(struct numbers_tokens_grammar *x, int token){
+	x->ponto++;
+	x->number_tokens_grammar[x->ponto] = token;
+}
+
 // Returns 'true' if the character is a DELIMITER.
 bool isDelimiter(char ch)
 {
@@ -68,7 +78,9 @@ bool isKeyword(char* str)
 	bool f = false;
 	int i, tam = TAMANHO(reserved_words);
 	for (i = 0; i < tam; i++) {
-		if (strcmp(str, reserved_words[i]) == 0){ f = true; }
+		if (strcmp(str, reserved_words[i]) == 0){
+			f = true;
+		}
 	}
 	return f;
 	/*if (!strcmp(str, "if") || !strcmp(str, "else") ||
@@ -93,7 +105,9 @@ bool isOpetatorLanguage(char* str)
 	bool f = false;
 	int i, tam = TAMANHO(operators);
 	for (i = 0; i < tam; i++) {
-		if (strcmp(str, operators[i]) == 0){ f = true; }
+		if (strcmp(str, operators[i]) == 0){
+			f = true;
+		}
 	}
 	return f;
 }
@@ -224,47 +238,91 @@ char* subString(char* str, int left, int right)
 	return (subStr);
 }
 
+
 // Parsing the input STRING.
-void parse(char* str)
+void parse(char* str, struct numbers_tokens_grammar numers_grammar)
 {
-	int left = 0, right = 0;
-	int len = strlen(str);
-
-	while (right <= len && left <= right) {
-		if (isDelimiter(str[right]) == false)
-			right++;
-
-		if (isDelimiter(str[right]) == true && left == right) {
-			if (isOperator(str[right]) == true)
-				printf("'%c' IS AN OPERATOR\n", str[right]);
-
-			right++;
-			left = right;
-		} else if ((isDelimiter(str[right]) == true && left != right)
-				|| (right == len && left != right)) {
-			char* subStr = subString(str, left, right - 1);
-
-			if (isKeyword(subStr) == true)
-				printf("'%s' IS A KEYWORD\n", subStr);
-
-			else if (isInteger(subStr) == true)
-				printf("'%s' IS AN INTEGER\n", subStr);
-
-			else if (isRealNumber(subStr) == true)
-				printf("'%s' IS A REAL NUMBER\n", subStr);
-			
-			else if (isHexNumber(subStr) == true)
-				printf("'%s' IS A HEX NUMBER\n", subStr);
-
-			else if (validIdentifier(subStr) == true
-					&& isDelimiter(str[right - 1]) == false)
-				printf("'%s' IS A VALID IDENTIFIER\n", subStr);
-
-			else if (validIdentifier(subStr) == false
-					&& isDelimiter(str[right - 1]) == false)
-				printf("'%s' IS NOT A VALID IDENTIFIER\n", subStr);
-			left = right;
-		}
+	//~ int left = 0, right = 0;
+	//~ int len = strlen(str);
+	//~ struct numbers_tokens_grammar numers_grammar = {0, {0}};
+	
+	if(isKeyword(str)){
+		push_tokens_grammar(&numers_grammar, TOKEN_PALAVRA_CHAVE);
 	}
+	if(isOpetatorLanguage(str)){
+		push_tokens_grammar(&numers_grammar, TOKEN_OPERADOR);
+	}
+	if(isString(str)){
+		push_tokens_grammar(&numers_grammar, stringLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(validIdentifier(str)){
+		push_tokens_grammar(&numers_grammar, Identifier);
+    }
+	if(isInteger(str)){
+		push_tokens_grammar(&numers_grammar, decimalLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(isRealNumber(str)){
+		push_tokens_grammar(&numers_grammar, numericLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(isBinaryNumber(str)){
+		push_tokens_grammar(&numers_grammar, numericLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(isBooleanNumber(str)){
+		push_tokens_grammar(&numers_grammar, booleanLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(isNullLiteral(str)){
+		push_tokens_grammar(&numers_grammar, nullLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(isOctalNumber(str)){
+		push_tokens_grammar(&numers_grammar, Literal);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+	if(isHexNumber(str)){
+		push_tokens_grammar(&numers_grammar, hexIntegerLiteral);
+		push_tokens_grammar(&numers_grammar, Literal);
+    }
+
+	//~ while (right <= len && left <= right) {
+		//~ if (isDelimiter(str[right]) == false)
+			//~ right++;
+
+		//~ if (isDelimiter(str[right]) == true && left == right) {
+			//~ if (isOperator(str[right]) == true)
+				//~ printf("'%c' IS AN OPERATOR\n", str[right]);
+
+			//~ right++;
+			//~ left = right;
+		//~ } else if ((isDelimiter(str[right]) == true && left != right)
+				//~ || (right == len && left != right)) {
+			//~ char* subStr = subString(str, left, right - 1);
+
+			//~ if (isKeyword(subStr) == true)
+				//~ printf("'%s' IS A KEYWORD\n", subStr);
+
+			//~ else if (isInteger(subStr) == true)
+				//~ printf("'%s' IS AN INTEGER\n", subStr);
+
+			//~ else if (isRealNumber(subStr) == true)
+				//~ printf("'%s' IS A REAL NUMBER\n", subStr);
+			
+			//~ else if (isHexNumber(subStr) == true)
+				//~ printf("'%s' IS A HEX NUMBER\n", subStr);
+
+			//~ else if (validIdentifier(subStr) == true
+					//~ && isDelimiter(str[right - 1]) == false)
+				//~ printf("'%s' IS A VALID IDENTIFIER\n", subStr);
+
+			//~ else if (validIdentifier(subStr) == false
+					//~ && isDelimiter(str[right - 1]) == false)
+				//~ printf("'%s' IS NOT A VALID IDENTIFIER\n", subStr);
+			//~ left = right;
+		//~ }
+	//~ }
 	return;
 }
