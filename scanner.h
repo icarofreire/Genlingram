@@ -13,6 +13,8 @@ void push_tokens_grammar(struct numbers_tokens_grammar *x, int token){
 	x->number_tokens_grammar[x->ponto] = token;
 }
 
+bool isKeyword(char* str);
+
 // Returns 'true' if the character is a DELIMITER.
 bool isDelimiter(char ch)
 {
@@ -33,6 +35,11 @@ bool isDelimiter(char ch)
 
 bool isID(char *str)
 {
+
+  if(isKeyword(str)){
+	return false;
+  }
+
   if(isdigit(str[0]))
     return false;
   int counter = 0;
@@ -217,18 +224,18 @@ bool isOctalNumber(char* str)
 bool isHexNumber(char* str)
 {
 	int i, len = strlen(str);
-	bool f1 = false, f2 = true;
+	bool f1 = false, f2 = false;
 
 	if (len == 0) return (false);
 
 	if( (str[0] == '0' && str[1] == 'x') || (str[0] == '0' && str[1] == 'X') ){ f1 = true; }
 	for (i = 2; i < len; i++) {
-		if( (isdigit(str[i]) == 0) &&
+		if( (isdigit(str[i]) > 0) &&
 		( str[i] != 'a' && str[i] != 'b' && str[i] != 'c' && str[i] != 'd' && str[i] != 'e' && str[i] != 'f' &&
 		  str[i] != 'A' && str[i] != 'B' && str[i] != 'D' && str[i] != 'D' && str[i] != 'E' && str[i] != 'F'
 		)
 		){
-			f2 = false;
+			f2 = true;
 		}
 	}
 	return (f1 == true && f2 == true);
@@ -266,7 +273,7 @@ void parse(char* str)
 			if( str[right] != ' ' ){ 
 				char sinal[] = {str[right], '\0'};
 				if(isOpetatorLanguage(sinal)){
-					printf("%c[%d] IS AN OPERATOR >> %s\n", str[right], right, sinal);
+					//~ printf("%c[%d] IS AN OPERATOR >> %s\n", str[right], right, sinal);
 					push_tokens_grammar(&numers_grammar, TOKEN_OPERADOR);
 				}
 			}

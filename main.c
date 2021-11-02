@@ -176,7 +176,7 @@ int transversal_grammar(int linha[], const int tam_linha){
 int main()
 {
 	//~ // maximum legth of string is 100 here
-	char str[100] = "function int a = b + 1c; if 0x98";
+	char str[100] = "function int a = b + 18; if 0x98";
 	parse(str);
 
 	//~ char *str[] = {"ok", "teste"};
