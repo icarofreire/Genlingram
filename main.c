@@ -171,107 +171,13 @@ int transversal_grammar(int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
-int split (const char *str, char c, char ***arr)
-{
-    int count = 1;
-    int token_len = 1;
-    int i = 0;
-    char *p;
-    char *t;
-
-    p = str;
-    while (*p != '\0')
-    {
-        if (*p == c)
-            count++;
-        p++;
-    }
-
-    *arr = (char**) malloc(sizeof(char*) * count);
-    if (*arr == NULL)
-        exit(1);
-
-    p = str;
-    while (*p != '\0')
-    {
-        if (*p == c)
-        {
-            (*arr)[i] = (char*) malloc( sizeof(char) * token_len );
-            if ((*arr)[i] == NULL)
-                exit(1);
-
-            token_len = 0;
-            i++;
-        }
-        p++;
-        token_len++;
-    }
-    (*arr)[i] = (char*) malloc( sizeof(char) * token_len );
-    if ((*arr)[i] == NULL)
-        exit(1);
-
-    i = 0;
-    p = str;
-    t = ((*arr)[i]);
-    while (*p != '\0')
-    {
-        if (*p != c && *p != '\0')
-        {
-            *t = *p;
-            t++;
-        }
-        else
-        {
-            *t = '\0';
-            i++;
-            t = ((*arr)[i]);
-        }
-        p++;
-    }
-
-    return count;
-}
-
-void replaceTodos(char *s){
-	int k, j, tam = TAMANHO(operators);
-	for (k = 0; k < strlen(s); k++) {
-		for (j = 0; j < tam; j++) {
-			if (s[k] == delimiters[j]){
-				s[k] = '*';
-			}
-		}
-	}	
-}
-
-void tokentizar(char *s){
-	int i;
-    int c = 0;
-    char **arr = NULL;
-	struct numbers_tokens_grammar numers_grammar = {0, {0}};
-		
-	replaceTodos(s);
-	printf(">> %s.\n", s);
-    c = split(s, '*', &arr);
-
-    printf("found %d tokens.\n", c);
-
-    for (i = 0; i < c; i++){
-		char *str = arr[i];
-		parse(str, numers_grammar);
-        //~ printf("string #%d: %s\n", i, str);
-	}
-	
-	for (i = 0; i < 20; i++){
-		 printf(">> %d\n", numers_grammar.number_tokens_grammar[i]);
-	}
-}
 
 // DRIVER FUNCTION
 int main()
 {
-	// maximum legth of string is 100 here
-	//~ char str[100] = "function int a = b + 1c; if 0x98";
-	//~ parse(str);
+	//~ // maximum legth of string is 100 here
+	char str[100] = "function int a = b + 1c; if 0x98";
+	parse(str);
 
 	//~ char *str[] = {"ok", "teste"};
 
@@ -281,26 +187,5 @@ int main()
 	
 	//~ transversal_grammar(linha, tam_linha);
 	
-
-	//~ int i;
-    char s[] = "function int a = b + 1c; if 0x98";
-    
-	tokentizar(s);
-    
-    //~ int c = 0;
-    //~ char **arr = NULL;
-
-	//~ replaceTodos(s);
-	//~ printf(">> %s.\n", s);
-    //~ c = split(s, '*', &arr);
-
-    //~ printf("found %d tokens.\n", c);
-
-    //~ for (i = 0; i < c; i++){
-        //~ printf("string #%d: %s\n", i, arr[i]);
-	//~ }
-
-	//~ parse(str); // calling the parse function
-
 	return (0);
 }
