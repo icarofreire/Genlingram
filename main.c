@@ -125,6 +125,16 @@ int se_token_primario(int tokens_primarios_gramatica[TAM_XP], int token){
 	return -1;
 }
 
+int se_token_primario_matriz(int grammar[TAM_X][TAM_Y], int token){
+	int i;
+	for(i=0; i<TAM_XP; i++){
+		if( grammar[i][0] == token ){
+			return i;
+		}
+	}
+	return -1;
+}
+
 /*\/ procura se cada token de uma linha, pertence a primeira linha da gramatica,
  * e se cada token subsequente ao token anterior, pertencem a mesma sequencia definida
  * na gramatica do token da primeira linha na gramatica; 
@@ -171,21 +181,65 @@ int transversal_grammar(int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
+int transversal_grammar_matriz(int linha[], const int tam_linha){
+	int i, err=0;
+	const int tam_linha_varrer = 100;
+	int acertos = 0, acertos_totais = 0;
+	int erros[100] = {0};
+	int visi[100] = {0};
+	for(i=0; i<tam_linha; i++){
+		int indice_token_primario = se_token_primario_matriz(grammar, linha[i]);
+		if( (linha[i] != 0) && indice_token_primario != -1 ){
+			printf("T: %d\n", linha[i] );
+			visi[indice_token_primario] = 1;
+			acertos++;
+			int ini = indice_token_primario;
+			int g; // << coluna_gramatica;
+			int i2 = i+1;
+			for(g=1; g<tam_linha_varrer; g++){
+				if( (grammar[ini][g] != FIM_PARTE_EXPRESSAO ) && (linha[i2] != 0) && grammar[ini][g] == linha[i2] ){
+					acertos++;
+					printf("[%d] - [%d] => g[%d] - l[%d]\n", g, i2, grammar[ini][g], linha[i2] );
+					i2++;
+				}else if( (grammar[ini][g] != FIM_PARTE_EXPRESSAO ) && (linha[i2] != 0) && se_token_primario_matriz(grammar, grammar[ini][g]) != -1 && visi[grammar[ini][g]] == 0 ){
+					visi[grammar[ini][g]] = 1;
+					printf("<< retoma [%d][%d];\n", ini, g);
+					ini = se_token_primario_matriz(grammar, grammar[ini][g]);
+					g = 1;
+					//~ linha[i2] = 0; // << retira da expressão;
+					
+				}
+			}
+		/*\/ se determinado token da linha não se encontra predefinido no inicio da gramatica de tokens (grammar); */
+		}else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){
+			printf("Erro: [%d] -> (%d)\n", i, linha[i] );
+			erros[err] = i;
+			err++;
+		} 
+		printf(">>%d\n", acertos );
+		acertos_totais += acertos;
+		acertos = 0;
+	}
+	printf("total -> %d\n", acertos_totais );
+	return acertos_totais;
+}
 
 // DRIVER FUNCTION
 int main()
 {
 	//~ // maximum legth of string is 100 here
 	char str[100] = "function int a = b + 18; if 0x98";
-	parse(str);
+	//~ parse(str);
 
 	//~ char *str[] = {"ok", "teste"};
 
-	//~ const int tam_linha = 11;
+	const int tam_linha = 11;
 	//~ int linha[11] = {4, 5, 6, 7, 8, 9, 6, 5, 5, 4};
 	//~ int linha[11] = {LeftHandSideExpression, CallExpression, MemberExpression, FIM_PARTE_EXPRESSAO};
+	int linha[11] = {ArrayLiteral, TOKEN_OPERADOR, ABRE_BLOCO, ABRE_BLOCO, FECHA_BLOCO};
 	
 	//~ transversal_grammar(linha, tam_linha);
+	transversal_grammar_matriz(linha, tam_linha);
 	
 	return (0);
 }
