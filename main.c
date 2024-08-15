@@ -151,7 +151,7 @@ int transversal_grammar(int linha[], const int tam_linha){
 	int i, err=0;
 	const int tam_linha_varrer = 100;
 	int acertos = 0, acertos_totais = 0;
-	int erros[100] = {0};
+	//~ int erros[100] = {0};
 	for(i=0; i<tam_linha; i++){
 		int indice_token_primario = se_token_primario(tokens_primarios_gramatica, linha[i]);
 		if( (linha[i] != 0) && indice_token_primario != -1 ){
@@ -170,7 +170,7 @@ int transversal_grammar(int linha[], const int tam_linha){
 		/*\/ se determinado token da linha não se encontra predefinido no inicio da gramatica de tokens (grammar); */
 		}else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){
 			printf("Erro: [%d] -> (%d)\n", i, linha[i] );
-			erros[err] = i;
+			//~ erros[err] = i;
 			err++;
 		} 
 		printf(">>%d\n", acertos );
@@ -185,7 +185,7 @@ int transversal_grammar_matriz(int linha[], const int tam_linha){
 	int i, err=0;
 	const int tam_linha_varrer = 100;
 	int acertos = 0, acertos_totais = 0;
-	int erros[100] = {0};
+	//~ int erros[100] = {0};
 	int visi[100] = {0};
 	for(i=0; i<tam_linha; i++){
 		int indice_token_primario = se_token_primario_matriz(grammar, linha[i]);
@@ -213,7 +213,7 @@ int transversal_grammar_matriz(int linha[], const int tam_linha){
 		/*\/ se determinado token da linha não se encontra predefinido no inicio da gramatica de tokens (grammar); */
 		}else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){
 			printf("Erro: [%d] -> (%d)\n", i, linha[i] );
-			erros[err] = i;
+			//~ erros[err] = i;
 			err++;
 		} 
 		printf(">>%d\n", acertos );
@@ -230,16 +230,17 @@ int main()
 	//~ // maximum legth of string is 100 here
 	char str[100] = "function int a = b + 18; if 0x98";
 	//~ parse(str);
+	parse2(str);
 
 	//~ char *str[] = {"ok", "teste"};
 
-	const int tam_linha = 11;
+	//~ const int tam_linha = 11;
 	//~ int linha[11] = {4, 5, 6, 7, 8, 9, 6, 5, 5, 4};
 	//~ int linha[11] = {LeftHandSideExpression, CallExpression, MemberExpression, FIM_PARTE_EXPRESSAO};
-	int linha[11] = {ArrayLiteral, TOKEN_OPERADOR, ABRE_BLOCO, ABRE_BLOCO, FECHA_BLOCO};
+	//~ int linha[11] = {ArrayLiteral, TOKEN_OPERADOR, ABRE_BLOCO, ABRE_BLOCO, FECHA_BLOCO};
 	
 	//~ transversal_grammar(linha, tam_linha);
-	transversal_grammar_matriz(linha, tam_linha);
+	//~ transversal_grammar_matriz(linha, tam_linha);
 	
 	return (0);
 }

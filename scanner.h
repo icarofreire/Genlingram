@@ -1,16 +1,44 @@
 #include <string.h>
 #include <ctype.h>
 #include "symbols.h"
+#include "LinkedList.c"
+
+#define MAX_TOKEN 100
 
 struct numbers_tokens_grammar {
 	int ponto;
-	int number_tokens_grammar[1000];
+	int number_tokens_grammar;
+	
+	char *token;
+	struct numbers_tokens_grammar *prox_token[MAX_TOKEN];
 } numers_grammar;
 
-void push_tokens_grammar(struct numbers_tokens_grammar *x, int token){
+struct numbers_tokens_grammar* new_node();
+
+struct numbers_tokens_grammar* push_tokens_grammar(struct numbers_tokens_grammar *x, int token, char* str_token){
+	printf("Add token [%d][%s]\n", token, str_token);
 	x->ponto++;
-	printf("Add token [%d]\n", token);
-	x->number_tokens_grammar[x->ponto] = token;
+	//~ printf("Add token [%d][%s]\n", token, str_token);
+	x->number_tokens_grammar = token;
+	x->token = str_token;
+	return x;
+}
+
+struct numbers_tokens_grammar* add_node(struct numbers_tokens_grammar *x, int token, char* str_token){
+	struct numbers_tokens_grammar *novo = new_node();
+	novo->ponto = 1;
+	novo->number_tokens_grammar = token;
+	novo->token = str_token;
+	
+	x->prox_token[x->ponto] = novo;
+	x->ponto++;
+	return novo;
+}
+
+struct numbers_tokens_grammar* new_node(){
+	struct numbers_tokens_grammar* temp =
+		(struct numbers_tokens_grammar*)malloc(sizeof(struct numbers_tokens_grammar));
+	return temp;
 }
 
 bool isKeyword(char* str);
@@ -118,14 +146,13 @@ bool isKeyword(char* str)
 // Returns 'true' if the string is a OPERATOR.
 bool isOpetatorLanguage(char* str)
 {
-	bool f = false;
 	int i, tam = TAMANHO(operators);
 	for (i = 0; i < tam; i++) {
 		if (strcmp(str, operators[i]) == 0){
-			f = true;
+			return true;
 		}
 	}
-	return f;
+	return false;
 }
 
 // Returns 'true' if the string is an INTEGER.
@@ -254,7 +281,123 @@ char* subString(char* str, int left, int right)
 	return (subStr);
 }
 
+void show(struct LinkedList *linked) {
+    LinkedListIterator *iterator = LinkedListIterator_new(linked);
+	LinkedListIterator_move_to_next(iterator);
+	while(iterator->index != LINKEDLIST_INDEX_END){
+			printf("N: [%s]\n", (char*)iterator->current->value);
+			LinkedListIterator_move_to_next(iterator);
+	}
+}
 
+void parse2(char* str)
+{
+    // Space is used as the delimiter to split
+    char delimiter[] = {' ', ';'};
+ 
+    // Declare empty string to store token
+    char* token;
+ 
+    //~ printf("Initial String: %s", str);
+    //~ printf("\nAfter Tokenization: \n");
+    // Get the first token
+    token = strtok(str, delimiters);
+    
+    struct numbers_tokens_grammar *numers_grammar = new_node();//{0, {0}};
+    numers_grammar->ponto = 0;
+    LinkedList *linked = LinkedList_new();
+    //~ numers_grammar->prev_token = NULL;
+    //~ numers_grammar->prox_token = NULL;
+    
+
+    // using loop to get the rest of the token
+    while (token) {
+        	char* str = token;
+			if(isKeyword(str)){
+				//~ printf("IS AN KEY >>\n");
+				//~ push_tokens_grammar(numers_grammar, TOKEN_PALAVRA_CHAVE, str);
+				LinkedList_pushback(linked, str);
+				//~ add_node(numers_grammar, TOKEN_PALAVRA_CHAVE, str);
+			}
+			if(isOpetatorLanguage(str)){
+				//~ printf("IS AN OPER 2 >>\n");
+				//~ push_tokens_grammar(numers_grammar, TOKEN_OPERADOR, str);
+				LinkedList_pushback(linked, str);
+				//~ add_node(numers_grammar, TOKEN_OPERADOR, str);
+			}
+			if(isString(str)){
+				//~ push_tokens_grammar(&numers_grammar, stringLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				//~ add_node(numers_grammar, Literal, str);
+				LinkedList_pushback(linked, str);
+			}
+			if(validIdentifier(str)){
+				//~ push_tokens_grammar(numers_grammar, Identifier, str, openf);openf = 0;
+				//~ add_node(numers_grammar, Identifier, str);
+				LinkedList_pushback(linked, str);
+			}
+			if(isInteger(str)){
+				//~ push_tokens_grammar(&numers_grammar, decimalLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				//~ add_node(numers_grammar, Literal, str);
+				LinkedList_pushback(linked, str);
+			}
+			if(isRealNumber(str)){
+				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				LinkedList_pushback(linked, str);
+			}
+			if(isBinaryNumber(str)){
+				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				LinkedList_pushback(linked, str);
+			}
+			if(isBooleanNumber(str)){
+				//~ push_tokens_grammar(&numers_grammar, booleanLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				LinkedList_pushback(linked, str);
+			}
+			if(isNullLiteral(str)){
+				//~ push_tokens_grammar(&numers_grammar, nullLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				LinkedList_pushback(linked, str);
+			}
+			if(isOctalNumber(str)){
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				//~ push_tokens_grammar(&numers_grammar, Literal);
+				LinkedList_pushback(linked, str);
+			}
+			if(isHexNumber(str)){
+				//~ push_tokens_grammar(&numers_grammar, hexIntegerLiteral);
+				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
+				LinkedList_pushback(linked, str);
+			}
+        
+        token = strtok(NULL, delimiter);
+    }
+    
+    /*\/ exibir a tabela de tokens; */
+	//~ int r;
+	//~ for(r = 0; r <= numers_grammar->ponto; r++){
+		//~ printf(">> %d - [%s]\n", numers_grammar->number_tokens_grammar, numers_grammar->token);
+		//~ if(numers_grammar->prox_token){
+			//~ printf(">>>> %d - [%s]\n", numers_grammar->prox_token[0]->number_tokens_grammar, numers_grammar->prox_token[0]->token);
+		//~ }
+	//~ }
+
+	show(linked);
+	//~ printf(">> (%d) %d - [%s]\n", numers_grammar->ponto, numers_grammar->number_tokens_grammar, numers_grammar->token);
+
+	//~ int r = 0;
+	//~ struct numbers_tokens_grammar *next = numers_grammar->prox_token;
+	//~ while(next && r < 10){
+		//~ printf(">>>> %d - [%s]\n", numers_grammar->number_tokens_grammar, numers_grammar->token);
+		//~ next = numers_grammar->prox_token;
+		//~ r++;
+	//~ }
+}
+
+/*
 // Parsing the input STRING.
 void parse(char* str)
 {
@@ -269,14 +412,14 @@ void parse(char* str)
 		if (isDelimiter(str[right]) == true && left == right) {
 			//~ if (isOperator(str[right]) == true)
 				//~ printf("'%c' IS AN OPERATOR\n", str[right]);
-			/*\/ eliminar o espaço em branco e interpretar somente os operadores reais; */
-			if( str[right] != ' ' ){ 
+			//~ if( str[right] != ' ' ){ 
 				char sinal[] = {str[right], '\0'};
 				if(isOpetatorLanguage(sinal)){
-					//~ printf("%c[%d] IS AN OPERATOR >> %s\n", str[right], right, sinal);
-					push_tokens_grammar(&numers_grammar, TOKEN_OPERADOR);
+					
+					printf("%c[%d] IS AN OPERATOR >> %s\n", sinal[0], right, sinal);
+					push_tokens_grammar(&numers_grammar, sinal[0], sinal);
 				}
-			}
+			//~ }
 			right++;
 			left = right;
 		} else if ((isDelimiter(str[right]) == true && left != right)
@@ -287,56 +430,59 @@ void parse(char* str)
 			char* str = subStr;
 			
 			if(isKeyword(str)){
-				push_tokens_grammar(&numers_grammar, TOKEN_PALAVRA_CHAVE);
+				printf("IS AN KEY >>\n");
+				push_tokens_grammar(&numers_grammar, TOKEN_PALAVRA_CHAVE, str);
 			}
 			if(isOpetatorLanguage(str)){
-				push_tokens_grammar(&numers_grammar, TOKEN_OPERADOR);
+				//~ printf("IS AN OPER 2 >>\n");
+				push_tokens_grammar(&numers_grammar, TOKEN_OPERADOR, str);
 			}
 			if(isString(str)){
 				//~ push_tokens_grammar(&numers_grammar, stringLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			if(validIdentifier(str)){
-				push_tokens_grammar(&numers_grammar, Identifier);
+				push_tokens_grammar(&numers_grammar, Identifier, str);
 			}
 			if(isInteger(str)){
 				//~ push_tokens_grammar(&numers_grammar, decimalLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			if(isRealNumber(str)){
 				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			if(isBinaryNumber(str)){
 				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			if(isBooleanNumber(str)){
 				//~ push_tokens_grammar(&numers_grammar, booleanLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			if(isNullLiteral(str)){
 				//~ push_tokens_grammar(&numers_grammar, nullLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			if(isOctalNumber(str)){
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 				//~ push_tokens_grammar(&numers_grammar, Literal);
 			}
 			if(isHexNumber(str)){
 				//~ push_tokens_grammar(&numers_grammar, hexIntegerLiteral);
-				push_tokens_grammar(&numers_grammar, Literal);
+				push_tokens_grammar(&numers_grammar, Literal, str);
 			}
 			
 			left = right;
 		}
 	}
 	
-	/*\/ exibir a tabela de tokens; */
+	// exibir a tabela de tokens;
 	int r;
-	for(r = 0; r < numers_grammar.ponto; r++){
-		printf(">> %d\n", numers_grammar.number_tokens_grammar[r]);
+	for(r = 0; r <= numers_grammar.ponto; r++){
+		printf(">> %d - [%s]\n", numers_grammar.number_tokens_grammar[r], numers_grammar.token[r]);
 	}
 	
 	return;
 }
+*/

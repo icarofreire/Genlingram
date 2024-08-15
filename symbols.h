@@ -5,7 +5,6 @@
 
 /*\/ TOKEN_OPERADOR*/
 char *operators[] = {
-" ",
 "=", /* EQ */
 "+", /* ADD */
 "-", /* SUB */
@@ -60,9 +59,9 @@ char *operators[] = {
 
 char delimiters[] = {
 ' ', /* espaço em branco; */
-'=', /* EQ */
-'+', /* ADD */
-'-', /* SUB */
+//~ '=', /* EQ */
+//~ '+', /* ADD */
+//~ '-', /* SUB */
 '!', /* NOT */
 '&', /* AND */
 '*', /* MUL */
