@@ -115,7 +115,7 @@ int grammar[TAM_X][TAM_Y] = {
 };
 
 
-int se_token_primario(int tokens_primarios_gramatica[TAM_XP], int token){
+int se_token_primario(const int tokens_primarios_gramatica[TAM_XP], int token){
 	int i;
 	for(i=0; i<TAM_XP; i++){
 		if( tokens_primarios_gramatica[i] == token ){
@@ -125,7 +125,7 @@ int se_token_primario(int tokens_primarios_gramatica[TAM_XP], int token){
 	return -1;
 }
 
-int se_token_primario_matriz(int grammar[TAM_X][TAM_Y], int token){
+int se_token_primario_matriz(const int grammar[TAM_X][TAM_Y], int token){
 	int i;
 	for(i=0; i<TAM_XP; i++){
 		if( grammar[i][0] == token ){
@@ -147,7 +147,7 @@ int se_token_primario_matriz(int grammar[TAM_X][TAM_Y], int token){
  * ******************
  * 
  * */
-int transversal_grammar(int linha[], const int tam_linha){
+int transversal_grammar(const int linha[], const int tam_linha){
 	int i, err=0;
 	const int tam_linha_varrer = 100;
 	int acertos = 0, acertos_totais = 0;
@@ -181,7 +181,7 @@ int transversal_grammar(int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
-int transversal_grammar_matriz(int linha[], const int tam_linha){
+int transversal_grammar_matriz(const int linha[], const int tam_linha){
 	int i, err=0;
 	const int tam_linha_varrer = 100;
 	int acertos = 0, acertos_totais = 0;

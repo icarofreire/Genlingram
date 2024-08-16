@@ -124,6 +124,9 @@ char *reserved_words[] = {
 "instanceof" /* INSTANCEOF */
 };
 
+char *types[] = {
+};
+
 enum primary_tokens_grammar {
 /*0 */ PrimaryExpression,
 /*1 */ Literal,

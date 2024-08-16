@@ -5,7 +5,7 @@
 
 #define MAX_TOKEN 100
 
-bool isKeyword(char* str);
+bool isKeyword(const char* str);
 
 // Returns 'true' if the character is a DELIMITER.
 bool isDelimiter(char ch)
@@ -25,7 +25,7 @@ bool isDelimiter(char ch)
 	return (false);
 }
 
-bool isID(char *str)
+bool isID(const char *str)
 {
 
   if(isKeyword(str)){
@@ -45,7 +45,7 @@ bool isID(char *str)
   return true;
 }
 
-bool isString(char *str)
+bool isString(const char *str)
 {
   int fim = strlen(str);
   if(
@@ -69,7 +69,7 @@ bool isOperator(char ch)
 }
 
 // Returns 'true' if the string is a VALID IDENTIFIER.
-bool validIdentifier(char* str)
+bool validIdentifier(const char* str)
 {
 	//~ if (str[0] == '0' || str[0] == '1' || str[0] == '2' ||
 		//~ str[0] == '3' || str[0] == '4' || str[0] == '5' ||
@@ -81,7 +81,7 @@ bool validIdentifier(char* str)
 }
 
 // Returns 'true' if the string is a KEYWORD.
-bool isKeyword(char* str)
+bool isKeyword(const char* str)
 {
 	bool f = false;
 	int i, tam = TAMANHO(reserved_words);
@@ -108,7 +108,7 @@ bool isKeyword(char* str)
 }
 
 // Returns 'true' if the string is a OPERATOR.
-bool isOpetatorLanguage(char* str)
+bool isOpetatorLanguage(const char* str)
 {
 	int i, tam = TAMANHO(operators);
 	for (i = 0; i < tam; i++) {
@@ -120,7 +120,7 @@ bool isOpetatorLanguage(char* str)
 }
 
 // Returns 'true' if the string is an INTEGER.
-bool isInteger(char* str)
+bool isInteger(const char* str)
 {
 	int i, len = strlen(str);
 
@@ -137,7 +137,7 @@ bool isInteger(char* str)
 }
 
 // Returns 'true' if the string is a REAL NUMBER.
-bool isRealNumber(char* str)
+bool isRealNumber(const char* str)
 {
 	int i, len = strlen(str);
 	bool hasDecimal = false;
@@ -158,7 +158,7 @@ bool isRealNumber(char* str)
 }
 
 // Returns 'true' if the string is a BINARY NUMBER.
-bool isBinaryNumber(char* str)
+bool isBinaryNumber(const char* str)
 {
 	int i, len = strlen(str);
 	bool fb1 = false, fb2 = true;
@@ -174,7 +174,7 @@ bool isBinaryNumber(char* str)
 	return (fb1 && fb2);
 }
 
-bool isBooleanNumber(char* str)
+bool isBooleanNumber(const char* str)
 {
 	int len = strlen(str);
 	bool f = false;
@@ -185,7 +185,7 @@ bool isBooleanNumber(char* str)
 	return (f);
 }
 
-bool isNullLiteral(char* str)
+bool isNullLiteral(const char* str)
 {
 	int len = strlen(str);
 	bool f = false;
@@ -196,7 +196,7 @@ bool isNullLiteral(char* str)
 	return (f);
 }
 
-bool isOctalNumber(char* str)
+bool isOctalNumber(const char* str)
 {
 	int i, len = strlen(str);
 	bool f1 = false, f2 = true;
@@ -212,7 +212,7 @@ bool isOctalNumber(char* str)
 	return (f1 && f2);
 }
 
-bool isHexNumber(char* str)
+bool isHexNumber(const char* str)
 {
 	int i, len = strlen(str);
 	bool f1 = false, f2 = false;
@@ -223,7 +223,7 @@ bool isHexNumber(char* str)
 	for (i = 2; i < len; i++) {
 		if( (isdigit(str[i]) > 0) &&
 		( str[i] != 'a' && str[i] != 'b' && str[i] != 'c' && str[i] != 'd' && str[i] != 'e' && str[i] != 'f' &&
-		  str[i] != 'A' && str[i] != 'B' && str[i] != 'D' && str[i] != 'D' && str[i] != 'E' && str[i] != 'F'
+		  str[i] != 'A' && str[i] != 'B' && str[i] != 'D' && str[i] != 'E' && str[i] != 'F'
 		)
 		){
 			f2 = true;
@@ -233,7 +233,7 @@ bool isHexNumber(char* str)
 }
 
 // Extracts the SUBSTRING.
-char* subString(char* str, int left, int right)
+char* subString(const char* str, int left, int right)
 {
 	int i;
 	char* subStr = (char*)malloc(
@@ -248,7 +248,7 @@ char* subString(char* str, int left, int right)
 void parse2(char* str)
 {
     // Space is used as the delimiter to split
-    char delimiter[] = {' ', ';'};
+    const char delimiter[] = {' ', ';', '\0'};
 
     // Declare empty string to store token
     char* token;
@@ -269,6 +269,7 @@ void parse2(char* str)
 				addEdge(graph, str, TOKEN_OPERADOR);
 			}
 			if(isString(str)){
+				addEdge(graph, str, Literal);
 			}
 			if(validIdentifier(str)){
 				addEdge(graph, str, Identifier);
@@ -301,6 +302,9 @@ void parse2(char* str)
 	int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
 	reduceNode(graph, tokens, TAMANHO(tokens));
 	printGraph(graph);
+	
+	free(graph->adjLists);
+	free(graph);
 }
 
 /*

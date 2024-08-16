@@ -1,3 +1,4 @@
+
 // Structure to represent a node in the adjacency list
 struct Node {
     int vertex;
@@ -64,20 +65,22 @@ void addEdgeNNodes(struct AdjacencyList* graph, int nNodesAnterior) {
 
 // Function to print the adjacency list representation of the graph
 void printGraph(struct AdjacencyList* graph) {
-    printf("Vertex:  Adjacency List\n");
+    printf("Adjacency List:\n");
     for (int v = 0; v < graph->numVertices; v++) {
         struct Node* temp = graph->adjLists[v];
-        //~ printf("%d --->", v);
         while (temp) {
             printf("[%d] -> [%s], ", temp->vertex, (char*)temp->value);
             temp = temp->next;
         }
-        printf("\n");  
+        printf("\n");
     }
 }
-void insertNodeAdjacentToAnother(struct AdjacencyList*, struct Node*, struct Node*);
 
-void reduceNode(struct AdjacencyList* graph, int tokens[], int m_tokens) {
+void insertNodeAdjacentToAnother(struct AdjacencyList* graph, struct Node* src, struct Node* nodeInsert) {
+    src->next = nodeInsert;
+}
+
+void reduceNode(struct AdjacencyList* graph, const int tokens[], int m_tokens) {
     int res = 0;
     struct Node* uniNodes[m_tokens];
 	for(int i=0; i<m_tokens; i++) uniNodes[i] = NULL;
@@ -86,7 +89,6 @@ void reduceNode(struct AdjacencyList* graph, int tokens[], int m_tokens) {
         struct Node* temp = graph->adjLists[v];
         while (temp) {
             printf("[%d] -> [%s] t:%d == %d; \n", temp->vertex, (char*)temp->value, temp->token, tokens[res]);
-
 			if( res < m_tokens && temp->token == tokens[res] ){
 				uniNodes[res] = temp;
 				res++;
@@ -106,8 +108,4 @@ void reduceNode(struct AdjacencyList* graph, int tokens[], int m_tokens) {
 			temp = temp->next;
         }
     }
-}
-
-void insertNodeAdjacentToAnother(struct AdjacencyList* graph, struct Node* src, struct Node* nodeInsert) {
-    src->next = nodeInsert;
 }
