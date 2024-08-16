@@ -9,8 +9,10 @@ struct Node {
 
 // Structure to represent the graph(Adjacency List)
 struct AdjacencyList {
+	/*\/ número de vertices pré-definido; */
     int numVertices;
-    int indice;
+    /*\/ número de vertices criados; */
+    int size;
     struct Node** adjLists;
 };
 
@@ -36,14 +38,14 @@ struct AdjacencyList* createGraph(int vertices) {
         graph->adjLists[i] = NULL;
     }
     
-    graph->indice = 0;//indice interator;
+    graph->size = 0;
 
     return graph;
 }
 
 void addEdge(struct AdjacencyList* graph, char* value, int token) {
-	int src = graph->indice;
-	int dest = graph->indice++;
+	int src = graph->size;
+	int dest = graph->size++;
     // Add edge from src to dest
     struct Node* newNode = createNode(dest);
     newNode->next = graph->adjLists[src];
@@ -52,21 +54,10 @@ void addEdge(struct AdjacencyList* graph, char* value, int token) {
     graph->adjLists[src] = newNode;
 }
 
-void addEdgeNNodes(struct AdjacencyList* graph, int nNodesAnterior) {
-	int src = graph->indice;
-	if(nNodesAnterior){
-		int dest = graph->indice-1;
-		
-		struct Node* newNode = graph->adjLists[dest];
-		newNode->next = graph->adjLists[src];
-		graph->adjLists[src] = newNode;
-	}
-}
-
 // Function to print the adjacency list representation of the graph
 void printGraph(struct AdjacencyList* graph) {
     printf("Adjacency List:\n");
-    for (int v = 0; v < graph->numVertices; v++) {
+    for (int v = 0; v < graph->size; v++) {
         struct Node* temp = graph->adjLists[v];
         while (temp) {
             printf("[%d] -> [%s], ", temp->vertex, (char*)temp->value);
@@ -85,23 +76,20 @@ void reduceNode(struct AdjacencyList* graph, const int tokens[], int m_tokens) {
     struct Node* uniNodes[m_tokens];
 	for(int i=0; i<m_tokens; i++) uniNodes[i] = NULL;
 
-    for (int v = 0; v < graph->numVertices; v++) {
+    for (int v = 0; v < graph->size; v++) {
         struct Node* temp = graph->adjLists[v];
         while (temp) {
-            printf("[%d] -> [%s] t:%d == %d; \n", temp->vertex, (char*)temp->value, temp->token, tokens[res]);
 			if( res < m_tokens && temp->token == tokens[res] ){
 				uniNodes[res] = temp;
 				res++;
 				if(res == m_tokens){
-					for (int i = res; i > 0; i--) {
-						if(i-1 >= 0){
-							insertNodeAdjacentToAnother(graph, uniNodes[i-1], uniNodes[i]);
-						}
+					for (int i = res-1; i > 0; i--) {
+						insertNodeAdjacentToAnother(graph, uniNodes[i-1], uniNodes[i]);
 					}
 					res = 0;
 				}
 			}else if( res < m_tokens && temp->token != tokens[res] ){
-				uniNodes[res-1] = NULL;
+				for(int i=0; i<m_tokens; i++) uniNodes[i] = NULL;
 				res = 0;
 			}
 
