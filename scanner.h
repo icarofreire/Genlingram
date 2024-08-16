@@ -1,46 +1,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "symbols.h"
-//~ #include "LinkedList.c"
 #include "adjacency-list.h"
 
 #define MAX_TOKEN 100
-
-//~ struct numbers_tokens_grammar {
-	//~ int ponto;
-	//~ int number_tokens_grammar;
-	
-	//~ char *token;
-	//~ struct numbers_tokens_grammar *prox_token[MAX_TOKEN];
-//~ } numers_grammar;
-
-//~ struct numbers_tokens_grammar* new_node();
-
-//~ struct numbers_tokens_grammar* push_tokens_grammar(struct numbers_tokens_grammar *x, int token, char* str_token){
-	//~ printf("Add token [%d][%s]\n", token, str_token);
-	//~ x->ponto++;
-	//~ printf("Add token [%d][%s]\n", token, str_token);
-	//~ x->number_tokens_grammar = token;
-	//~ x->token = str_token;
-	//~ return x;
-//~ }
-
-//~ struct numbers_tokens_grammar* add_node(struct numbers_tokens_grammar *x, int token, char* str_token){
-	//~ struct numbers_tokens_grammar *novo = new_node();
-	//~ novo->ponto = 1;
-	//~ novo->number_tokens_grammar = token;
-	//~ novo->token = str_token;
-	
-	//~ x->prox_token[x->ponto] = novo;
-	//~ x->ponto++;
-	//~ return novo;
-//~ }
-
-//~ struct numbers_tokens_grammar* new_node(){
-	//~ struct numbers_tokens_grammar* temp =
-		//~ (struct numbers_tokens_grammar*)malloc(sizeof(struct numbers_tokens_grammar));
-	//~ return temp;
-//~ }
 
 bool isKeyword(char* str);
 
@@ -282,47 +245,16 @@ char* subString(char* str, int left, int right)
 	return (subStr);
 }
 
-//~ void showNode(Node *node){
-	//~ while(node != NULL && node->previous != NULL && node->next != NULL){
-		//~ printf("[%s]<< >>[%s]\n", (char*)node->previous->value, (char*)node->next->value);
-	//~ }
-//~ }
-
-//~ void showLinkedList(struct LinkedList *linked) {
-    //~ LinkedListIterator *iterator = LinkedListIterator_new(linked);
-	//~ LinkedListIterator_move_to_next(iterator);
-	//~ while(iterator->index != LINKEDLIST_INDEX_END){
-			//~ printf("N(%d): [%s]\n", iterator->index, (char*)iterator->current->value);
-			//~ LinkedListIterator_move_to_next(iterator);
-	//~ }
-//~ }
-
-//~ //void LinkedListIterator_move_to_previous(LinkedListIterator *itr_ptr);
-//~ void reg_previous_nodeList(struct LinkedList *linked) {
-    //~ LinkedListIterator *iterator = LinkedListIterator_new(linked);
-	//~ // obtém valor do no anterior;
-	//~ printf("[prev]: [%d][%s]\n", iterator->index, (char*)linked->last->previous->value);
-	
-	//~ LinkedList_pushback(linked, (char*)linked->last->previous->value);
-//~ }
-
-
 void parse2(char* str)
 {
     // Space is used as the delimiter to split
     char delimiter[] = {' ', ';'};
- 
+
     // Declare empty string to store token
     char* token;
- 
-    //~ printf("Initial String: %s", str);
-    //~ printf("\nAfter Tokenization: \n");
+
     // Get the first token
     token = strtok(str, delimiters);
-    
-    //~ struct numbers_tokens_grammar *numers_grammar = new_node();//{0, {0}};
-    //~ numers_grammar->ponto = 0;
-    //~ LinkedList *linked = LinkedList_new();
     
     // Create an undirected graph with 3 vertices
     struct AdjacencyList* graph = createGraph(20);
@@ -331,103 +263,44 @@ void parse2(char* str)
     while (token) {
         	char* str = token;
 			if(isKeyword(str)){
-				//~ printf("IS AN KEY >>\n");
-				//~ push_tokens_grammar(numers_grammar, TOKEN_PALAVRA_CHAVE, str);
-				//~ LinkedList_pushback(linked, str);
-				//~ add_node(numers_grammar, TOKEN_PALAVRA_CHAVE, str);
 				addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
 			}
 			if(isOpetatorLanguage(str)){
-				//~ printf("IS AN OPER 2 >>\n");
-				//~ push_tokens_grammar(numers_grammar, TOKEN_OPERADOR, str);
-				//~ LinkedList_pushback(linked, str);
-				//~ reg_previous_nodeList(linked);
 				addEdge(graph, str, TOKEN_OPERADOR);
-				//~ addEdgeNNodes(graph, 1);
 			}
 			if(isString(str)){
-				//~ push_tokens_grammar(&numers_grammar, stringLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ add_node(numers_grammar, Literal, str);
-				//~ LinkedList_pushback(linked, str);
 			}
 			if(validIdentifier(str)){
-				//~ push_tokens_grammar(numers_grammar, Identifier, str, openf);openf = 0;
-				//~ add_node(numers_grammar, Identifier, str);
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Identifier);
 			}
 			if(isInteger(str)){
-				//~ push_tokens_grammar(&numers_grammar, decimalLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ add_node(numers_grammar, Literal, str);
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
 			if(isRealNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
 			if(isBinaryNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
 			if(isBooleanNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, booleanLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
 			if(isNullLiteral(str)){
-				//~ push_tokens_grammar(&numers_grammar, nullLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
 			if(isOctalNumber(str)){
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ push_tokens_grammar(&numers_grammar, Literal);
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
 			if(isHexNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, hexIntegerLiteral);
-				//~ push_tokens_grammar(numers_grammar, Literal, str, openf);openf = 0;
-				//~ LinkedList_pushback(linked, str);
 				addEdge(graph, str, Literal);
 			}
         
         token = strtok(NULL, delimiter);
     }
-    
-    /*\/ exibir a tabela de tokens; */
-	//~ int r;
-	//~ for(r = 0; r <= numers_grammar->ponto; r++){
-		//~ printf(">> %d - [%s]\n", numers_grammar->number_tokens_grammar, numers_grammar->token);
-		//~ if(numers_grammar->prox_token){
-			//~ printf(">>>> %d - [%s]\n", numers_grammar->prox_token[0]->number_tokens_grammar, numers_grammar->prox_token[0]->token);
-		//~ }
-	//~ }
 
-	//~ showLinkedList(linked);
-	//~ balanceGraph(graph);
 	int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
-	reduceNode(graph, tokens, 3);
-	//~ balanceGraph2(graph, graph->adjLists[3], graph->adjLists[4]);
+	reduceNode(graph, tokens, TAMANHO(tokens));
 	printGraph(graph);
-	//~ printf(">> (%d) %d - [%s]\n", numers_grammar->ponto, numers_grammar->number_tokens_grammar, numers_grammar->token);
-
-	//~ int r = 0;
-	//~ struct numbers_tokens_grammar *next = numers_grammar->prox_token;
-	//~ while(next && r < 10){
-		//~ printf(">>>> %d - [%s]\n", numers_grammar->number_tokens_grammar, numers_grammar->token);
-		//~ next = numers_grammar->prox_token;
-		//~ r++;
-	//~ }
 }
 
 /*

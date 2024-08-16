@@ -228,7 +228,7 @@ int transversal_grammar_matriz(int linha[], const int tam_linha){
 int main()
 {
 	//~ // maximum legth of string is 100 here
-	char str[100] = "function int a = b + 18; if 0x98";
+	char str[100] = "function int a = b + 18; if teste * 0x98";
 	//~ char str[100] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
 	//~ parse(str);
 	parse2(str);
