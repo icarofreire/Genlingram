@@ -299,8 +299,8 @@ void parse2(char* str)
         token = strtok(NULL, delimiter);
     }
 
-	int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
-	reduceNode(graph, tokens, TAMANHO(tokens));
+	//~ int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
+	//~ reduceNode(graph, tokens, TAMANHO(tokens));
 	printGraph(graph);
 	
 	free(graph->adjLists);

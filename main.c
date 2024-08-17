@@ -224,14 +224,87 @@ int transversal_grammar_matriz(const int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
+// C substring function definition
+void substring(char s[], char sub[], int p, int l) {
+   int c = 0;
+   while (c < l) {
+      sub[c] = s[p+c-1];
+      c++;
+   }
+   sub[c] = '\0';
+}
+
+int
+__strsep5 (char **stringp, const char *delim[], int tamDel, int tam_sep, char sep[tam_sep][tam_sep])
+{
+	char *begin;
+	begin = *stringp;
+
+	//~ int tamxx = (strlen(begin)/tamDel)+(tamDel*2);
+	//~ char sep[tamxx][tamxx];
+	int consep = 0;
+
+	int con = 0;
+	int idx = strcspn(begin, *delim);
+	char sub[strlen(*delim)];
+	substring(begin, sub, 1, idx);
+	begin+=idx;
+	//~ printf("ini: %d, %s, [%s -> %s]\n", idx, (*delim), begin, sub);
+	strcpy(sep[consep++], sub);
+	strcpy(sep[consep++], *delim);
+	while(idx < strlen(*stringp) && con < tamDel-1 ){
+		idx = strcspn(begin, *++delim);
+
+		char subl[strlen(*delim)];
+		substring(begin, subl, 2, (idx-1));
+		begin+=idx;
+		//~ printf("ini: %d, %s, [%s -> %s]\n", idx, (*delim), begin, subl);
+		strcpy(sep[consep++], subl);
+		strcpy(sep[consep++], *delim);
+		con++;
+	}
+	
+	//~ for(int i=0; i<consep; i++){
+		//~ printf("-> %s\n", sep[i]);
+	//~ }
+	return consep;
+}
+
 // DRIVER FUNCTION
 int main()
 {
 	//~ // maximum legth of string is 100 here
-	char str[100] = "function int a = b + 18; if teste * 0x98";
+	//~ char str[100] = "function int a = b + 18; if teste * 0x98";
 	//~ char str[100] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
 	//~ parse(str);
-	parse2(str);
+	//~ parse2(str);
+	
+	//~ char *t = "function int a = b + 18; if teste * 0x98";
+	
+	//~ char s_in[50] = "function int a = b + 18; if teste * 0x98";
+	char s_in[50] = "int a=b+18;";
+    //~ char del[20] = "=+;";
+    const char *delimiters[] = {"=", "+", ";"};  
+    char* in_Ptr = s_in;  
+    //~ char* o_Ptr;  
+  
+    //~ while ((o_Ptr = __strsep3(&in_Ptr, del)) != NULL) {  
+        //~ printf("%s\n", o_Ptr);  
+    //~ }  
+
+
+	/* -- split with delimiters; */
+	int tam_delimiters = 3;
+	//~ int tamxx = (strlen(&in_Ptr)/tam_delimiters)+(tam_delimiters*3);
+	const int tam_sep = 1000;
+	char sep[tam_sep][tam_sep];
+	int num = __strsep5(&in_Ptr, delimiters, tam_delimiters, tam_sep, sep);
+	
+	for(int i=0; i<num; i++){
+		printf("-> %s\n", sep[i]);
+	}
+	/* -- split with delimiters; */
+
 
 	//~ char *str[] = {"ok", "teste"};
 
