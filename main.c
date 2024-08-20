@@ -9,6 +9,9 @@
 #define TAM_X 105
 #define TAM_Y 100
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 /* \/ grammar; */
 int grammar[TAM_X][TAM_Y] = {
 { PrimaryExpression, TOKEN_PALAVRA_CHAVE, ObjectLiteral, ABRE_BLOCO, TOKEN_ABRE_PARENTESE, Expression, TOKEN_FECHA_PARENTESE, FECHA_BLOCO, Identifier, ArrayLiteral, Literal, FIM_PARTE_EXPRESSAO},
@@ -224,6 +227,15 @@ int transversal_grammar_matriz(const int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
+void trimString(char *str) {
+	while (isspace((unsigned char)str[0])){
+		memmove(str, str + 1, strlen(str));   
+	}
+	while (isspace((unsigned char)str[strlen(str) - 1])){
+		str[strlen(str) - 1] = '\0';
+	}
+}
+
 // C substring function definition
 void substring(char s[], char sub[], int p, int l) {
    int c = 0;
@@ -249,18 +261,21 @@ __strsep5 (char **stringp, const char *delim[], int tamDel, int tam_sep, char se
 	char sub[strlen(*delim)];
 	substring(begin, sub, 1, idx);
 	begin+=idx;
-	//~ printf("ini: %d, %s, [%s -> %s]\n", idx, (*delim), begin, sub);
-	strcpy(sep[consep++], sub);
-	strcpy(sep[consep++], *delim);
-	while(idx < strlen(*stringp) && con < tamDel-1 ){
+	//~ printf("[%s -> %s]\n", (*delim), sub);
+	printf("[%s -> %s] : %d - %d\n", (*delim), sub, idx, strlen(begin));
+	trimString(sub);
+	if(strcmp(sub, " ") != 0) strcpy(sep[consep++], sub);
+	if(strcmp(*delim, " ") != 0) strcpy(sep[consep++], *delim);
+	while((strlen(begin) > 0) && idx < strlen(begin)/*&& con < tamDel-1 *//*(strlen(begin) > 0)*/ ){
 		idx = strcspn(begin, *++delim);
 
 		char subl[strlen(*delim)];
 		substring(begin, subl, 2, (idx-1));
 		begin+=idx;
-		//~ printf("ini: %d, %s, [%s -> %s]\n", idx, (*delim), begin, subl);
-		strcpy(sep[consep++], subl);
-		strcpy(sep[consep++], *delim);
+		trimString(subl);
+		printf("[%s -> %s] : %d - %d: %s\n", (*delim), subl, idx, strlen(begin), begin);
+		//~ if(strcmp(subl, " ") != 0) strcpy(sep[consep++], subl);
+		//~ if(strcmp(sub, " ") != 0) strcpy(sep[consep++], *delim);
 		con++;
 	}
 	
@@ -268,6 +283,110 @@ __strsep5 (char **stringp, const char *delim[], int tamDel, int tam_sep, char se
 		//~ printf("-> %s\n", sep[i]);
 	//~ }
 	return consep;
+}
+
+void str_replace(char *target, const char *needle, const char *replacement)
+{
+    char buffer[1024] = { 0 };
+    char *insert_point = &buffer[0];
+    const char *tmp = target;
+    size_t needle_len = strlen(needle);
+    size_t repl_len = strlen(replacement);
+
+    while (1) {
+        const char *p = strstr(tmp, needle);
+
+        // walked past last occurrence of needle; copy remaining part
+        if (p == NULL) {
+            strcpy(insert_point, tmp);
+            break;
+        }
+
+        // copy part before needle
+        memcpy(insert_point, tmp, p - tmp);
+        insert_point += p - tmp;
+
+        // copy replacement string
+        memcpy(insert_point, replacement, repl_len);
+        insert_point += repl_len;
+
+        // adjust pointers, move on
+        tmp = p + needle_len;
+    }
+
+    // write altered string back to target
+    strcpy(target, buffer);
+}
+
+void replace_all(char *target, const char *needle, const char *replacement){
+	char* ppos = strstr(target, needle);
+	if(ppos != NULL){
+		target = realloc(target, (strlen(target)+strlen(replacement)) * sizeof(char));
+		str_replace(target, needle, replacement);
+	}
+}
+
+void replace_all_deli(char *target, char **delimiters, int tam_delimiters){
+	for(int i = 0; i<tam_delimiters; i++){
+		char* p_in_target = strstr(target, delimiters[i]);
+		if(strcmp(delimiters[i], " ") != 0 && p_in_target != NULL){
+			char *subs = malloc(sizeof(char) * (strlen(delimiters[i]) + 2));
+			strcpy(subs, " ");
+			strcat(subs, delimiters[i]);
+			strcat(subs, " ");
+			printf("rep: '%s' por '%s' in '%s'\n", delimiters[i], subs, target);
+			replace_all(target, delimiters[i], subs);
+			free(subs);
+		}
+	}
+}
+
+int uni_delimiters(char delimiters[], int tam_delimiters, char *operators[], int tam_operators, char *buff_string_delimiters[]){
+	int i = 0;
+	for(; i<tam_delimiters; i++){
+		char *ss = malloc(2);
+		ss[0] = delimiters[i];
+		ss[1] = '\0';
+		buff_string_delimiters[i] = ss;
+	}
+	//~ printf("fim: %d\n", i);
+	int j = 0;
+	for(; j<tam_operators; j++){
+		buff_string_delimiters[i+j] = operators[j];
+		//~ printf("->: %s, %d\n", operators[j], (i+j));
+	}
+	//~ printf("fim2: %d\n", (i+j));
+	return (i+j);
+}
+
+void
+__strsep6 (char *begin, char *delim[], int tamDel)
+{
+	//~ printf("len: %d\n", strlen(begin));
+	char *mbegin = malloc(sizeof(char) * strlen(begin));
+	strcpy(mbegin, begin);
+
+	replace_all_deli(mbegin, delim, tamDel);
+	printf("begin : %s\n", mbegin );
+	//~ printf("len: %d\n", strlen(buffer));
+	//~ free(buffer);
+	free(mbegin);
+}
+
+void apply_uni_tokentize(char *stringp){
+	int tam_operators = 50;
+	char *buff_string_delimiters[TAMANHO(delimiters) + tam_operators];
+	//~ for(int i=0; i<tam_operators; i++) buff_string_delimiters[i] = NULL;
+	int ocuped = uni_delimiters(delimiters, TAMANHO(delimiters), operators, tam_operators, buff_string_delimiters);
+	//~ for(int i=0; i<ocuped; i++){
+		//~ printf(">> %s\n", buff_string_delimiters[i]);
+	//~ }
+	
+	__strsep6(stringp, buff_string_delimiters, ocuped);
+	
+	for(int i=0; i<TAMANHO(delimiters); i++){
+		free(buff_string_delimiters[i]);
+	}
 }
 
 // DRIVER FUNCTION
@@ -281,28 +400,41 @@ int main()
 	
 	//~ char *t = "function int a = b + 18; if teste * 0x98";
 	
-	//~ char s_in[50] = "function int a = b + 18; if teste * 0x98";
-	char s_in[50] = "int a=b+18;";
+	char s_in[100] = "function int a=b + 18; if teste * 0x98";
+	//~ char s_in[50] = "int a=b+18;";
+	//~ char s_in[200] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
     //~ char del[20] = "=+;";
-    const char *delimiters[] = {"=", "+", ";"};  
-    char* in_Ptr = s_in;  
+    //~ char *delimiters[] = {" ", "=", "+", ";"};
+    //~ char* in_Ptr = s_in;  
     //~ char* o_Ptr;  
-  
+	apply_uni_tokentize(s_in);
+	//~ __strsep6(s_in, delimiters, 4);
     //~ while ((o_Ptr = __strsep3(&in_Ptr, del)) != NULL) {  
         //~ printf("%s\n", o_Ptr);  
     //~ }  
+/*
+	int tam_operators = 50;
+	char *buff_string_delimiters[TAMANHO(delimiters) + tam_operators];
+	//~ for(int i=0; i<tam_operators; i++) buff_string_delimiters[i] = NULL;
+	int ocuped = uni_delimiters(delimiters, TAMANHO(delimiters), operators, tam_operators, buff_string_delimiters);
+	for(int i=0; i<ocuped; i++){
+		printf(">> %s\n", buff_string_delimiters[i]);
+	}
+	for(int i=0; i<TAMANHO(delimiters); i++){
+		free(buff_string_delimiters[i]);
+	}
+*/
 
 
 	/* -- split with delimiters; */
-	int tam_delimiters = 3;
-	//~ int tamxx = (strlen(&in_Ptr)/tam_delimiters)+(tam_delimiters*3);
+	/*int tam_delimiters = 4;
 	const int tam_sep = 1000;
 	char sep[tam_sep][tam_sep];
-	int num = __strsep5(&in_Ptr, delimiters, tam_delimiters, tam_sep, sep);
+	int num = __strsep6(&in_Ptr, delimiters, tam_delimiters, tam_sep, sep);
 	
 	for(int i=0; i<num; i++){
 		printf("-> %s\n", sep[i]);
-	}
+	}*/
 	/* -- split with delimiters; */
 
 
