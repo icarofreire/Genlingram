@@ -25,6 +25,48 @@ bool isDelimiter(char ch)
 	return (false);
 }
 
+int num_token_demiliter(char ch){
+	int num_token = -1;
+	switch(ch){
+	 case '=': num_token = EQ; break;
+	 case '+': num_token = ADD; break;
+	 case '-': num_token = SUB; break;
+	 case '!': num_token = NOT; break;
+	 case '&': num_token = AND; break;
+	 case '*': num_token = MUL; break;
+	 case '/': num_token = DIV; break;
+	 case '(': num_token = LPAREN; break;
+	 case ')': num_token = RPAREN; break;
+	 case '.': num_token = DOT; break;
+	 case ',': num_token = COMMA; break;
+	 case '?': num_token = QUESTION; break;
+	 case '~': num_token = TILDE; break;
+	 case ':': num_token = COLON; break;
+	 case ';': num_token = SEMICOLON; break;
+	 case '{': num_token = LBRACE; break;
+	 case '}': num_token = RBRACE; break;
+	 case '[': num_token = LBRACK; break;
+	 case ']': num_token = RBRACK; break;
+	 case '<': num_token = LESSER; break;
+	 case '|': num_token = OR; break;
+	 case '^': num_token = XOR; break;
+	 case '%': num_token = MOD; break;
+	 case '>': num_token = GREATER; break;
+	}
+	return num_token;
+}
+
+//~ bool isDelimiter_str(char* str)
+//~ {
+	//~ int k, tam = TAMANHO(delimiters);
+	//~ for (k = 0; k < tam; k++) {
+		//~ if (ch == delimiters[k]){
+			//~ return (true);
+		//~ }
+	//~ }
+	//~ return (false);
+//~ }
+
 bool isID(const char *str)
 {
 
@@ -268,6 +310,9 @@ void parse2(char* str)
 			if(isOpetatorLanguage(str)){
 				addEdge(graph, str, TOKEN_OPERADOR);
 			}
+			//~ if(isDelimiter(str)){
+				//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
+			//~ }
 			if(isString(str)){
 				addEdge(graph, str, Literal);
 			}

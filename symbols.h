@@ -59,9 +59,9 @@ char *operators[] = {
 
 char delimiters[] = {
 ' ', /* espaço em branco; */
-//~ '=', /* EQ */
-//~ '+', /* ADD */
-//~ '-', /* SUB */
+'=', /* EQ */
+'+', /* ADD */
+'-', /* SUB */
 '!', /* NOT */
 '&', /* AND */
 '*', /* MUL */
@@ -253,6 +253,33 @@ enum primary_tokens_grammar {
 /*122 */ SLASH,
 /*123 */ SLASHASSIGN,
 /*124 */ FIM_PARTE_EXPRESSAO
+};
+
+enum token_delimiters {
+EQ, /* '=' */
+ADD, /* '+' */
+SUB, /* '-' */
+NOT, /* '!' */
+AND, /* '&' */
+MUL, /* '*' */
+DIV, /* '/' */
+LPAREN, /* '(' */
+RPAREN, /* ')' */
+DOT, /* '.' */
+COMMA, /* ',' */
+QUESTION, /* '?' */
+TILDE, /* '~' */
+COLON, /* ':' */
+SEMICOLON, /* ';' */
+LBRACE, /* '{' */
+RBRACE, /* '}' */
+LBRACK, /* '[' */
+RBRACK, /* ']' */
+LESSER, /* '<' */
+OR, /* '|' */
+XOR, /* '^' */
+MOD, /* '%' */
+GREATER /* '>' */
 };
 
 #define TAM_XP 105

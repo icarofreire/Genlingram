@@ -337,6 +337,7 @@ void replace_all_deli(char *target, char **delimiters, int tam_delimiters){
 			printf("rep: '%s' por '%s' in '%s'\n", delimiters[i], subs, target);
 			replace_all(target, delimiters[i], subs);
 			free(subs);
+			//~ printf("rep: '%s' por '%s' \n", delimiters[0], target);
 		}
 	}
 }
@@ -369,7 +370,6 @@ __strsep6 (char *begin, char *delim[], int tamDel)
 	replace_all_deli(mbegin, delim, tamDel);
 	printf("begin : %s\n", mbegin );
 	//~ printf("len: %d\n", strlen(buffer));
-	//~ free(buffer);
 	free(mbegin);
 }
 
@@ -389,6 +389,246 @@ void apply_uni_tokentize(char *stringp){
 	}
 }
 
+struct tokenStruct {
+	char* token;
+	char* delimiter;
+};
+
+/** alteração de uma implementação de strtok.c em Libc;
+ * https://opensource.apple.com/source/Libc/Libc-167/string.subproj/strtok.c.auto.html
+ *  */
+struct tokenStruct
+__strtok_struct(
+	register char *s,
+	register const char *delim)
+{
+	register char *spanp;
+	register int c, sc;
+	char *tok;
+	static char *last;
+	struct tokenStruct nulret = {NULL, NULL};
+
+	if (s == NULL && (s = last) == NULL)
+		return (nulret);//(NULL);
+
+	/*
+	 * Skip (span) leading delimiters (s += strspn(s, delim), sort of).
+	 */
+cont:
+	c = *s++;
+	for (spanp = (char *)delim; (sc = *spanp++) != 0;) {
+		if (c == sc)
+			goto cont;
+	}
+
+	if (c == 0) {		/* no non-delimiter characters */
+		last = NULL;
+		return (nulret);//(NULL);
+	}
+	tok = s - 1;
+
+	/*
+	 * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
+	 * Note that delim must have one NUL; we stop if we see that, too.
+	 */
+	for (;;) {
+		c = *s++;
+		spanp = (char *)delim;
+		do {
+			if ((sc = *spanp++) == c) {
+				if (c == 0)
+					s = NULL;
+				else
+					s[-1] = 0; /* Pointer Equivalent: *(array-1); */
+				last = s;
+
+				char temp_str_delimiter[] = {sc, '\0'};
+				struct tokenStruct tokenStru = {tok, temp_str_delimiter};
+				printf("tok: '%s', '%c', '%s'\n", tok, sc, spanp);
+				spanp = (char *)delim;
+				sc = 0;
+				//~ return (tok);
+				return (tokenStru);
+			}
+		} while (sc != 0);
+	}
+	/* NOTREACHED */
+}
+
+/**
+ *_strcmp - A special compare function that compares is sub
+ * is aubset of fstring. for example if fstring is "hello"
+ * "h", "he", ... but not "hello" are all subsets and
+ * in such a case a 1 will be returned
+ *@fstring: fstring
+ *@sub: subset
+ *Return: 1 on success and -1 on faliur
+ */
+int _strcmp(char *fstring, const char *sub)
+{
+	if (!fstring || !sub)
+		return (-1);
+	if (strlen(fstring) < strlen(sub))
+		return (-1);
+	while (*sub && *fstring)
+	{
+		if (*sub != *fstring)
+			return (-1);
+		sub++, fstring++;
+	}
+	return (1);
+}
+/**
+ * _strtok - tokenizes a string according to a certain delimiter
+ * it doesnt creat a new string to hold the tokens but rather creats a
+ * a static variable that will directly copy str and puts the null
+ * terminator everytime it finds the delimeter, the default str will be
+ * manipulated so beware
+ * for example if you have a string str = "helo; now; bo"
+ * when _strtok is called for the first time (_strtok(str, ";")) it will put
+ * \0 (a null terminator in the first location of the delimeter so the str
+ * variable will be "helo\0 nowo; bo", ";" and it will be returned and the
+ * static variable save would hold " nowo; bo" and when _strtok is called
+ * for the second time _strtok(NULL, ";"); the same cyle continue
+ * but this time instead of str save will be manipulated. This
+ *cycle continues untile save == NULL
+ * @str: the string to be tokenized
+ * @delimeter: the delimiter to separate tokens
+ * Return: a character pointer to the current delimited token
+ */
+char *_strtok_nat(char *str, const char *delimeter)
+{
+	static char *save;
+	char *_new = NULL;
+	int i = 0;
+
+	if (!str || !*str)
+	{
+		if (!save || !*save)
+			return (NULL);
+
+		while (_strcmp(save + i, delimeter) != 1 && *(save + i) != '\0')
+			i++;
+		if (*(save + i) == '\0')
+		{
+			save = NULL;
+			return (save);
+		}
+
+		_new = save;
+		*(save + i) = '\0';
+		save = save + i + strlen(delimeter);
+
+		return (_new);
+
+	}
+	while (_strcmp(str + i, delimeter) != 1 && *(str + i) != '\0')
+		i++;
+	if (*(str + i) == '\0')
+		return (str);
+
+	save = str + i + strlen(delimeter);
+	*(str + i) = '\0';
+
+	return (str);
+}
+
+void run_strtok(char* str, char* delimiters){
+    struct tokenStruct tokenStru = __strtok_struct(str, delimiters);
+    while(tokenStru.token){
+		printf(">> %s -> '%s'\n", tokenStru.token, tokenStru.delimiter);
+		tokenStru = __strtok_struct(NULL, delimiters);
+	}
+}
+
+void run_strtok_nested(char* str){
+	char* ini_delim = "=+-!&*/().,?~:;{}[]<|^%>";
+	
+	char temp_str[strlen(str)];
+	strcpy(temp_str, str);
+    struct tokenStruct tokenStru = __strtok_struct(str, ini_delim);
+    while(tokenStru.token){
+		//~ printf(">> %s -> '%s'\n", tokenStru.token, tokenStru.delimiter);
+
+
+		//~ if(strcspn(tokenStru.token, delimiters) < strlen(tokenStru.token)){
+			//~ char copy[strlen(tokenStru.token)];
+			//~ strcpy(copy, tokenStru.token);
+			//~ run_strtok(copy, "=+-!&*/().,?~:;{}[]<|^%>");
+			//~ printf("iner: %s\n", temp_str);
+
+			//~ strcpy(str, temp_str);
+			//~ tokenStru = __strtok_struct(str, ini_delim);
+		//~ }
+		//~ strcpy(temp_str, str);
+		tokenStru = __strtok_struct(NULL, ini_delim);
+	}
+}
+
+int next_index_delimiter(char *str, int lim){
+	lim = ((lim > 0) ? (lim) : (strlen(str)));
+	for(int i=0; i<lim; i++){
+		if(isDelimiter(str[i])){
+			return i;
+		}
+	}
+	return -1;
+}
+
+struct tokensStruct {
+	char **tokens;
+	int size;
+};
+
+void realoc_add(struct tokensStruct *tk, char *word){
+	if(tk->size == 0){
+		tk->tokens = (char**)malloc(1 * sizeof(char*));
+	}
+	tk->size++;
+	tk->tokens = (char**) realloc(tk->tokens, tk->size * sizeof(int));
+	tk->tokens[tk->size-1] = (char*)malloc((strlen(word)+1) * sizeof(char));
+	strcpy(tk->tokens[tk->size-1], word);
+}
+
+struct tokensStruct my_tokentize(char *str){
+	struct tokensStruct tk;
+	tk.size = 0;
+
+    for(; (*str) != '\0'; str++){
+		int index_deli = next_index_delimiter(str, 0);
+		if(index_deli != -1){
+			char delimiter = str[index_deli];
+			char word[index_deli+1];
+			substring(str, word, 1, index_deli);
+			trimString(word);
+			//~ printf(">> '%s' -> '%c'\n", word, delimiter);
+			if(strcmp(word, "") != 0){
+				//~ printf(">> '%s'\n", word);
+				/*\/ realocar memória para o array de strings, e para o array que conterá a string; */
+				realoc_add(&tk, word);
+			}
+			if(delimiter != ' '){
+				//~ printf(">> '%c'\n", delimiter);
+				/*\/ realocar memória para o array de strings, e para o array que conterá a string; */
+				char temp_str_delimiter[] = {delimiter, '\0'};
+				realoc_add(&tk, temp_str_delimiter);
+			}
+			str+=index_deli;
+		}
+		else if(index_deli == -1){
+			int index_prox_fim = next_index_delimiter(str, index_deli);
+			if(index_prox_fim == -1){
+				char word_fim[index_prox_fim+1];
+				substring(str, word_fim, 1, strlen(str));
+				realoc_add(&tk, word_fim);
+				str+=strlen(str)-1;
+				//~ printf("FIM: %s\n", word_fim);
+			}
+		}
+	}
+	return tk;
+}
+
 // DRIVER FUNCTION
 int main()
 {
@@ -400,18 +640,52 @@ int main()
 	
 	//~ char *t = "function int a = b + 18; if teste * 0x98";
 	
-	char s_in[100] = "function int a=b + 18; if teste * 0x98";
+	char s_in[] = "function int a=b + 18; if teste * 0x98";
 	//~ char s_in[50] = "int a=b+18;";
-	//~ char s_in[200] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
+	//~ char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
     //~ char del[20] = "=+;";
     //~ char *delimiters[] = {" ", "=", "+", ";"};
     //~ char* in_Ptr = s_in;  
     //~ char* o_Ptr;  
-	apply_uni_tokentize(s_in);
+	//~ apply_uni_tokentize(s_in);
 	//~ __strsep6(s_in, delimiters, 4);
     //~ while ((o_Ptr = __strsep3(&in_Ptr, del)) != NULL) {  
         //~ printf("%s\n", o_Ptr);  
     //~ }  
+    
+    //~ run_strtok_nested(s_in);
+    //~ run_strtok(s_in, delimiters);
+    //~ run_strtok(s_in, "=+-!&*/().,?~:;{}[]<|^%>");
+    
+    //~ char *tok = _strtok_nat(s_in, " ");
+    //~ while(tok){
+		//~ printf(">> %s -> 'x'\n", tok);
+		//~ tok = _strtok_nat(NULL, " ");
+	//~ }
+    
+
+    char *str = s_in;
+    //~ for(int i=0; i<strlen(str); i++){
+		//~ int num = num_token_demiliter(str[i]);
+		//~ if(num != -1){
+			//~ printf(">> %d\n", num_token_demiliter(str[i]));
+		//~ }
+	//~ }
+    //~ printf("***\n");
+	
+	struct tokensStruct tk = my_tokentize(str);
+	for(int i=0; i<tk.size; i++){
+		if(tk.tokens[i])printf(">> '%s'\n", tk.tokens[i]);
+	}
+	
+	/*\/ remover; */
+	for(int i=0; i<tk.size; i++){
+		free(tk.tokens[i]);
+	}free(tk.tokens);
+    
+    
+    
+    
 /*
 	int tam_operators = 50;
 	char *buff_string_delimiters[TAMANHO(delimiters) + tam_operators];
