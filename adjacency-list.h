@@ -67,6 +67,52 @@ void printGraph(struct AdjacencyList* graph) {
     }
 }
 
+// Function to perform Breadth First Search on a graph
+// represented using adjacency list
+void bfs(struct Node* adj[], int vertices, int source, int visited[]) {
+    // Create a queue for BFS
+    int queue[vertices];
+    int front = 0, rear = 0;
+
+    // Mark the current node as visited and enqueue it
+    visited[source] = 1;
+    queue[rear++] = source;
+
+    // Iterate over the queue
+    while (front != rear) {
+      
+        // Dequeue a vertex from queue and print it
+        int curr = queue[front++];
+        printf("%d ", curr);
+
+        // Get all adjacent vertices of the dequeued vertex
+        // curr If an adjacent has not been visited,
+        // then mark it visited and enqueue it
+        struct Node* temp = adj[curr];
+        while (temp != NULL) {
+            int neighbor = temp->vertex;
+            if (!visited[neighbor]) {
+                visited[neighbor] = 1;
+                queue[rear++] = neighbor;
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+// Function to perform BFS for the entire graph
+void BFS_TraversalStarting(struct AdjacencyList* adjList, int value)
+{
+	int vertices = adjList->size;
+    // Mark all the vertices as not visited
+    int visited[vertices];
+    for (int i = 0; i < vertices; ++i)
+        visited[i] = 0;
+
+    // Perform BFS traversal starting from vertex 0
+    bfs(adjList->adjLists, vertices, 0, visited);
+}
+
 void insertNodeAdjacentToAnother(struct AdjacencyList* graph, struct Node* src, struct Node* nodeInsert) {
     src->next = nodeInsert;
 }

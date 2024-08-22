@@ -1,7 +1,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "symbols.h"
-#include "adjacency-list.h"
+//~ #include "adjacency-list.h"
 
 #define MAX_TOKEN 100
 
@@ -299,46 +299,46 @@ void parse2(char* str)
     token = strtok(str, delimiters);
     
     // Create an undirected graph with 3 vertices
-    struct AdjacencyList* graph = createGraph(20);
+    //~ struct AdjacencyList* graph = createGraph(20);
 
     // using loop to get the rest of the token
     while (token) {
         	char* str = token;
 			if(isKeyword(str)){
-				addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
+				//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
 			}
 			if(isOpetatorLanguage(str)){
-				addEdge(graph, str, TOKEN_OPERADOR);
+				//~ addEdge(graph, str, TOKEN_OPERADOR);
 			}
 			//~ if(isDelimiter(str)){
 				//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
 			//~ }
 			if(isString(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(validIdentifier(str)){
-				addEdge(graph, str, Identifier);
+				//~ addEdge(graph, str, Identifier);
 			}
 			if(isInteger(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(isRealNumber(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(isBinaryNumber(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(isBooleanNumber(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(isNullLiteral(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(isOctalNumber(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
 			if(isHexNumber(str)){
-				addEdge(graph, str, Literal);
+				//~ addEdge(graph, str, Literal);
 			}
         
         token = strtok(NULL, delimiter);
@@ -346,10 +346,10 @@ void parse2(char* str)
 
 	//~ int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
 	//~ reduceNode(graph, tokens, TAMANHO(tokens));
-	printGraph(graph);
+	//~ printGraph(graph);
 	
-	free(graph->adjLists);
-	free(graph);
+	//~ free(graph->adjLists);
+	//~ free(graph);
 }
 
 /*

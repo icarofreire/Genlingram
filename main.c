@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "scanner.h"
+#include "Lib-Adjacency-List.h"
 //~ #include "tokens_grammar.h"
 
 #define TAM_X 105
@@ -664,26 +665,42 @@ int main()
 	//~ }
     
 
-    char *str = s_in;
-    //~ for(int i=0; i<strlen(str); i++){
-		//~ int num = num_token_demiliter(str[i]);
-		//~ if(num != -1){
-			//~ printf(">> %d\n", num_token_demiliter(str[i]));
-		//~ }
+    //~ char *str = s_in;
+	
+	//~ struct tokensStruct tk = my_tokentize(str);
+	//~ for(int i=0; i<tk.size; i++){
+		//~ if(tk.tokens[i])printf(">> '%s'\n", tk.tokens[i]);
 	//~ }
-    //~ printf("***\n");
 	
-	struct tokensStruct tk = my_tokentize(str);
-	for(int i=0; i<tk.size; i++){
-		if(tk.tokens[i])printf(">> '%s'\n", tk.tokens[i]);
-	}
-	
-	/*\/ remover; */
-	for(int i=0; i<tk.size; i++){
-		free(tk.tokens[i]);
-	}free(tk.tokens);
+	//~ /*\/ remover; */
+	//~ for(int i=0; i<tk.size; i++){
+		//~ free(tk.tokens[i]);
+	//~ }free(tk.tokens);
     
     
+    // Create an undirected adjList with 3 vertices
+    struct AdjacencyList* undirectedAdjacencyList = createAdjacencyList(3);
+
+    // Add edges to the undirected adjList
+    //~ addEdge(undirectedAdjacencyList, 0, 1);
+    //~ addEdge(undirectedAdjacencyList, 0, 2);
+    //~ addEdge(undirectedAdjacencyList, 1, 2);
+
+    //~ printf("Adjacecncy List for Undirected AdjacencyList:\n");
+    //~ printAdjacencyList(undirectedAdjacencyList);
+
+    // Create a directed adjList with 3 vertices
+    struct AdjacencyList* directedAdjacencyList = createAdjacencyList(3);
+
+    // Add edges to the directed adjList
+    addEdge(directedAdjacencyList, 1, 0);
+    addEdge(directedAdjacencyList, 1, 2);
+    addEdge(directedAdjacencyList, 2, 0);
+
+    printf("\nAdjacecncy List for Directed AdjacencyList:\n");
+    printAdjacencyList(directedAdjacencyList);
+    
+    BFS_TraversalStarting(undirectedAdjacencyList, 2);
     
     
 /*
