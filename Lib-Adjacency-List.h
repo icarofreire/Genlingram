@@ -1,5 +1,8 @@
 /* Lib Adjacency List; */
 
+#define MAX_NODES 100
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 // Structure to represent a node in the adjacency list
 struct Node {
     int vertex;
@@ -8,10 +11,10 @@ struct Node {
 
 // Structure to represent the adjList
 struct AdjacencyList {
-	/*\/ número de vertices pré-definido; */
+	/*\/ número de vertices criados dinâmicamente; */
     int numVertices;
-    /*\/ número de vertices criados; */
-    int numEdges;
+    /*\/  */
+    int maxEdgeInserido;
     struct Node** adjLists;
 };
 
@@ -24,42 +27,40 @@ struct Node* createNode(int v) {
 }
 
 // Function to create a adjList
-struct AdjacencyList* createAdjacencyList(int vertices) {
+struct AdjacencyList* createAdjacencyList() {
     struct AdjacencyList* adjList = malloc(sizeof(struct AdjacencyList));
-    adjList->numVertices = vertices;
 
-    // Create an array of adjacency lists
-    adjList->adjLists = malloc(vertices * sizeof(struct Node*));
+	int vertices = MAX_NODES;
+	adjList->numVertices = vertices;
 
-    // Initialize each adjacency list as empty
-    for (int i = 0; i < vertices; i++) {
-        adjList->adjLists[i] = NULL;
-    }
-    
-    adjList->numEdges = 0;
+	// Create an array of adjacency lists
+	adjList->adjLists = malloc(vertices * sizeof(struct Node*));
+
+	// Initialize each adjacency list as empty
+	for (int i = 0; i < vertices; i++) {
+		adjList->adjLists[i] = NULL;
+	}
+	
+	adjList->maxEdgeInserido = 0;
 
     return adjList;
 }
 
 // Function to add an edge to the adjList
 void addEdge(struct AdjacencyList* adjList, int src, int dest) {
+
+	adjList->maxEdgeInserido = MAX(adjList->maxEdgeInserido, src);
+	
     // Add edge from src to dest
     struct Node* newNode = createNode(dest);
     newNode->next = adjList->adjLists[src];
     adjList->adjLists[src] = newNode;
-    adjList->numEdges++;
-    
-    if(adjList->numVertices < adjList->numEdges){
-		// realocar para mais 1;
-		adjList->adjLists = malloc((adjList->numVertices+1) * sizeof(struct Node*));
-		adjList->numVertices++;
-	}
 }
 
 // Function to print the adjacency list representation of the adjList
 void printAdjacencyList(struct AdjacencyList* adjList) {
     printf("Vertex:  Adjacency List\n");
-    for (int v = 0; v < adjList->numVertices; v++) {
+    for (int v = 0; v < adjList->maxEdgeInserido; v++) {
         struct Node* temp = adjList->adjLists[v];
         printf("%d --->", v);
         while (temp) {
@@ -112,9 +113,9 @@ int bfs(struct Node* adj[], int vertices, int source, int visited[], int value) 
 // Function to perform BFS for the entire graph
 int BFS_TraversalStarting(struct AdjacencyList* adjList, int vertex_ini, int value)
 {
-	int vertices = adjList->numEdges;
+	int vertices = adjList->numVertices;
     // Mark all the vertices as not visited
-    int visited[vertices+1];
+    int visited[vertices];
     for (int i = 0; i < vertices; ++i)
         visited[i] = 0;
 
@@ -125,7 +126,7 @@ int BFS_TraversalStarting(struct AdjacencyList* adjList, int vertex_ini, int val
 // Perform BFS traversal for the entire graph
 void BFS_TraversalStartingEntireGraph(struct AdjacencyList* adjList, int value)
 {
-	int vertices = adjList->numEdges;
+	int vertices = adjList->numVertices;
     int visited[vertices];
     for (int i = 0; i < vertices; ++i)
         visited[i] = 0;

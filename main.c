@@ -690,7 +690,7 @@ int main()
     //~ printAdjacencyList(undirectedAdjacencyList);
 
     // Create a directed adjList with 3 vertices
-    struct AdjacencyList* directedAdjacencyList = createAdjacencyList(3);
+    struct AdjacencyList* directedAdjacencyList = createAdjacencyList();
 
     // Add edges to the directed adjList
     //~ addEdge(directedAdjacencyList, 1, 0);
@@ -716,7 +716,7 @@ int main()
     //~ printf("\nAdjacecncy List for Directed AdjacencyList:\n");
     printAdjacencyList(directedAdjacencyList);
     
-    //~ int path = BFS_TraversalStarting(directedAdjacencyList, 3, 9);
+    //~ int path = BFS_TraversalStarting(directedAdjacencyList, 3, 13);
     //~ BFS_TraversalStartingEntireGraph(directedAdjacencyList, 1);
     //~ if(path != -1){
 		//~ printf("[ok];\n");
