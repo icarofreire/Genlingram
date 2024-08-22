@@ -679,7 +679,7 @@ int main()
     
     
     // Create an undirected adjList with 3 vertices
-    struct AdjacencyList* undirectedAdjacencyList = createAdjacencyList(3);
+    //~ struct AdjacencyList* undirectedAdjacencyList = createAdjacencyList(3);
 
     // Add edges to the undirected adjList
     //~ addEdge(undirectedAdjacencyList, 0, 1);
@@ -693,14 +693,36 @@ int main()
     struct AdjacencyList* directedAdjacencyList = createAdjacencyList(3);
 
     // Add edges to the directed adjList
+    //~ addEdge(directedAdjacencyList, 1, 0);
+    //~ addEdge(directedAdjacencyList, 1, 2);
+    //~ addEdge(directedAdjacencyList, 2, 0);
+    
+    addEdge(directedAdjacencyList, 3, 1);
     addEdge(directedAdjacencyList, 1, 0);
-    addEdge(directedAdjacencyList, 1, 2);
-    addEdge(directedAdjacencyList, 2, 0);
+    addEdge(directedAdjacencyList, 3, 7);
+    addEdge(directedAdjacencyList, 7, 9);
+    addEdge(directedAdjacencyList, 3, 4);
+    addEdge(directedAdjacencyList, 3, 2);
+    addEdge(directedAdjacencyList, 4, 5);
+    addEdge(directedAdjacencyList, 4, 12);
+    addEdge(directedAdjacencyList, 4, 8);
+    addEdge(directedAdjacencyList, 12, 13);
+    addEdge(directedAdjacencyList, 2, 10);
+    addEdge(directedAdjacencyList, 2, 6);
+    addEdge(directedAdjacencyList, 10, 11);
+    
+    //~ printf("taM: %d, %d\n", directedAdjacencyList->numEdges, directedAdjacencyList->numVertices);
 
-    printf("\nAdjacecncy List for Directed AdjacencyList:\n");
+    //~ printf("\nAdjacecncy List for Directed AdjacencyList:\n");
     printAdjacencyList(directedAdjacencyList);
     
-    BFS_TraversalStarting(undirectedAdjacencyList, 2);
+    //~ int path = BFS_TraversalStarting(directedAdjacencyList, 3, 9);
+    //~ BFS_TraversalStartingEntireGraph(directedAdjacencyList, 1);
+    //~ if(path != -1){
+		//~ printf("[ok];\n");
+	//~ }else{
+		//~ printf("[No];\n");
+	//~ }
     
     
 /*

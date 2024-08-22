@@ -48,6 +48,12 @@ void addEdge(struct AdjacencyList* adjList, int src, int dest) {
     newNode->next = adjList->adjLists[src];
     adjList->adjLists[src] = newNode;
     adjList->numEdges++;
+    
+    if(adjList->numVertices < adjList->numEdges){
+		// realocar para mais 1;
+		adjList->adjLists = malloc((adjList->numVertices+1) * sizeof(struct Node*));
+		adjList->numVertices++;
+	}
 }
 
 // Function to print the adjacency list representation of the adjList
@@ -66,7 +72,7 @@ void printAdjacencyList(struct AdjacencyList* adjList) {
 
 // Function to perform Breadth First Search on a graph
 // represented using adjacency list
-void bfs(struct Node* adj[], int vertices, int source, int visited[], int value) {
+int bfs(struct Node* adj[], int vertices, int source, int visited[], int value) {
     // Create a queue for BFS
     int queue[vertices];
     int front = 0, rear = 0;
@@ -80,7 +86,7 @@ void bfs(struct Node* adj[], int vertices, int source, int visited[], int value)
       
         // Dequeue a vertex from queue and print it
         int curr = queue[front++];
-        printf("%d >>", curr);
+        printf("%d >> ", curr);
 
         // Get all adjacent vertices of the dequeued vertex
         // curr If an adjacent has not been visited,
@@ -88,30 +94,47 @@ void bfs(struct Node* adj[], int vertices, int source, int visited[], int value)
         struct Node* temp = adj[curr];
         while (temp != NULL) {
             int neighbor = temp->vertex;
+            
+            if(neighbor == value){
+				return 1;
+			}
+            
             if (!visited[neighbor]) {
                 visited[neighbor] = 1;
                 queue[rear++] = neighbor;
-                
-                if(neighbor == value){
-					//~ break;
-				}
             }
             temp = temp->next;
         }
     }
+    return -1;
 }
 
 // Function to perform BFS for the entire graph
-void BFS_TraversalStarting(struct AdjacencyList* adjList, int value)
+int BFS_TraversalStarting(struct AdjacencyList* adjList, int vertex_ini, int value)
 {
 	int vertices = adjList->numEdges;
     // Mark all the vertices as not visited
-    int visited[vertices];
+    int visited[vertices+1];
     for (int i = 0; i < vertices; ++i)
         visited[i] = 0;
 
     // Perform BFS traversal starting from vertex 0
-    bfs(adjList->adjLists, vertices, 0, visited, value);
+    return bfs(adjList->adjLists, vertices, vertex_ini, visited, value);
+}
+
+// Perform BFS traversal for the entire graph
+void BFS_TraversalStartingEntireGraph(struct AdjacencyList* adjList, int value)
+{
+	int vertices = adjList->numEdges;
+    int visited[vertices];
+    for (int i = 0; i < vertices; ++i)
+        visited[i] = 0;
+
+    for (int i = 0; i < vertices; ++i) {
+        if (!visited[i]) {
+            bfs(adjList->adjLists, vertices, i, visited, value);
+        }
+    }
 }
 
 /*
