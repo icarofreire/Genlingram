@@ -4,7 +4,8 @@
 #include <stdlib.h>
 
 #include "scanner.h"
-#include "Lib-Adjacency-List.h"
+//~ #include "Lib-Adjacency-List.h"
+#include "adjacency-list-lib2.h"
 //~ #include "tokens_grammar.h"
 
 #define TAM_X 105
@@ -641,7 +642,7 @@ int main()
 	
 	//~ char *t = "function int a = b + 18; if teste * 0x98";
 	
-	char s_in[] = "function int a=b + 18; if teste * 0x98";
+	//~ char s_in[] = "function int a=b + 18; if teste * 0x98";
 	//~ char s_in[50] = "int a=b+18;";
 	//~ char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
     //~ char del[20] = "=+;";
@@ -689,13 +690,9 @@ int main()
     //~ printf("Adjacecncy List for Undirected AdjacencyList:\n");
     //~ printAdjacencyList(undirectedAdjacencyList);
 
+/*
     // Create a directed adjList with 3 vertices
     struct AdjacencyList* directedAdjacencyList = createAdjacencyList();
-
-    // Add edges to the directed adjList
-    //~ addEdge(directedAdjacencyList, 1, 0);
-    //~ addEdge(directedAdjacencyList, 1, 2);
-    //~ addEdge(directedAdjacencyList, 2, 0);
     
     addEdge(directedAdjacencyList, 3, 1);
     addEdge(directedAdjacencyList, 1, 0);
@@ -723,8 +720,55 @@ int main()
 	//~ }else{
 		//~ printf("[No];\n");
 	//~ }
+    */
     
-    
+struct Graph* G2 = createGraph();
+
+insertNode(G2, 0);
+insertNode(G2, 1);
+insertNode(G2, 2);
+insertNode(G2, 3);
+insertNode(G2, 4);
+insertNode(G2, 5);
+insertNode(G2, 6);
+insertNode(G2, 7);
+insertNode(G2, 8);
+insertNode(G2, 9);
+insertNode(G2, 10);
+insertNode(G2, 11);
+insertNode(G2, 12);
+insertNode(G2, 13);
+
+// ***
+
+insertEdge(G2, 3, 1);
+insertEdge(G2, 1, 0);
+insertEdge(G2, 3, 7);
+insertEdge(G2, 7, 9);
+insertEdge(G2, 3, 4);
+insertEdge(G2, 3, 2);
+insertEdge(G2, 4, 5);
+insertEdge(G2, 4, 12);
+insertEdge(G2, 4, 8);
+insertEdge(G2, 12, 13);
+insertEdge(G2, 2, 10);
+insertEdge(G2, 2, 6);
+insertEdge(G2, 10, 11);
+
+printGraph(G2);
+
+printf("\n***\n");
+
+deleteAllGraph(G2);
+//~ printGraph(G2);
+
+//~ int path = isAdjacent(G2, 4, 12);
+//~ if(path == 1){
+	//~ printf("[ok];\n");
+//~ }else{
+	//~ printf("[No];\n");
+//~ }
+	
 /*
 	int tam_operators = 50;
 	char *buff_string_delimiters[TAMANHO(delimiters) + tam_operators];
