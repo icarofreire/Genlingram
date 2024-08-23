@@ -19,6 +19,21 @@ void substring(char s[], char sub[], int p, int l) {
    sub[c] = '\0';
 }
 
+/*
+// Extracts the SUBSTRING.
+char* subString(const char* str, int left, int right)
+{
+	int i;
+	char* subStr = (char*)malloc(
+				sizeof(char) * (right - left + 2));
+
+	for (i = left; i <= right; i++)
+		subStr[i - left] = str[i];
+	subStr[right - left + 1] = '\0';
+	return (subStr);
+}
+*/
+
 // Returns 'true' if the character is a DELIMITER.
 bool is_delimiter(char ch)
 {
@@ -45,10 +60,12 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
     for(; (*str) != '\0'; str++){
 		int index_deli = next_index_delimiter(str, 0);
 		if(index_deli != -1){
+
 			char delimiter = str[index_deli];
 			char word[index_deli+1];
 			substring(str, word, 1, index_deli);
 			trimString(word);
+
 			//~ printf(">> '%s' -> '%c'\n", word, delimiter);
 			if(strcmp(word, "") != 0){
 				//~ printf(">> '%s'\n", word);
@@ -62,13 +79,16 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
 			str+=index_deli;
 		}
 		else if(index_deli == -1){
+			/* \/ caso a string esteja perto de seu fim, mas não encontra um delimitador; */
 			int index_prox_fim = next_index_delimiter(str, index_deli);
 			if(index_prox_fim == -1){
+
 				char word_fim[index_prox_fim+1];
 				substring(str, word_fim, 1, strlen(str));
 				insertEnd(nodeDLL, word_fim);
 				str+=strlen(str)-1;
 				//~ printf("FIM: %s\n", word_fim);
+
 			}
 		}
 	}

@@ -1,7 +1,20 @@
 /* Lib Adjacency List; */
 /* Graph representation of an adjacency list with a linked list for the nodes; */
 
+struct Token
+{
+  // The beginning of the token, pointing directly into the source.
+  const char* str;
+
+  // The 1-based line where the token appears.
+  const int line;
+  
+  // The parsed value if the token is a literal.
+  const int tokenType;
+};
+
 struct Node {
+	struct Token* token;
     int val;
     struct Node* next;
     /*\/ lista de edges do nó; */
@@ -21,10 +34,10 @@ struct Graph {
 
 /* Prototypes */
 struct Graph* createGraph();
-struct Node* createNode(int val);
+struct Node* createNode(int val, struct Token* token);
 struct Edge* createEdge(struct Graph* graph, int dest);
 struct Node* getNode(struct Graph* graph, int val);
-int insertNode(struct Graph* graph, int val);
+int insertNode(struct Graph* graph, int val, struct Token* token);
 int insertEdge(struct Graph* graph, int src, int dest);
 void printGraph(struct Graph* graph);
 /* Prototypes */
@@ -37,8 +50,9 @@ struct Graph* createGraph() {
     return graph;
 }
 
-struct Node* createNode(int val) {
+struct Node* createNode(int val, struct Token* token) {
     struct Node* newNode  = (struct Node*)malloc(sizeof(struct Node));
+    newNode->token = (token != NULL) ? (token) : (NULL);
     newNode->val   = val;
     newNode->next  = NULL;
     newNode->edges = NULL;
@@ -53,9 +67,9 @@ struct Edge* createEdge(struct Graph* graph, int dest) {
     return newEdge;
 }
 
-int insertNode(struct Graph* graph, int val) {
+int insertNode(struct Graph* graph, int val, struct Token* token) {
     if (getNode(graph, val) != NULL) return -1;
-    struct Node* newNode  = createNode(val);
+    struct Node* newNode  = createNode(val, token);
     struct Node* tempNode = NULL;
 
     if (graph->head == NULL) {

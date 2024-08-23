@@ -5,7 +5,7 @@
 
 #include "scanner.h"
 //~ #include "Lib-Adjacency-List.h"
-#include "adjacency-list-lib2.h"
+//~ #include "adjacency-list-lib2.h"
 //~ #include "tokens_grammar.h"
 //~ #include "DoublyLinkedList.h"
 
@@ -249,8 +249,8 @@ int main()
 	//~ char s_in[] = "function int a=b + 18; if teste * 0x98";
 	//~ char s_in[50] = "int a=b+18;";
 	char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
-
-    tokentize(s_in, parse);
+	int line = 1;
+    tokentize(s_in, line);
 	
 	//~ struct NodeDLL *nodeDLL = createNodeDLL("");
 	//~ tokentize_by_delimiters(str, nodeDLL);
@@ -305,7 +305,24 @@ int main()
 		//~ printf("[No];\n");
 	//~ }
     */
-    /*
+
+//~ struct Graph* G2 = createGraph();
+
+//~ struct Token token = {"break-1", 1, 99};
+
+//~ insertNode(G2, 0, &token);
+
+//~ struct Token token2 = {"break-2", 1, 99};
+//~ insertNode(G2, 1, &token2);
+
+//~ struct Token token3 = {"break-3", 1, 99};
+//~ insertNode(G2, 2, &token3);
+
+//~ insertEdge(G2, 1, 0);
+//~ insertEdge(G2, 1, 2);
+//~ printGraph(G2);
+
+/*
 struct Graph* G2 = createGraph();
 
 insertNode(G2, 0);

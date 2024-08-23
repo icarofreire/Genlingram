@@ -3,21 +3,15 @@
 #include "symbols.h"
 //~ #include "adjacency-list.h"
 #include "tokenization.h"
+#include "adjacency-list-lib2.h"
 
 #define MAX_TOKEN 100
-
 
 bool isKeyword(const char* str);
 
 // Returns 'true' if the character is a DELIMITER.
 bool isDelimiter(char ch)
 {
-	//~ if (ch == ' ' || ch == '+' || ch == '-' || ch == '*' ||
-		//~ ch == '/' || ch == ',' || ch == ';' || ch == '>' ||
-		//~ ch == '<' || ch == '=' || ch == '(' || ch == ')' ||
-		//~ ch == '[' || ch == ']' || ch == '{' || ch == '}')
-		//~ return (true);
-	//~ return (false);
 	int k, tam = TAMANHO(delimiters);
 	for (k = 0; k < tam; k++) {
 		if (ch == delimiters[k]){
@@ -27,47 +21,34 @@ bool isDelimiter(char ch)
 	return (false);
 }
 
-int num_token_demiliter(char ch){
+int num_token_demiliter(char *str){
 	int num_token = -1;
-	switch(ch){
-	 case '=': num_token = EQ; break;
-	 case '+': num_token = ADD; break;
-	 case '-': num_token = SUB; break;
-	 case '!': num_token = NOT; break;
-	 case '&': num_token = AND; break;
-	 case '*': num_token = MUL; break;
-	 case '/': num_token = DIV; break;
-	 case '(': num_token = LPAREN; break;
-	 case ')': num_token = RPAREN; break;
-	 case '.': num_token = DOT; break;
-	 case ',': num_token = COMMA; break;
-	 case '?': num_token = QUESTION; break;
-	 case '~': num_token = TILDE; break;
-	 case ':': num_token = COLON; break;
-	 case ';': num_token = SEMICOLON; break;
-	 case '{': num_token = LBRACE; break;
-	 case '}': num_token = RBRACE; break;
-	 case '[': num_token = LBRACK; break;
-	 case ']': num_token = RBRACK; break;
-	 case '<': num_token = LESSER; break;
-	 case '|': num_token = OR; break;
-	 case '^': num_token = XOR; break;
-	 case '%': num_token = MOD; break;
-	 case '>': num_token = GREATER; break;
-	}
+	if (strcmp(str, "=") == 0) num_token = EQ;
+	else if (strcmp(str, "+") == 0) num_token = ADD;
+	else if (strcmp(str, "-") == 0) num_token = SUB;
+	else if (strcmp(str, "!") == 0) num_token = NOT;
+	else if (strcmp(str, "&") == 0) num_token = AND;
+	else if (strcmp(str, "*") == 0) num_token = MUL;
+	else if (strcmp(str, "/") == 0) num_token = DIV;
+	else if (strcmp(str, "(") == 0) num_token = LPAREN;
+	else if (strcmp(str, ")") == 0) num_token = RPAREN;
+	else if (strcmp(str, ".") == 0) num_token = DOT;
+	else if (strcmp(str, ",") == 0) num_token = COMMA;
+	else if (strcmp(str, "?") == 0) num_token = QUESTION;
+	else if (strcmp(str, "~") == 0) num_token = TILDE;
+	else if (strcmp(str, ":") == 0) num_token = COLON;
+	else if (strcmp(str, ";") == 0) num_token = SEMICOLON;
+	else if (strcmp(str, "{") == 0) num_token = LBRACE;
+	else if (strcmp(str, "}") == 0) num_token = RBRACE;
+	else if (strcmp(str, "[") == 0) num_token = LBRACK;
+	else if (strcmp(str, "]") == 0) num_token = RBRACK;
+	else if (strcmp(str, "<") == 0) num_token = LESSER;
+	else if (strcmp(str, "|") == 0) num_token = OR;
+	else if (strcmp(str, "^") == 0) num_token = XOR;
+	else if (strcmp(str, "%") == 0) num_token = MOD;
+	else if (strcmp(str, ">") == 0) num_token = GREATER;
 	return num_token;
 }
-
-//~ bool isDelimiter_str(char* str)
-//~ {
-	//~ int k, tam = TAMANHO(delimiters);
-	//~ for (k = 0; k < tam; k++) {
-		//~ if (ch == delimiters[k]){
-			//~ return (true);
-		//~ }
-	//~ }
-	//~ return (false);
-//~ }
 
 bool isID(const char *str)
 {
@@ -115,12 +96,6 @@ bool isOperator(char ch)
 // Returns 'true' if the string is a VALID IDENTIFIER.
 bool validIdentifier(const char* str)
 {
-	//~ if (str[0] == '0' || str[0] == '1' || str[0] == '2' ||
-		//~ str[0] == '3' || str[0] == '4' || str[0] == '5' ||
-		//~ str[0] == '6' || str[0] == '7' || str[0] == '8' ||
-		//~ str[0] == '9' || isDelimiter(str[0]) == true)
-		//~ return (false);
-	//~ return (true);
 	return isID(str);
 }
 
@@ -135,20 +110,6 @@ bool isKeyword(const char* str)
 		}
 	}
 	return f;
-	/*if (!strcmp(str, "if") || !strcmp(str, "else") ||
-		!strcmp(str, "while") || !strcmp(str, "do") ||
-		!strcmp(str, "break") ||
-		!strcmp(str, "continue") || !strcmp(str, "int")
-		|| !strcmp(str, "double") || !strcmp(str, "float")
-		|| !strcmp(str, "return") || !strcmp(str, "char")
-		|| !strcmp(str, "case") || !strcmp(str, "char")
-		|| !strcmp(str, "sizeof") || !strcmp(str, "long")
-		|| !strcmp(str, "short") || !strcmp(str, "typedef")
-		|| !strcmp(str, "switch") || !strcmp(str, "unsigned")
-		|| !strcmp(str, "void") || !strcmp(str, "static")
-		|| !strcmp(str, "struct") || !strcmp(str, "goto"))
-		return (true);
-	return (false);*/
 }
 
 // Returns 'true' if the string is a OPERATOR.
@@ -289,54 +250,89 @@ char* subString(const char* str, int left, int right)
 	return (subStr);
 }
 
-void tokentize(char* str, void(*parse)(char *str))
+void parse(char*, int, struct NodeDLL*, struct Graph*);
+
+void tokentize(char* str, int line)
 {
 	struct NodeDLL *nodeDLL = createNodeDLL("");
 	tokentize_by_delimiters(str, nodeDLL);
+	
+	struct Graph* graph = createGraph();
 
 	//~ forwardTraversal(nodeDLL);
-	forwardTraversalPassingFunction(nodeDLL, parse);
+	//~ forwardTraversalPassingFunction(nodeDLL, parse, line);
+
+
+	// Start traversal from the head of the list
+    struct NodeDLL* curr = nodeDLL;
+
+    // Continue until the current node is not
+    // null (end of list)
+    while (curr != NULL) {
+      
+        // Output data of the current node
+        //~ printf("%s -> ", curr->data);
+        parse(curr->data, line, curr, graph);
+      
+        // Move to the next node
+        curr = curr->next;
+    }
+    
+    printGraph(graph);
+
 }
 
-void parse(char* token)
+void parse(char* token, int line, struct NodeDLL* nodeDLL, struct Graph* graph)
 {
-	printf("[fun parse];\n");
 	char* str = token;
 	if(isKeyword(str)){
-		//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
+		struct Token token = {str, line, TOKEN_PALAVRA_CHAVE};
+		insertNode(graph, TOKEN_PALAVRA_CHAVE, &token);
 	}
 	if(isOpetatorLanguage(str)){
-		//~ addEdge(graph, str, TOKEN_OPERADOR);
+		struct Token token = {str, line, TOKEN_OPERADOR};
+		insertNode(graph, TOKEN_PALAVRA_CHAVE, &token);
 	}
-	//~ if(isDelimiter(str)){
-		//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
-	//~ }
+	int token_demiliter = num_token_demiliter(str);
+	if(token_demiliter != -1){
+		struct Token token = {str, line, token_demiliter};
+		insertNode(graph, token_demiliter, &token);
+	}
 	if(isString(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(validIdentifier(str)){
-		//~ addEdge(graph, str, Identifier);
+		struct Token token = {str, line, Identifier};
+		insertNode(graph, Identifier, &token);
 	}
 	if(isInteger(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(isRealNumber(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(isBinaryNumber(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(isBooleanNumber(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(isNullLiteral(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(isOctalNumber(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 	if(isHexNumber(str)){
-		//~ addEdge(graph, str, Literal);
+		struct Token token = {str, line, Literal};
+		insertNode(graph, Literal, &token);
 	}
 
 	//~ int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
@@ -411,94 +407,5 @@ void parse2(char* str)
 	
 	//~ free(graph->adjLists);
 	//~ free(graph);
-}
-*/
-/*
-// Parsing the input STRING.
-void parse(char* str)
-{
-	int left = 0, right = 0;
-	int len = strlen(str);
-	struct numbers_tokens_grammar numers_grammar = {0, {0}};
-
-	while (right <= len && left <= right) {
-		if (isDelimiter(str[right]) == false)
-			right++;
-
-		if (isDelimiter(str[right]) == true && left == right) {
-			//~ if (isOperator(str[right]) == true)
-				//~ printf("'%c' IS AN OPERATOR\n", str[right]);
-			//~ if( str[right] != ' ' ){ 
-				char sinal[] = {str[right], '\0'};
-				if(isOpetatorLanguage(sinal)){
-					
-					printf("%c[%d] IS AN OPERATOR >> %s\n", sinal[0], right, sinal);
-					push_tokens_grammar(&numers_grammar, sinal[0], sinal);
-				}
-			//~ }
-			right++;
-			left = right;
-		} else if ((isDelimiter(str[right]) == true && left != right)
-				|| (right == len && left != right)) {
-			char* subStr = subString(str, left, right - 1);
-
-			printf("--> '%s'\n", subStr);
-			char* str = subStr;
-			
-			if(isKeyword(str)){
-				printf("IS AN KEY >>\n");
-				push_tokens_grammar(&numers_grammar, TOKEN_PALAVRA_CHAVE, str);
-			}
-			if(isOpetatorLanguage(str)){
-				//~ printf("IS AN OPER 2 >>\n");
-				push_tokens_grammar(&numers_grammar, TOKEN_OPERADOR, str);
-			}
-			if(isString(str)){
-				//~ push_tokens_grammar(&numers_grammar, stringLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			if(validIdentifier(str)){
-				push_tokens_grammar(&numers_grammar, Identifier, str);
-			}
-			if(isInteger(str)){
-				//~ push_tokens_grammar(&numers_grammar, decimalLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			if(isRealNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			if(isBinaryNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, numericLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			if(isBooleanNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, booleanLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			if(isNullLiteral(str)){
-				//~ push_tokens_grammar(&numers_grammar, nullLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			if(isOctalNumber(str)){
-				push_tokens_grammar(&numers_grammar, Literal, str);
-				//~ push_tokens_grammar(&numers_grammar, Literal);
-			}
-			if(isHexNumber(str)){
-				//~ push_tokens_grammar(&numers_grammar, hexIntegerLiteral);
-				push_tokens_grammar(&numers_grammar, Literal, str);
-			}
-			
-			left = right;
-		}
-	}
-	
-	// exibir a tabela de tokens;
-	int r;
-	for(r = 0; r <= numers_grammar.ponto; r++){
-		printf(">> %d - [%s]\n", numers_grammar.number_tokens_grammar[r], numers_grammar.token[r]);
-	}
-	
-	return;
 }
 */

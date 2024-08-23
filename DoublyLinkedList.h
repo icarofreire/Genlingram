@@ -313,8 +313,8 @@ void forwardTraversal(struct NodeDLL* head) {
     // Print newline after traversal
     printf("\n");
 }
-
-void forwardTraversalPassingFunction(struct NodeDLL* head, void(*fun)(char*)) {
+/*
+void forwardTraversalPassingFunction(struct NodeDLL* head, void(*fun)(char*, int), int line) {
   
     // Start traversal from the head of the list
     struct NodeDLL* curr = head;
@@ -325,7 +325,7 @@ void forwardTraversalPassingFunction(struct NodeDLL* head, void(*fun)(char*)) {
       
         // Output data of the current node
         //~ printf("%s -> ", curr->data);
-        fun(curr->data);
+        fun(curr->data, line);
       
         // Move to the next node
         curr = curr->next;
@@ -334,7 +334,7 @@ void forwardTraversalPassingFunction(struct NodeDLL* head, void(*fun)(char*)) {
     // Print newline after traversal
     //~ printf("\n");
 }
-
+*/
 // Function to traverse the doubly linked list 
 // in backward direction
 void backwardTraversal(struct NodeDLL* tail) {
