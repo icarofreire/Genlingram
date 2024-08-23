@@ -2,26 +2,30 @@
 
 #include <stdio.h>
 
-struct Node {
-    int data;
-    struct Node *next;
-    struct Node *prev
+/* Node Doubly Linked List; */
+struct NodeDLL {
+    char* data;
+    struct NodeDLL *next;
+    struct NodeDLL *prev;
 };
 
 // Function to create a new node
-struct Node *createNode(int new_data) {
-    struct Node *new_node = (struct Node *)malloc(sizeof(struct Node));
-    new_node->data = new_data;
+struct NodeDLL *createNodeDLL(char* new_data) {
+    struct NodeDLL *new_node = (struct NodeDLL *)malloc(sizeof(struct NodeDLL));
+    //~ new_node->data = new_data;
+    new_node->data = (char*)malloc((strlen(new_data)) * sizeof(char));
+	strcpy(new_node->data, new_data);
+	
     new_node->next = NULL;
     new_node->prev = NULL;
     return new_node;
 }
 
 // Function to insert a new node at the front of doubly linked list
-struct Node *insertAtFront(struct Node *head, int new_data) {
+struct NodeDLL *insertAtFront(struct NodeDLL *head, char* new_data) {
 
     // Create a new node
-    struct Node *new_node = createNode(new_data);
+    struct NodeDLL *new_node = createNodeDLL(new_data);
 
     // Make next of new node as head
     new_node->next = head;
@@ -35,10 +39,32 @@ struct Node *insertAtFront(struct Node *head, int new_data) {
     return new_node;
 }
 
+// Function to insert a new node at the end of the doubly linked list
+struct NodeDLL* insertEnd(struct NodeDLL *head, char* new_data) {
+    struct NodeDLL *new_node = createNodeDLL(new_data);
+
+    // If the linked list is empty, set the new node as the head
+    if (head == NULL) {
+        head = new_node;
+    } else {
+        struct NodeDLL *curr = head;
+        while (curr->next != NULL) {
+            curr = curr->next;
+        }
+
+        // Set the next of last node to new node
+        curr->next = new_node;
+        // Set prev of new node to last node
+        new_node->prev = curr;
+    }
+
+    return head;
+}
+
 // Function to insert a new node at a given position
-struct Node* insertAtPosition(struct Node *head, int pos, int new_data) {
+struct NodeDLL* insertAtPosition(struct NodeDLL *head, int pos, char* new_data) {
     // Create a new node
-    struct Node *new_node = createNode(new_data);
+    struct NodeDLL *new_node = createNodeDLL(new_data);
 
     // Insertion at the beginning
     if (pos == 1) {
@@ -54,7 +80,7 @@ struct Node* insertAtPosition(struct Node *head, int pos, int new_data) {
         return head;
     }
 
-    struct Node *curr = head;
+    struct NodeDLL *curr = head;
   
     // Traverse the list to find the node before the insertion point
     for (int i = 1; i < pos - 1 && curr != NULL; ++i) {
@@ -87,12 +113,12 @@ struct Node* insertAtPosition(struct Node *head, int pos, int new_data) {
 }
 
 // Function to insert a new node after a given node in doubly linked list
-struct Node *insertAfter(struct Node *head, int key, int new_data) {
-    struct Node *curr = head;
+struct NodeDLL *insertAfter(struct NodeDLL *head, char* key, char* new_data) {
+    struct NodeDLL *curr = head;
 
     // Iterate over Linked List to find the key
     while (curr != NULL) {
-        if (curr->data == key)
+        if (strcmp(curr->data, key) == 0)
             break;
         curr = curr->next;
     }
@@ -103,7 +129,7 @@ struct Node *insertAfter(struct Node *head, int key, int new_data) {
         return head;
 
     // Create a new node
-    struct Node *new_node = createNode(new_data);
+    struct NodeDLL *new_node = createNodeDLL(new_data);
 
     // Set prev of new node to the given node
     new_node->prev = curr;
@@ -122,12 +148,12 @@ struct Node *insertAfter(struct Node *head, int key, int new_data) {
 }
 
 // Function to insert a new node before a given node
-struct Node* insertBefore(struct Node *head, int key, int new_data) {
-    struct Node *curr = head;
+struct NodeDLL* insertBefore(struct NodeDLL *head, char* key, char* new_data) {
+    struct NodeDLL *curr = head;
 
     // Iterate over Linked List to find the key
     while (curr != NULL) {
-        if (curr->data == key)
+        if (strcmp(curr->data, key) == 0)
             break;
         curr = curr->next;
     }
@@ -137,7 +163,7 @@ struct Node* insertBefore(struct Node *head, int key, int new_data) {
         return head;
 
     // Create a new node
-    struct Node *new_node = createNode(new_data);
+    struct NodeDLL *new_node = createNodeDLL(new_data);
 
     // Set prev of new node to prev of given node
     new_node->prev = curr->prev;
@@ -160,17 +186,17 @@ struct Node* insertBefore(struct Node *head, int key, int new_data) {
 }
 
 // Checks whether key is present in linked list
-bool searchKey(struct Node* head, int key) {
+bool searchKey(struct NodeDLL* head, char* key) {
 
     // Initialize curr with the head of linked list
-    struct Node* curr = head;
+    struct NodeDLL* curr = head;
 
     // Iterate over all the nodes
     while (curr != NULL) {
 
         // If the current node's value is equal to key,
         // return true
-        if (curr->data == key)
+        if (strcmp(curr->data, key) == 0)
             return true;
 
         // Move to the next node
@@ -183,13 +209,13 @@ bool searchKey(struct Node* head, int key) {
 
 // Function to delete a node at a specific 
 //position in the doubly linked list
-struct Node * delPos(struct Node * head, int pos) {
+struct NodeDLL * delPos(struct NodeDLL * head, int pos) {
 
     // If the list is empty
     if (head == NULL)
         return head;
 
-    struct Node * curr = head;
+    struct NodeDLL * curr = head;
 
     // Traverse to the node at the given position
     for (int i = 1; curr && i < pos; ++i) {
@@ -209,9 +235,10 @@ struct Node * delPos(struct Node * head, int pos) {
         curr -> next -> prev = curr -> prev;
 
     // If the node to be deleted is the head node
-    if (head == curr)
-        head = curr -> next;
+	if (head == curr)
+		head = curr -> next;
 
+	free(curr->data);
     // Deallocate memory for the deleted node
     free(curr);
     return head;
@@ -220,7 +247,7 @@ struct Node * delPos(struct Node * head, int pos) {
 /* Function to delete a node in a Doubly Linked List. 
    head_ref --> pointer to head node pointer. 
    del  -->  pointer to node to be deleted. */
-void deleteNode(struct Node** head_ref, struct Node* del) 
+void deleteNode(struct NodeDLL** head_ref, struct NodeDLL* del) 
 { 
     /* base case */
     if (*head_ref == NULL || del == NULL) 
@@ -235,31 +262,31 @@ void deleteNode(struct Node** head_ref, struct Node* del)
         del->next->prev = del->prev; 
   
     /* Change prev only if node to be deleted is NOT the first node */
-    if (del->prev != NULL) 
-        del->prev->next = del->next; 
+	if (del->prev != NULL) 
+		del->prev->next = del->next; 
   
+	free(del->data);
     /* Finally, free the memory occupied by del*/
-    free(del); 
-    return; 
+    free(del);
 }
 
 // deleteAllNodes(&head)
-void deleteAllNodes(Node** head_ref)
+void deleteAllNodes(struct NodeDLL** head_ref)
 {
-    Node* ptr = *head_ref;
+    struct NodeDLL* ptr = *head_ref;
  
     while (ptr != NULL) {
-        Node* next = ptr->next;
+        struct NodeDLL* next = ptr->next;
         deleteNode(head_ref, ptr);
         ptr = next;
     }
 }
 
 // Function to print the doubly linked list
-void printList(struct Node *head) {
-    struct Node *curr = head;
+void printList(struct NodeDLL *head) {
+    struct NodeDLL *curr = head;
     while (curr != NULL) {
-        printf(" %d", curr->data);
+        printf(" %s", curr->data);
         curr = curr->next;
     }
     printf("\n");
@@ -267,17 +294,17 @@ void printList(struct Node *head) {
 
 // Function to traverse the doubly linked list 
 // in forward direction
-void forwardTraversal(struct Node* head) {
+void forwardTraversal(struct NodeDLL* head) {
   
     // Start traversal from the head of the list
-    struct Node* curr = head;
+    struct NodeDLL* curr = head;
 
     // Continue until the current node is not
     // null (end of list)
     while (curr != NULL) {
       
         // Output data of the current node
-        printf("%d -> ", curr->data);
+        printf("%s -> ", curr->data);
       
         // Move to the next node
         curr = curr->next;
@@ -289,17 +316,17 @@ void forwardTraversal(struct Node* head) {
 
 // Function to traverse the doubly linked list 
 // in backward direction
-void backwardTraversal(struct Node* tail) {
+void backwardTraversal(struct NodeDLL* tail) {
   
     // Start traversal from the tail of the list
-    struct Node* curr = tail;
+    struct NodeDLL* curr = tail;
 
     // Continue until the current node is not 
     // null (end of list)
     while (curr != NULL) {
       
         // Output data of the current node
-        printf("%d <- ", curr->data);
+        printf("%s <- ", curr->data);
       
         // Move to the previous node
         curr = curr->prev;

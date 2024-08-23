@@ -7,6 +7,7 @@
 //~ #include "Lib-Adjacency-List.h"
 #include "adjacency-list-lib2.h"
 //~ #include "tokens_grammar.h"
+#include "DoublyLinkedList.h"
 
 #define TAM_X 105
 #define TAM_Y 100
@@ -577,24 +578,7 @@ int next_index_delimiter(char *str, int lim){
 	return -1;
 }
 
-struct tokensStruct {
-	char **tokens;
-	int size;
-};
-
-void realoc_add(struct tokensStruct *tk, char *word){
-	if(tk->size == 0){
-		tk->tokens = (char**)malloc(1 * sizeof(char*));
-	}
-	tk->size++;
-	tk->tokens = (char**) realloc(tk->tokens, tk->size * sizeof(int));
-	tk->tokens[tk->size-1] = (char*)malloc((strlen(word)+1) * sizeof(char));
-	strcpy(tk->tokens[tk->size-1], word);
-}
-
-struct tokensStruct my_tokentize(char *str){
-	struct tokensStruct tk;
-	tk.size = 0;
+void my_tokentize(char *str, struct NodeDLL *nodeDLL){
 
     for(; (*str) != '\0'; str++){
 		int index_deli = next_index_delimiter(str, 0);
@@ -606,14 +590,12 @@ struct tokensStruct my_tokentize(char *str){
 			//~ printf(">> '%s' -> '%c'\n", word, delimiter);
 			if(strcmp(word, "") != 0){
 				//~ printf(">> '%s'\n", word);
-				/*\/ realocar memória para o array de strings, e para o array que conterá a string; */
-				realoc_add(&tk, word);
+				insertEnd(nodeDLL, word);
 			}
 			if(delimiter != ' '){
 				//~ printf(">> '%c'\n", delimiter);
-				/*\/ realocar memória para o array de strings, e para o array que conterá a string; */
 				char temp_str_delimiter[] = {delimiter, '\0'};
-				realoc_add(&tk, temp_str_delimiter);
+				insertEnd(nodeDLL, temp_str_delimiter);
 			}
 			str+=index_deli;
 		}
@@ -622,13 +604,12 @@ struct tokensStruct my_tokentize(char *str){
 			if(index_prox_fim == -1){
 				char word_fim[index_prox_fim+1];
 				substring(str, word_fim, 1, strlen(str));
-				realoc_add(&tk, word_fim);
+				insertEnd(nodeDLL, word_fim);
 				str+=strlen(str)-1;
 				//~ printf("FIM: %s\n", word_fim);
 			}
 		}
 	}
-	return tk;
 }
 
 // DRIVER FUNCTION
@@ -644,7 +625,7 @@ int main()
 	
 	//~ char s_in[] = "function int a=b + 18; if teste * 0x98";
 	//~ char s_in[50] = "int a=b+18;";
-	//~ char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
+	char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
     //~ char del[20] = "=+;";
     //~ char *delimiters[] = {" ", "=", "+", ";"};
     //~ char* in_Ptr = s_in;  
@@ -666,17 +647,17 @@ int main()
 	//~ }
     
 
-    //~ char *str = s_in;
+    char *str = s_in;
 	
-	//~ struct tokensStruct tk = my_tokentize(str);
-	//~ for(int i=0; i<tk.size; i++){
-		//~ if(tk.tokens[i])printf(">> '%s'\n", tk.tokens[i]);
-	//~ }
+	struct NodeDLL *nodeDLL = createNodeDLL("teste");
+	my_tokentize(str, nodeDLL);
 	
 	//~ /*\/ remover; */
 	//~ for(int i=0; i<tk.size; i++){
 		//~ free(tk.tokens[i]);
 	//~ }free(tk.tokens);
+
+	forwardTraversal(nodeDLL);
     
     
     // Create an undirected adjList with 3 vertices
@@ -721,7 +702,7 @@ int main()
 		//~ printf("[No];\n");
 	//~ }
     */
-    
+    /*
 struct Graph* G2 = createGraph();
 
 insertNode(G2, 0);
@@ -768,7 +749,7 @@ deleteAllGraph(G2);
 //~ }else{
 	//~ printf("[No];\n");
 //~ }
-	
+	*/
 /*
 	int tam_operators = 50;
 	char *buff_string_delimiters[TAMANHO(delimiters) + tam_operators];
@@ -780,6 +761,11 @@ deleteAllGraph(G2);
 	for(int i=0; i<TAMANHO(delimiters); i++){
 		free(buff_string_delimiters[i]);
 	}
+*/
+/*
+struct NodeDLL *nodeDLL = createNodeDLL("teste");
+insertEnd(nodeDLL, "teste2rs");
+forwardTraversal(nodeDLL);
 */
 
 
