@@ -2,8 +2,10 @@
 #include <ctype.h>
 #include "symbols.h"
 //~ #include "adjacency-list.h"
+#include "tokenization.h"
 
 #define MAX_TOKEN 100
+
 
 bool isKeyword(const char* str);
 
@@ -287,6 +289,65 @@ char* subString(const char* str, int left, int right)
 	return (subStr);
 }
 
+void tokentize(char* str, void(*parse)(char *str))
+{
+	struct NodeDLL *nodeDLL = createNodeDLL("");
+	tokentize_by_delimiters(str, nodeDLL);
+
+	//~ forwardTraversal(nodeDLL);
+	forwardTraversalPassingFunction(nodeDLL, parse);
+}
+
+void parse(char* token)
+{
+	printf("[fun parse];\n");
+	char* str = token;
+	if(isKeyword(str)){
+		//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
+	}
+	if(isOpetatorLanguage(str)){
+		//~ addEdge(graph, str, TOKEN_OPERADOR);
+	}
+	//~ if(isDelimiter(str)){
+		//~ addEdge(graph, str, TOKEN_PALAVRA_CHAVE);
+	//~ }
+	if(isString(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(validIdentifier(str)){
+		//~ addEdge(graph, str, Identifier);
+	}
+	if(isInteger(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(isRealNumber(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(isBinaryNumber(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(isBooleanNumber(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(isNullLiteral(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(isOctalNumber(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+	if(isHexNumber(str)){
+		//~ addEdge(graph, str, Literal);
+	}
+
+	//~ int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
+	//~ reduceNode(graph, tokens, TAMANHO(tokens));
+	//~ printGraph(graph);
+	
+	//~ free(graph->adjLists);
+	//~ free(graph);
+}
+
+/*
 void parse2(char* str)
 {
     // Space is used as the delimiter to split
@@ -351,7 +412,7 @@ void parse2(char* str)
 	//~ free(graph->adjLists);
 	//~ free(graph);
 }
-
+*/
 /*
 // Parsing the input STRING.
 void parse(char* str)

@@ -1,3 +1,4 @@
+/* Lib Adjacency List; */
 /* Graph representation of an adjacency list with a linked list for the nodes; */
 
 struct Node {
