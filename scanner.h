@@ -2,6 +2,8 @@
 #include <ctype.h>
 #include "symbols.h"
 //~ #include "adjacency-list.h"
+//~ #include "TokenLinkedList.h"
+#include "Token.h"
 #include "tokenization.h"
 #include "adjacency-list-lib2.h"
 
@@ -21,34 +23,51 @@ bool isDelimiter(char ch)
 	return (false);
 }
 
-int num_token_demiliter(char *str){
-	int num_token = -1;
-	if (strcmp(str, "=") == 0) num_token = EQ;
-	else if (strcmp(str, "+") == 0) num_token = ADD;
-	else if (strcmp(str, "-") == 0) num_token = SUB;
-	else if (strcmp(str, "!") == 0) num_token = NOT;
-	else if (strcmp(str, "&") == 0) num_token = AND;
-	else if (strcmp(str, "*") == 0) num_token = MUL;
-	else if (strcmp(str, "/") == 0) num_token = DIV;
-	else if (strcmp(str, "(") == 0) num_token = LPAREN;
-	else if (strcmp(str, ")") == 0) num_token = RPAREN;
-	else if (strcmp(str, ".") == 0) num_token = DOT;
-	else if (strcmp(str, ",") == 0) num_token = COMMA;
-	else if (strcmp(str, "?") == 0) num_token = QUESTION;
-	else if (strcmp(str, "~") == 0) num_token = TILDE;
-	else if (strcmp(str, ":") == 0) num_token = COLON;
-	else if (strcmp(str, ";") == 0) num_token = SEMICOLON;
-	else if (strcmp(str, "{") == 0) num_token = LBRACE;
-	else if (strcmp(str, "}") == 0) num_token = RBRACE;
-	else if (strcmp(str, "[") == 0) num_token = LBRACK;
-	else if (strcmp(str, "]") == 0) num_token = RBRACK;
-	else if (strcmp(str, "<") == 0) num_token = LESSER;
-	else if (strcmp(str, "|") == 0) num_token = OR;
-	else if (strcmp(str, "^") == 0) num_token = XOR;
-	else if (strcmp(str, "%") == 0) num_token = MOD;
-	else if (strcmp(str, ">") == 0) num_token = GREATER;
-	return num_token;
+//~ int num_token_delimiter(char *str){
+	//~ int num_token = -1;
+	//~ if (strcmp(str, "=") == 0) num_token = EQ;
+	//~ else if (strcmp(str, "+") == 0) num_token = ADD;
+	//~ else if (strcmp(str, "-") == 0) num_token = SUB;
+	//~ else if (strcmp(str, "!") == 0) num_token = NOT;
+	//~ else if (strcmp(str, "&") == 0) num_token = AND;
+	//~ else if (strcmp(str, "*") == 0) num_token = MUL;
+	//~ else if (strcmp(str, "/") == 0) num_token = DIV;
+	//~ else if (strcmp(str, "(") == 0) num_token = LPAREN;
+	//~ else if (strcmp(str, ")") == 0) num_token = RPAREN;
+	//~ else if (strcmp(str, ".") == 0) num_token = DOT;
+	//~ else if (strcmp(str, ",") == 0) num_token = COMMA;
+	//~ else if (strcmp(str, "?") == 0) num_token = QUESTION;
+	//~ else if (strcmp(str, "~") == 0) num_token = TILDE;
+	//~ else if (strcmp(str, ":") == 0) num_token = COLON;
+	//~ else if (strcmp(str, ";") == 0) num_token = SEMICOLON;
+	//~ else if (strcmp(str, "{") == 0) num_token = LBRACE;
+	//~ else if (strcmp(str, "}") == 0) num_token = RBRACE;
+	//~ else if (strcmp(str, "[") == 0) num_token = LBRACK;
+	//~ else if (strcmp(str, "]") == 0) num_token = RBRACK;
+	//~ else if (strcmp(str, "<") == 0) num_token = LESSER;
+	//~ else if (strcmp(str, "|") == 0) num_token = OR;
+	//~ else if (strcmp(str, "^") == 0) num_token = XOR;
+	//~ else if (strcmp(str, "%") == 0) num_token = MOD;
+	//~ else if (strcmp(str, ">") == 0) num_token = GREATER;
+	//~ return num_token;
+//~ }
+
+int tokenType_predefinidos(char* str){
+	for(int i=0; i<TOKEN_FIM; i++){
+		if(strcmp(str, tokens_struct[i].identifier) == 0){
+			//~ printf("%s -> %d\n", tokens_struct[i].identifier, tokens_struct[i].tokenType );
+			return tokens_struct[i].tokenType;
+		}
+	}
+	return -1;
 }
+
+//~ int str_tokenType(int tokenType){
+	//~ if(tokenType < TOKEN_FIM){
+		//~ return tokens_struct[tokenType].identifier;
+	//~ }
+	//~ return -1;
+//~ }
 
 bool isID(const char *str)
 {
@@ -260,7 +279,6 @@ void tokentize(char* str, int line)
 	struct Graph* graph = createGraph();
 
 	//~ forwardTraversal(nodeDLL);
-	//~ forwardTraversalPassingFunction(nodeDLL, parse, line);
 
 
 	// Start traversal from the head of the list
@@ -273,74 +291,107 @@ void tokentize(char* str, int line)
         // Output data of the current node
         //~ printf("%s -> ", curr->data);
         parse(curr->data, line, curr, graph);
+        if(curr->token)printf("['%s' -> %d]\n", curr->token->identifier, curr->token->tokenType);
       
         // Move to the next node
         curr = curr->next;
     }
     
+    //~ if(isAdjacent(graph, src, dest)){}
+    
     printGraph(graph);
+    //~ printGraph2(graph);
 
+}
+
+void criarEdgeTokenAnterior(struct Graph* graph, struct NodeDLL* nodeDLL, int tokenType){
+	/*\/ inserir edge do token anterior para o token atual; */
+	struct NodeDLL* node_anterior = nodeDLL->prev;
+	if(node_anterior != NULL){
+		struct Token *token_anterior = node_anterior->token;
+		if(token_anterior != NULL){
+			insertEdge(graph, token_anterior->tokenType, tokenType);
+		}
+	}
 }
 
 void parse(char* token, int line, struct NodeDLL* nodeDLL, struct Graph* graph)
 {
 	char* str = token;
 	if(isKeyword(str)){
-		struct Token token = {str, line, TOKEN_PALAVRA_CHAVE};
-		insertNode(graph, TOKEN_PALAVRA_CHAVE, &token);
+		int tokenType = tokenType_predefinidos(str);
+		if(tokenType != -1){
+			struct Token token = {str, line, tokenType};
+			insertTokenStructInDLL(nodeDLL, &token);
+			insertNode(graph, tokenType, &token);
+			//~ criarEdgeTokenAnterior(graph, nodeDLL, tokenType);
+		}
 	}
 	if(isOpetatorLanguage(str)){
-		struct Token token = {str, line, TOKEN_OPERADOR};
-		insertNode(graph, TOKEN_PALAVRA_CHAVE, &token);
-	}
-	int token_demiliter = num_token_demiliter(str);
-	if(token_demiliter != -1){
-		struct Token token = {str, line, token_demiliter};
-		insertNode(graph, token_demiliter, &token);
+		int tokenType = tokenType_predefinidos(str);
+		if(tokenType != -1){
+			struct Token token = {str, line, tokenType};
+			insertTokenStructInDLL(nodeDLL, &token);
+			//~ insertNode(graph, tokenType, &token);
+			
+			//~ criarEdgeTokenAnterior(graph, nodeDLL, tokenType);
+		}
 	}
 	if(isString(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(validIdentifier(str)){
 		struct Token token = {str, line, Identifier};
-		insertNode(graph, Identifier, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Identifier, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Identifier);
 	}
 	if(isInteger(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isRealNumber(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isBinaryNumber(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isBooleanNumber(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isNullLiteral(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isOctalNumber(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isHexNumber(str)){
 		struct Token token = {str, line, Literal};
-		insertNode(graph, Literal, &token);
+		insertTokenStructInDLL(nodeDLL, &token);
+		//~ insertNode(graph, Literal, &token);
+		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 
-	//~ int tokens[] = {Identifier, TOKEN_OPERADOR, Literal};
-	//~ reduceNode(graph, tokens, TAMANHO(tokens));
-	//~ printGraph(graph);
-	
-	//~ free(graph->adjLists);
-	//~ free(graph);
 }
 
 /*

@@ -1,18 +1,6 @@
 /* Lib Adjacency List; */
 /* Graph representation of an adjacency list with a linked list for the nodes; */
 
-struct Token
-{
-  // The beginning of the token, pointing directly into the source.
-  const char* str;
-
-  // The 1-based line where the token appears.
-  const int line;
-  
-  // The parsed value if the token is a literal.
-  const int tokenType;
-};
-
 struct Node {
 	struct Token* token;
     int val;
@@ -125,23 +113,39 @@ void printGraph(struct Graph* graph) {
         tempNode = tempNode->next;
     }
 }
+/*
+void printGraph2(struct Graph* graph) {
+    struct Node* tempNode = graph->head;
+    struct Edge* tempEdge = NULL;
 
-/* If edge (vertex1,vertex2) exists */
+    while (tempNode != NULL) {
+        printf("\nNodo %d: ", tempNode->val);
+        tempEdge = tempNode->edges;
+        while (tempEdge) {
+            printf(" -> %d('%s')", tempEdge->dest->val, tempEdge->dest->token->identifier );
+            tempEdge = tempEdge->next;
+        }
+        tempNode = tempNode->next;
+    }
+}
+*/
+/* If edge (vertex1,vertex2) exists;
+ * return: Zero is interpreted as false and anything non-zero is interpreted as true. */
 int isAdjacent(struct Graph* graph, int src, int dest) {
 	struct Node* origNode = getNode(graph, src);
     struct Node* destNode = getNode(graph, dest);
-    if (origNode == NULL || destNode == NULL) return -1;
+    if (origNode == NULL || destNode == NULL) return 0;
     
     struct Edge* tempEdge = NULL;
     
-	printf("\nNodo %d: ", origNode->val);
+	//~ printf("\nNodo %d: ", origNode->val);
     tempEdge = origNode->edges;
 	while (tempEdge) {
-		printf(" -> %d", tempEdge->dest->val);
+		//~ printf(" -> %d", tempEdge->dest->val);
 		if(tempEdge->dest->val == dest) return 1;
 		tempEdge = tempEdge->next;
 	}
-    return -1;
+    return 0;
 }
 
 void deleteAllGraph(struct Graph* graph) {

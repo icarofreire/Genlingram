@@ -4,6 +4,7 @@
 
 /* Node Doubly Linked List; */
 struct NodeDLL {
+	struct Token *token;
     char* data;
     struct NodeDLL *next;
     struct NodeDLL *prev;
@@ -16,9 +17,19 @@ struct NodeDLL *createNodeDLL(char* new_data) {
     new_node->data = (char*)malloc((strlen(new_data)) * sizeof(char));
 	strcpy(new_node->data, new_data);
 	
+	new_node->token = NULL;
     new_node->next = NULL;
     new_node->prev = NULL;
     return new_node;
+}
+
+void insertTokenStructInDLL(struct NodeDLL *head, struct Token *token) {
+	if(head->token == NULL){
+		//~ struct Token *new_token = (struct Token *)malloc(sizeof(struct Token));
+		//~ head->token = new_token;
+		head->token = token;
+		//~ printf("[%s, %d, %d]", token->identifier, token->line, token->tokenType);
+	}
 }
 
 // Function to insert a new node at the front of doubly linked list
@@ -207,6 +218,28 @@ bool searchKey(struct NodeDLL* head, char* key) {
     return false;
 }
 
+// Checks whether key is present in linked list
+struct NodeDLL* searchNodeByKey(struct NodeDLL* head, char* key) {
+
+    // Initialize curr with the head of linked list
+    struct NodeDLL* curr = head;
+
+    // Iterate over all the nodes
+    while (curr != NULL) {
+
+        // If the current node's value is equal to key,
+        // return true
+        if (strcmp(curr->data, key) == 0)
+            return curr;
+
+        // Move to the next node
+        curr = curr->next;
+    }
+
+    // If there is no node with value as key, return false
+    return NULL;
+}
+
 // Function to delete a node at a specific 
 //position in the doubly linked list
 struct NodeDLL * delPos(struct NodeDLL * head, int pos) {
@@ -313,28 +346,7 @@ void forwardTraversal(struct NodeDLL* head) {
     // Print newline after traversal
     printf("\n");
 }
-/*
-void forwardTraversalPassingFunction(struct NodeDLL* head, void(*fun)(char*, int), int line) {
-  
-    // Start traversal from the head of the list
-    struct NodeDLL* curr = head;
 
-    // Continue until the current node is not
-    // null (end of list)
-    while (curr != NULL) {
-      
-        // Output data of the current node
-        //~ printf("%s -> ", curr->data);
-        fun(curr->data, line);
-      
-        // Move to the next node
-        curr = curr->next;
-    }
-
-    // Print newline after traversal
-    //~ printf("\n");
-}
-*/
 // Function to traverse the doubly linked list 
 // in backward direction
 void backwardTraversal(struct NodeDLL* tail) {

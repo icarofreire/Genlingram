@@ -232,8 +232,6 @@ int transversal_grammar_matriz(const int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
-/** ***************************************************************** */
-
 
 // DRIVER FUNCTION
 int main()
@@ -251,6 +249,15 @@ int main()
 	char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
 	int line = 1;
     tokentize(s_in, line);
+    
+    //~ long s;
+    //~ if (__builtin_types_compatible_p(__typeof__(s), long)) {
+        //~ puts("long");
+    //~ } else if (__builtin_types_compatible_p(__typeof__(s), char*)) {
+        //~ puts("str");
+    //~ }
+    
+    //~ if(0){printf("[ok];\n");}else{printf("[No];\n");}
 	
 	//~ struct NodeDLL *nodeDLL = createNodeDLL("");
 	//~ tokentize_by_delimiters(str, nodeDLL);
@@ -325,20 +332,20 @@ int main()
 /*
 struct Graph* G2 = createGraph();
 
-insertNode(G2, 0);
-insertNode(G2, 1);
-insertNode(G2, 2);
-insertNode(G2, 3);
-insertNode(G2, 4);
-insertNode(G2, 5);
-insertNode(G2, 6);
-insertNode(G2, 7);
-insertNode(G2, 8);
-insertNode(G2, 9);
-insertNode(G2, 10);
-insertNode(G2, 11);
-insertNode(G2, 12);
-insertNode(G2, 13);
+insertNode(G2, 0, NULL);
+insertNode(G2, 1, NULL);
+insertNode(G2, 2, NULL);
+insertNode(G2, 3, NULL);
+insertNode(G2, 4, NULL);
+insertNode(G2, 5, NULL);
+insertNode(G2, 6, NULL);
+insertNode(G2, 7, NULL);
+insertNode(G2, 8, NULL);
+insertNode(G2, 9, NULL);
+insertNode(G2, 10, NULL);
+insertNode(G2, 11, NULL);
+insertNode(G2, 12, NULL);
+insertNode(G2, 13, NULL);
 
 // ***
 
@@ -369,7 +376,8 @@ deleteAllGraph(G2);
 //~ }else{
 	//~ printf("[No];\n");
 //~ }
-	*/
+*/
+
 /*
 	int tam_operators = 50;
 	char *buff_string_delimiters[TAMANHO(delimiters) + tam_operators];

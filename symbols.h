@@ -386,3 +386,202 @@ JScriptVarDeclarationList,
 JScriptVarDeclaration,
 insertSemiColon
 };
+
+
+/** ***************************************************************** */
+
+typedef enum
+{
+/*\/ operadores; */
+TOKEN_EQ, /* "=" */
+TOKEN_ADD, /* "+" */
+TOKEN_SUB, /* "-" */
+TOKEN_NOT, /* "!" */
+TOKEN_AND, /* "&" */
+TOKEN_MUL, /* "*" */
+TOKEN_DIV, /* "/" */
+TOKEN_LPAREN, /* "(" */
+TOKEN_RPAREN, /* ")" */
+TOKEN_DOT, /* "." */
+TOKEN_COMMA, /* "," */
+TOKEN_QUESTION, /* "?" */
+TOKEN_TILDE, /* "~" */
+TOKEN_COLON, /* ":" */
+TOKEN_SEMICOLON, /* ";" */
+TOKEN_LBRACE, /* "{" */
+TOKEN_RBRACE, /* "}" */
+TOKEN_LBRACK, /* "[" */
+TOKEN_RBRACK, /* "]" */
+TOKEN_LESSER, /* "<" */
+TOKEN_OR, /* "|" */
+TOKEN_XOR, /* "^" */
+TOKEN_MOD, /* "%" */
+TOKEN_GREATER, /* ">" */
+TOKEN_EQEQ, /* "==" */
+TOKEN_ADDEQ, /* "+=" */
+TOKEN_INCR, /* "++" */
+TOKEN_SUBEQ, /* "-=" */
+TOKEN_DECR, /* "--" */
+TOKEN_NOTEQ, /* "!=" */
+TOKEN_ANDEQ, /* "&=" */
+TOKEN_LAND, /* "&&" */
+TOKEN_OREQ, /* "|=" */
+TOKEN_LOR, /* "||" */
+TOKEN_XOREQ, /* "^=" */
+TOKEN_LXOR, /* "^^" */
+TOKEN_MODEQ, /* "%=" */
+TOKEN_DIVEQ, /* "/=" */
+TOKEN_MULEQ, /* "*=" */
+TOKEN_LESSEREQ, /* "<=" */
+TOKEN_LSHF, /* "<<" */
+TOKEN_GREATEREQ, /* ">=" */
+TOKEN_RSHF, /* ">>" */
+TOKEN_FARROW, /* "=>" */
+TOKEN_LSHFEQ, /* "<<=" */
+TOKEN_EQEQEQ, /* "===" */
+TOKEN_NOTEQEQ, /* "!==" */
+TOKEN_RSHFEQ, /* ">>=" */
+TOKEN_URSHF, /* ">>>" */
+TOKEN_URSHFEQ, /* ">>>=" */
+
+/*\/ palavras chaves; */
+TOKEN_DO, /* "do" */
+TOKEN_IN, /* "in" */
+TOKEN_OF, /* "of" */
+TOKEN_IF, /* "if" */
+TOKEN_FOR, /* "for" */
+TOKEN_LET, /* "let" */
+TOKEN_NEW, /* "new" */
+TOKEN_TRY, /* "try" */
+TOKEN_VAR, /* "var" */
+TOKEN_VOID, /* "void" */
+TOKEN_WITH, /* "with" */
+TOKEN_THIS, /* "this" */
+TOKEN_CASE, /* "case" */
+TOKEN_ELSE, /* "else" */
+TOKEN_BREAK, /* "break" */
+TOKEN_CATCH, /* "catch" */
+TOKEN_CLASS, /* "class" */
+TOKEN_CONST, /* "const" */
+TOKEN_SUPER, /* "super" */
+TOKEN_THROW, /* "throw" */
+TOKEN_WHILE, /* "while" */
+TOKEN_YIELD, /* "yield" */
+TOKEN_DELETE, /* "delete" */
+TOKEN_EXPORT, /* "export" */
+TOKEN_IMPORT, /* "import" */
+TOKEN_RETURN, /* "return" */
+TOKEN_SWITCH, /* "switch" */
+TOKEN_TYPEOF, /* "typeof" */
+TOKEN_DEFAULT, /* "default" */
+TOKEN_EXTENDS, /* "extends" */
+TOKEN_FINALLY, /* "finally" */
+TOKEN_FUNCTION, /* "function" */
+TOKEN_CONTINUE, /* "continue" */
+TOKEN_DEBUGGER, /* "debugger" */
+TOKEN_INSTANCEOF, /* "instanceof" */
+TOKEN_FIM /* << número de tokens; */
+} TokenType;
+
+typedef struct TokenStruct
+{ 
+  // The parsed value if the token is a literal.
+  const int tokenType;
+  
+  // The beginning of the token, pointing directly into the source.
+  const char* identifier;
+} TokenStruct;
+
+//~ // The table of reserved words and their associated token types.
+static TokenStruct tokens_struct[] =
+{
+/*\/ operadores e delimitadores; */
+{TOKEN_EQ, "="},
+{TOKEN_ADD, "+"},
+{TOKEN_SUB, "-"},
+{TOKEN_NOT, "!"},
+{TOKEN_AND, "&"},
+{TOKEN_MUL, "*"},
+{TOKEN_DIV, "/"},
+{TOKEN_LPAREN, "("},
+{TOKEN_RPAREN, ")"},
+{TOKEN_DOT, "."},
+{TOKEN_COMMA, ","},
+{TOKEN_QUESTION, "?"},
+{TOKEN_TILDE, "~"},
+{TOKEN_COLON, ":"},
+{TOKEN_SEMICOLON, ";"},
+{TOKEN_LBRACE, "{"},
+{TOKEN_RBRACE, "}"},
+{TOKEN_LBRACK, "["},
+{TOKEN_RBRACK, "]"},
+{TOKEN_LESSER, "<"},
+{TOKEN_OR, "|"},
+{TOKEN_XOR, "^"},
+{TOKEN_MOD, "%"},
+{TOKEN_GREATER, ">"},
+{TOKEN_EQEQ, "=="},
+{TOKEN_ADDEQ, "+="},
+{TOKEN_INCR, "++"},
+{TOKEN_SUBEQ, "-="},
+{TOKEN_DECR, "--"},
+{TOKEN_NOTEQ, "!="},
+{TOKEN_ANDEQ, "&="},
+{TOKEN_LAND, "&&"},
+{TOKEN_OREQ, "|="},
+{TOKEN_LOR, "||"},
+{TOKEN_XOREQ, "^="},
+{TOKEN_LXOR, "^^"},
+{TOKEN_MODEQ, "%="},
+{TOKEN_DIVEQ, "/="},
+{TOKEN_MULEQ, "*="},
+{TOKEN_LESSEREQ, "<="},
+{TOKEN_LSHF, "<<"},
+{TOKEN_GREATEREQ, ">="},
+{TOKEN_RSHF, ">>"},
+{TOKEN_FARROW, "=>"},
+{TOKEN_LSHFEQ, "<<="},
+{TOKEN_EQEQEQ, "==="},
+{TOKEN_NOTEQEQ, "!=="},
+{TOKEN_RSHFEQ, ">>="},
+{TOKEN_URSHF, ">>>"},
+{TOKEN_URSHFEQ, ">>>="},
+
+/*\/ palavras chaves; */
+{TOKEN_DO, "do"},
+{TOKEN_IN, "in"},
+{TOKEN_OF, "of"},
+{TOKEN_IF, "if"},
+{TOKEN_FOR, "for"},
+{TOKEN_LET, "let"},
+{TOKEN_NEW, "new"},
+{TOKEN_TRY, "try"},
+{TOKEN_VAR, "var"},
+{TOKEN_VOID, "void"},
+{TOKEN_WITH, "with"},
+{TOKEN_THIS, "this"},
+{TOKEN_CASE, "case"},
+{TOKEN_ELSE, "else"},
+{TOKEN_BREAK, "break"},
+{TOKEN_CATCH, "catch"},
+{TOKEN_CLASS, "class"},
+{TOKEN_CONST, "const"},
+{TOKEN_SUPER, "super"},
+{TOKEN_THROW, "throw"},
+{TOKEN_WHILE, "while"},
+{TOKEN_YIELD, "yield"},
+{TOKEN_DELETE, "delete"},
+{TOKEN_EXPORT, "export"},
+{TOKEN_IMPORT, "import"},
+{TOKEN_RETURN, "return"},
+{TOKEN_SWITCH, "switch"},
+{TOKEN_TYPEOF, "typeof"},
+{TOKEN_DEFAULT, "default"},
+{TOKEN_EXTENDS, "extends"},
+{TOKEN_FINALLY, "finally"},
+{TOKEN_FUNCTION, "function"},
+{TOKEN_CONTINUE, "continue"},
+{TOKEN_DEBUGGER, "debugger"},
+{TOKEN_INSTANCEOF, "instanceof"},
+{TOKEN_FIM, NULL} /* << marca o fim do array; */
+};
