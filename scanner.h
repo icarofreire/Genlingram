@@ -291,16 +291,16 @@ void tokentize(char* str, int line)
         // Output data of the current node
         //~ printf("%s -> ", curr->data);
         parse(curr->data, line, curr, graph);
-        if(curr->token)printf("['%s' -> %d]\n", curr->token->identifier, curr->token->tokenType);
+        if(curr->token && curr->prev && curr->prev->token)printf("['%s' -> %d, ant: '%s']\n", curr->token->identifier, curr->token->tokenType, curr->prev->token->identifier);
       
         // Move to the next node
         curr = curr->next;
     }
     
     //~ if(isAdjacent(graph, src, dest)){}
-    
-    printGraph(graph);
-    //~ printGraph2(graph);
+    printf("\n***\n");
+    //~ printGraph(graph);
+    printGraph2(graph);
 
 }
 
@@ -324,7 +324,7 @@ void parse(char* token, int line, struct NodeDLL* nodeDLL, struct Graph* graph)
 			struct Token token = {str, line, tokenType};
 			insertTokenStructInDLL(nodeDLL, &token);
 			insertNode(graph, tokenType, &token);
-			//~ criarEdgeTokenAnterior(graph, nodeDLL, tokenType);
+			criarEdgeTokenAnterior(graph, nodeDLL, tokenType);
 		}
 	}
 	if(isOpetatorLanguage(str)){
@@ -332,64 +332,63 @@ void parse(char* token, int line, struct NodeDLL* nodeDLL, struct Graph* graph)
 		if(tokenType != -1){
 			struct Token token = {str, line, tokenType};
 			insertTokenStructInDLL(nodeDLL, &token);
-			//~ insertNode(graph, tokenType, &token);
-			
-			//~ criarEdgeTokenAnterior(graph, nodeDLL, tokenType);
+			insertNode(graph, tokenType, &token);			
+			criarEdgeTokenAnterior(graph, nodeDLL, tokenType);
 		}
 	}
 	if(isString(str)){
-		struct Token token = {str, line, Literal};
+		struct Token token = {str, line, STRING_LITERAL};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, STRING_LITERAL, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, STRING_LITERAL);
 	}
 	if(validIdentifier(str)){
-		struct Token token = {str, line, Identifier};
+		struct Token token = {str, line, IDENTIFIER_NAME};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Identifier, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Identifier);
+		insertNode(graph, IDENTIFIER_NAME, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, IDENTIFIER_NAME);
 	}
 	if(isInteger(str)){
-		struct Token token = {str, line, Literal};
+		struct Token token = {str, line, DECIMAL_LITERAL};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, DECIMAL_LITERAL, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, DECIMAL_LITERAL);
 	}
 	if(isRealNumber(str)){
 		struct Token token = {str, line, Literal};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, Literal, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isBinaryNumber(str)){
 		struct Token token = {str, line, Literal};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, Literal, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isBooleanNumber(str)){
 		struct Token token = {str, line, Literal};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, Literal, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isNullLiteral(str)){
-		struct Token token = {str, line, Literal};
+		struct Token token = {str, line, NULL_LITERAL};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, NULL_LITERAL, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, NULL_LITERAL);
 	}
 	if(isOctalNumber(str)){
 		struct Token token = {str, line, Literal};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, Literal, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, Literal);
 	}
 	if(isHexNumber(str)){
-		struct Token token = {str, line, Literal};
+		struct Token token = {str, line, HEX_INTEGER_LITERAL};
 		insertTokenStructInDLL(nodeDLL, &token);
-		//~ insertNode(graph, Literal, &token);
-		//~ criarEdgeTokenAnterior(graph, nodeDLL, Literal);
+		insertNode(graph, HEX_INTEGER_LITERAL, &token);
+		criarEdgeTokenAnterior(graph, nodeDLL, HEX_INTEGER_LITERAL);
 	}
 
 }

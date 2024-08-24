@@ -25,10 +25,11 @@ struct NodeDLL *createNodeDLL(char* new_data) {
 
 void insertTokenStructInDLL(struct NodeDLL *head, struct Token *token) {
 	if(head->token == NULL){
-		//~ struct Token *new_token = (struct Token *)malloc(sizeof(struct Token));
-		//~ head->token = new_token;
-		head->token = token;
-		//~ printf("[%s, %d, %d]", token->identifier, token->line, token->tokenType);
+		struct Token *new_token = (struct Token *)malloc(sizeof(struct Token));
+		new_token->identifier = token->identifier;
+		new_token->line = token->line;
+		new_token->tokenType = token->tokenType;
+		head->token = new_token;
 	}
 }
 

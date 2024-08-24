@@ -40,7 +40,13 @@ struct Graph* createGraph() {
 
 struct Node* createNode(int val, struct Token* token) {
     struct Node* newNode  = (struct Node*)malloc(sizeof(struct Node));
-    newNode->token = (token != NULL) ? (token) : (NULL);
+    
+    struct Token* newToken = (struct Token*)malloc(sizeof(struct Token));
+    newToken->identifier = token->identifier;
+    newToken->line = token->line;
+    newToken->tokenType = token->tokenType;
+    newNode->token = newToken;
+    
     newNode->val   = val;
     newNode->next  = NULL;
     newNode->edges = NULL;
@@ -113,7 +119,7 @@ void printGraph(struct Graph* graph) {
         tempNode = tempNode->next;
     }
 }
-/*
+///*
 void printGraph2(struct Graph* graph) {
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
@@ -128,7 +134,7 @@ void printGraph2(struct Graph* graph) {
         tempNode = tempNode->next;
     }
 }
-*/
+//*/
 /* If edge (vertex1,vertex2) exists;
  * return: Zero is interpreted as false and anything non-zero is interpreted as true. */
 int isAdjacent(struct Graph* graph, int src, int dest) {
