@@ -1,147 +1,198 @@
+/* Lib Adjacency List; */
+/* Graph representation of an adjacency list with a linked list for the nodes; */
 
-// Structure to represent a node in the adjacency list
 struct Node {
-    int vertex;
-    void *value;
-    int token;
+    int val;
     struct Node* next;
+    /*\/ lista de edges do nó; */
+    struct Edge* edges;
 };
 
-// Structure to represent the graph(Adjacency List)
-struct AdjacencyList {
-	/*\/ número de vertices pré-definido; */
-    int numVertices;
-    /*\/ número de vertices criados; */
+struct Edge {
+    struct Node* dest;
+    struct Edge* next;
+};
+
+struct Graph {
+	/*\/ lista de nós inseridas; */
+    struct Node* head;
     int size;
-    struct Node** adjLists;
 };
 
-// Function to create a new node
-struct Node* createNode(int v) {
-    struct Node* newNode = malloc(sizeof(struct Node));
-    newNode->vertex = v;
-    newNode->token = 0;
-    newNode->next = NULL;
-    return newNode;
-}
+/* Prototypes */
+struct Graph* createGraph();
+struct Node* createNode(int val);
+struct Edge* createEdge(struct Graph* graph, int dest);
+struct Node* getNode(struct Graph* graph, int val);
+int insertNode(struct Graph* graph, int val);
+int insertEdge(struct Graph* graph, int src, int dest);
+void printGraph(struct Graph* graph);
+/* Prototypes */
 
-// Function to create a graph
-struct AdjacencyList* createGraph(int vertices) {
-    struct AdjacencyList* graph = malloc(sizeof(struct AdjacencyList));
-    graph->numVertices = vertices;
-
-    // Create an array of adjacency lists
-    graph->adjLists = malloc(vertices * sizeof(struct Node*));
-
-    // Initialize each adjacency list as empty
-    for (int i = 0; i < vertices; i++) {
-        graph->adjLists[i] = NULL;
-    }
-    
-    graph->size = 0;
+struct Graph* createGraph() {
+    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
+    graph->size  = 0;
+    graph->head  = NULL;
 
     return graph;
 }
 
-void addEdge(struct AdjacencyList* graph, char* value, int token) {
-	int src = graph->size;
-	int dest = graph->size++;
-    // Add edge from src to dest
-    struct Node* newNode = createNode(dest);
-    newNode->next = graph->adjLists[src];
-    newNode->value = value;
-    newNode->token = token;
-    graph->adjLists[src] = newNode;
+struct Node* createNode(int val) {
+    struct Node* newNode  = (struct Node*)malloc(sizeof(struct Node));
+    newNode->val   = val;
+    newNode->next  = NULL;
+    newNode->edges = NULL;
+    return newNode;
 }
 
+struct Edge* createEdge(struct Graph* graph, int dest) {
+    struct Edge* newEdge = (struct Edge*)malloc(sizeof(struct Edge));
+    newEdge->dest = getNode(graph, dest);
+    newEdge->next = NULL;
 
+    return newEdge;
+}
 
-// Function to print the adjacency list representation of the graph
-void printGraph(struct AdjacencyList* graph) {
-    printf("Adjacency List:\n");
-    for (int v = 0; v < graph->size; v++) {
-        struct Node* temp = graph->adjLists[v];
-        while (temp) {
-            printf("[%d] -> [%s], ", temp->vertex, (char*)temp->value);
-            temp = temp->next;
+int insertNode(struct Graph* graph, int val) {
+    if (getNode(graph, val) != NULL) return -1;
+    struct Node* newNode  = createNode(val);
+    struct Node* tempNode = NULL;
+
+    if (graph->head == NULL) {
+        graph->head = newNode;
+    } else {
+        tempNode = graph->head;
+        while (tempNode->next != NULL)
+            tempNode = tempNode->next;
+        tempNode->next = newNode;
+    }
+    graph->size++;
+    return 1;
+}
+
+int insertEdge(struct Graph* graph, int src, int dest) {
+    struct Node* origNode = getNode(graph, src);
+    struct Node* destNode = getNode(graph, dest);
+    if (origNode == NULL || destNode == NULL) return -1;
+
+    struct Edge* newEdge  = createEdge(graph, dest);
+    struct Edge* tempEdge = NULL;
+
+    if (origNode->edges == NULL) {
+        origNode->edges = newEdge;
+    } else {
+        tempEdge = origNode->edges;
+        while (tempEdge->next != NULL) tempEdge = tempEdge->next;
+        tempEdge->next = newEdge;
+    }
+    return 1;
+}
+
+struct Node* getNode(struct Graph* graph, int val) {
+    struct Node* tempNode = graph->head;
+    while (tempNode != NULL) {
+        if (tempNode->val == val) return tempNode;
+        tempNode = tempNode->next;
+    }
+    return NULL;
+}
+
+void printGraph(struct Graph* graph) {
+    struct Node* tempNode = graph->head;
+    struct Edge* tempEdge = NULL;
+
+    while (tempNode != NULL) {
+        printf("\nNodo %d: ", tempNode->val);
+        tempEdge = tempNode->edges;
+        while (tempEdge) {
+            printf(" -> %d", tempEdge->dest->val);
+            tempEdge = tempEdge->next;
         }
-        printf("\n");
+        tempNode = tempNode->next;
     }
 }
 
-// Function to perform Breadth First Search on a graph
-// represented using adjacency list
-void bfs(struct Node* adj[], int vertices, int source, int visited[]) {
-    // Create a queue for BFS
-    int queue[vertices];
-    int front = 0, rear = 0;
+/* If edge (vertex1,vertex2) exists;
+ * return: Zero is interpreted as false and anything non-zero is interpreted as true. */
+int isAdjacent(struct Graph* graph, int src, int dest) {
+	struct Node* origNode = getNode(graph, src);
+    struct Node* destNode = getNode(graph, dest);
+    if (origNode == NULL || destNode == NULL) return 0;
+    
+    struct Edge* tempEdge = NULL;
+    
+	//~ printf("\nNodo %d: ", origNode->val);
+    tempEdge = origNode->edges;
+	while (tempEdge) {
+		//~ printf(" -> %d", tempEdge->dest->val);
+		if(tempEdge->dest->val == dest) return 1;
+		tempEdge = tempEdge->next;
+	}
+    return 0;
+}
 
-    // Mark the current node as visited and enqueue it
-    visited[source] = 1;
-    queue[rear++] = source;
+void deleteAllGraph(struct Graph* graph) {
+    struct Node* tempNode = graph->head, *tmpNode = NULL;
+    struct Edge* tempEdge = NULL, *tmpEdge = NULL;
 
-    // Iterate over the queue
-    while (front != rear) {
-      
-        // Dequeue a vertex from queue and print it
-        int curr = queue[front++];
-        printf("%d ", curr);
-
-        // Get all adjacent vertices of the dequeued vertex
-        // curr If an adjacent has not been visited,
-        // then mark it visited and enqueue it
-        struct Node* temp = adj[curr];
-        while (temp != NULL) {
-            int neighbor = temp->vertex;
-            if (!visited[neighbor]) {
-                visited[neighbor] = 1;
-                queue[rear++] = neighbor;
-            }
-            temp = temp->next;
+    while (tempNode != NULL) {
+        tempEdge = tempNode->edges;
+        while (tempEdge) {
+            tmpEdge = tempEdge;
+            tempEdge = tempEdge->next;
+            free(tmpEdge);
         }
+        tmpNode = tempNode;
+        tempNode = tempNode->next;
+        free(tmpNode);
     }
 }
 
-// Function to perform BFS for the entire graph
-void BFS_TraversalStarting(struct AdjacencyList* adjList, int value)
-{
-	int vertices = adjList->size;
-    // Mark all the vertices as not visited
-    int visited[vertices];
-    for (int i = 0; i < vertices; ++i)
-        visited[i] = 0;
+/* ***
+ * example;
+ * */
+/*
+struct Graph* G2 = createGraph();
 
-    // Perform BFS traversal starting from vertex 0
-    bfs(adjList->adjLists, vertices, 0, visited);
+insertNode(G2, 0);
+insertNode(G2, 1);
+insertNode(G2, 2);
+insertNode(G2, 3);
+insertNode(G2, 4);
+insertNode(G2, 5);
+insertNode(G2, 6);
+insertNode(G2, 7);
+insertNode(G2, 8);
+insertNode(G2, 9);
+insertNode(G2, 10);
+insertNode(G2, 11);
+insertNode(G2, 12);
+insertNode(G2, 13);
+
+// ***
+
+insertEdge(G2, 3, 1);
+insertEdge(G2, 1, 0);
+insertEdge(G2, 3, 7);
+insertEdge(G2, 7, 9);
+insertEdge(G2, 3, 4);
+insertEdge(G2, 3, 2);
+insertEdge(G2, 4, 5);
+insertEdge(G2, 4, 12);
+insertEdge(G2, 4, 8);
+insertEdge(G2, 12, 13);
+insertEdge(G2, 2, 10);
+insertEdge(G2, 2, 6);
+insertEdge(G2, 10, 11);
+
+printGraph(G2);
+
+printf("\n***\n");
+
+int path = isAdjacent(G2, 4, 12);
+if(path == 1){
+	printf("[ok];\n");
+}else{
+	printf("[No];\n");
 }
-
-void insertNodeAdjacentToAnother(struct AdjacencyList* graph, struct Node* src, struct Node* nodeInsert) {
-    src->next = nodeInsert;
-}
-
-void reduceNode(struct AdjacencyList* graph, const int tokens[], int m_tokens) {
-    int res = 0;
-    struct Node* uniNodes[m_tokens];
-	for(int i=0; i<m_tokens; i++) uniNodes[i] = NULL;
-
-    for (int v = 0; v < graph->size; v++) {
-        struct Node* temp = graph->adjLists[v];
-        while (temp) {
-			if( res < m_tokens && temp->token == tokens[res] ){
-				uniNodes[res] = temp;
-				res++;
-				if(res == m_tokens){
-					for (int i = res-1; i > 0; i--) {
-						insertNodeAdjacentToAnother(graph, uniNodes[i-1], uniNodes[i]);
-					}
-					res = 0;
-				}
-			}else if( res < m_tokens && temp->token != tokens[res] ){
-				for(int i=0; i<m_tokens; i++) uniNodes[i] = NULL;
-				res = 0;
-			}
-
-			temp = temp->next;
-        }
-    }
-}
+*/

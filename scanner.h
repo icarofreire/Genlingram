@@ -1,11 +1,10 @@
 #include <string.h>
 #include <ctype.h>
 #include "symbols.h"
-//~ #include "adjacency-list.h"
-//~ #include "TokenLinkedList.h"
+
+#include "adjacency-list.h"
 #include "Token.h"
 #include "tokenization.h"
-#include "adjacency-list-lib2.h"
 
 #define MAX_TOKEN 100
 
