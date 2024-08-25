@@ -2,7 +2,6 @@
 /* Graph representation of an adjacency list with a linked list for the nodes; */
 
 struct Node {
-	struct Token* token;
     int val;
     struct Node* next;
     /*\/ lista de edges do nó; */
@@ -22,10 +21,10 @@ struct Graph {
 
 /* Prototypes */
 struct Graph* createGraph();
-struct Node* createNode(int val, struct Token* token);
+struct Node* createNode(int val);
 struct Edge* createEdge(struct Graph* graph, int dest);
 struct Node* getNode(struct Graph* graph, int val);
-int insertNode(struct Graph* graph, int val, struct Token* token);
+int insertNode(struct Graph* graph, int val);
 int insertEdge(struct Graph* graph, int src, int dest);
 void printGraph(struct Graph* graph);
 /* Prototypes */
@@ -38,15 +37,8 @@ struct Graph* createGraph() {
     return graph;
 }
 
-struct Node* createNode(int val, struct Token* token) {
+struct Node* createNode(int val) {
     struct Node* newNode  = (struct Node*)malloc(sizeof(struct Node));
-    
-    struct Token* newToken = (struct Token*)malloc(sizeof(struct Token));
-    newToken->identifier = token->identifier;
-    newToken->line = token->line;
-    newToken->tokenType = token->tokenType;
-    newNode->token = newToken;
-    
     newNode->val   = val;
     newNode->next  = NULL;
     newNode->edges = NULL;
@@ -61,9 +53,9 @@ struct Edge* createEdge(struct Graph* graph, int dest) {
     return newEdge;
 }
 
-int insertNode(struct Graph* graph, int val, struct Token* token) {
+int insertNode(struct Graph* graph, int val) {
     if (getNode(graph, val) != NULL) return -1;
-    struct Node* newNode  = createNode(val, token);
+    struct Node* newNode  = createNode(val);
     struct Node* tempNode = NULL;
 
     if (graph->head == NULL) {
@@ -119,22 +111,7 @@ void printGraph(struct Graph* graph) {
         tempNode = tempNode->next;
     }
 }
-///*
-void printGraph2(struct Graph* graph) {
-    struct Node* tempNode = graph->head;
-    struct Edge* tempEdge = NULL;
 
-    while (tempNode != NULL) {
-        printf("\nNodo %d: ", tempNode->val);
-        tempEdge = tempNode->edges;
-        while (tempEdge) {
-            printf(" -> %d('%s')", tempEdge->dest->val, tempEdge->dest->token->identifier );
-            tempEdge = tempEdge->next;
-        }
-        tempNode = tempNode->next;
-    }
-}
-//*/
 /* If edge (vertex1,vertex2) exists;
  * return: Zero is interpreted as false and anything non-zero is interpreted as true. */
 int isAdjacent(struct Graph* graph, int src, int dest) {
