@@ -244,6 +244,48 @@ struct NodeDLL* searchNodeByKey(struct NodeDLL* head, char* key) {
     return NULL;
 }
 
+struct NodeDLL* searchBackwardNodeByTokenType(struct NodeDLL* tail, int tokenType) {
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = tail;
+
+    // Continue until the current node is not 
+    // null (end of list)
+    while (curr != NULL) {
+
+        if(curr->token->tokenType == tokenType){
+			return curr;
+		}
+
+        // Move to the previous node
+        curr = curr->prev;
+    }
+
+    // If there is no node with value as key, return false
+    return NULL;
+}
+
+struct NodeDLL* searchForwardNodeByTokenType(struct NodeDLL* head, int tokenType) {
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = head;
+
+    // Continue until the current node is not 
+    // null (end of list)
+    while (curr != NULL) {
+
+        if(curr->token->tokenType == tokenType){
+			return curr;
+		}
+
+        // Move to the next node
+        curr = curr->next;
+    }
+
+    // If there is no node with value as key, return false
+    return NULL;
+}
+
 // Function to delete a node at a specific 
 //position in the doubly linked list
 struct NodeDLL * delPos(struct NodeDLL * head, int pos) {
