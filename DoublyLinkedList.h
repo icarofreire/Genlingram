@@ -8,6 +8,7 @@ struct NodeDLL {
     char* data;
     struct NodeDLL *next;
     struct NodeDLL *prev;
+    int index;
 };
 
 // Function to create a new node
@@ -20,6 +21,7 @@ struct NodeDLL *createNodeDLL(char* new_data) {
 	new_node->token = NULL;
     new_node->next = NULL;
     new_node->prev = NULL;
+    new_node->index = 0;
     return new_node;
 }
 
@@ -33,6 +35,7 @@ void insertTokenStructInDLL(struct NodeDLL *head, struct Token *token) {
 		new_token->line = token->line;
 		new_token->tokenType = token->tokenType;
 		head->token = new_token;
+		head->index = (head->prev) ? (head->prev->index+1) : (1);
 	}
 }
 
@@ -244,48 +247,6 @@ struct NodeDLL* searchNodeByKey(struct NodeDLL* head, char* key) {
     return NULL;
 }
 
-struct NodeDLL* searchBackwardNodeByTokenType(struct NodeDLL* tail, int tokenType) {
-
-    // Start traversal from the tail of the list
-    struct NodeDLL* curr = tail;
-
-    // Continue until the current node is not 
-    // null (end of list)
-    while (curr != NULL) {
-
-        if(curr->token->tokenType == tokenType){
-			return curr;
-		}
-
-        // Move to the previous node
-        curr = curr->prev;
-    }
-
-    // If there is no node with value as key, return false
-    return NULL;
-}
-
-struct NodeDLL* searchForwardNodeByTokenType(struct NodeDLL* head, int tokenType) {
-
-    // Start traversal from the tail of the list
-    struct NodeDLL* curr = head;
-
-    // Continue until the current node is not 
-    // null (end of list)
-    while (curr != NULL) {
-
-        if(curr->token->tokenType == tokenType){
-			return curr;
-		}
-
-        // Move to the next node
-        curr = curr->next;
-    }
-
-    // If there is no node with value as key, return false
-    return NULL;
-}
-
 // Function to delete a node at a specific 
 //position in the doubly linked list
 struct NodeDLL * delPos(struct NodeDLL * head, int pos) {
@@ -414,3 +375,110 @@ void backwardTraversal(struct NodeDLL* tail) {
     // Print newline after traversal
     printf("\n");
 }
+
+
+/**********************************************************************/
+/*** buscas customizadas; ***/
+
+struct NodeDLL* searchBackwardNodeByTokenType(struct NodeDLL* tail, int tokenType) {
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = tail;
+
+    // Continue until the current node is not 
+    // null (end of list)
+    while (curr != NULL) {
+
+        if(curr->token->tokenType == tokenType){
+			return curr;
+		}
+
+        // Move to the previous node
+        curr = curr->prev;
+    }
+
+    // If there is no node with value as key, return false
+    return NULL;
+}
+/*
+struct NodeDLL* searchBackwardNodeByFindTokenTypes(struct NodeDLL* tail, int tokenType[], int tamTokenTypes) {
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = tail;
+
+    // Continue until the current node is not 
+    // null (end of list)
+    while (curr != NULL) {
+
+		for(int i=0; i<tamTokenTypes; i++){
+			if( curr->token->tokenType == tokenType[i]){
+				return curr;
+			}
+		}
+
+        // Move to the previous node
+        curr = curr->prev;
+    }
+
+    // If there is no node with value as key, return false
+    return NULL;
+}
+*/
+/*
+struct NodeDLL* searchForwardNodeByTokenType(struct NodeDLL* head, int tokenType, int n_pos) {
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = head;
+
+    // Continue until the current node is not 
+    // null (end of list)
+    int encont = 0;
+    while (curr != NULL) {
+
+        if(curr->token->tokenType == tokenType){
+			encont++;
+			if(n_pos <= 1){
+				return curr;
+			}else if(n_pos > 1 && encont == n_pos){
+				// retornar somente o N nó encontrado posteriormente;
+				return curr;
+			}
+		}
+
+        // Move to the next node
+        curr = curr->next;
+    }
+
+    // If there is no node with value as key, return false
+    return NULL;
+}
+*/
+/*
+struct NodeDLL* searchForwardClosesNodeByTokenType(struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento) {
+    struct NodeDLL* curr = head;
+    
+    struct NodeDLL pilha[100];
+    int encont = 0;
+    while (curr != NULL) {
+
+        if(curr->token->tokenType == tokenTypeAbertura){
+			pilha[encont] = *curr;
+			encont++;
+			//edge anterior -> atual;
+		}else if(curr->token->tokenType == tokenTypeFechamento){
+			encont--;
+			
+			if(encont >= 0){
+				//edge pilha[encont] -> atual;
+			}
+
+		}else if(encont >= 0){
+			//edge anterior -> atual;
+		}
+
+        // Move to the next node
+        curr = curr->next;
+    }
+    return NULL;
+}
+*/
