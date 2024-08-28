@@ -351,46 +351,76 @@ TOKEN_URSHFEQ
 	return false;
 }
 
-void criarEdgeTokenAnterior(struct Graph*, struct NodeDLL*, int);
-void criarEdgeTokenPos(struct Graph*, struct NodeDLL*, int);
+void criarEdgeIndexAnterior(struct Graph*, struct NodeDLL*, int);
+void criarEdgeIndexPos(struct Graph*, struct NodeDLL*, int);
 
-struct NodeDLL* searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento) {
+struct NodeDLL* searchFaixasIndexs(struct Graph* graph, struct NodeDLL* head, int index_ini, int index_fim) {
     struct NodeDLL* curr = head;
-    
-    struct NodeDLL pilha[100];
-    int encont = 0;
+
     while (curr != NULL) {
 
-        if(curr->token->tokenType == tokenTypeAbertura){
-			pilha[encont] = *curr;
-			encont++;
+        if(curr->index > index_ini && curr->index <= index_fim){
 			//edge anterior -> atual;
-			//~ criarEdgeTokenAnterior(graph, curr, curr->token->tokenType);
-		}else if(curr->token->tokenType == tokenTypeFechamento){
-			encont--;
-			
-			if(encont >= 0){
-				//edge pilha[encont] -> atual;
-				//~ insertEdge(graph, pilha[encont].token->tokenType, curr->token->tokenType);
-				printf("edge: (P: %d)%d -> %d\n", pilha[0].index, pilha[encont].index, curr->index);
-			}
-
-		}else if(encont >= 0){
-			//edge anterior -> atual;
-			//~ criarEdgeTokenAnterior(graph, curr, curr->token->tokenType);
-			//~ insertNode(graph, curr->index);
-			//~ insertEdge(graph, pilha[encont].token->tokenType, curr->token->tokenType);
+			insertNode(graph, curr->index);
+			criarEdgeIndexAnterior(graph, curr, curr->index);
 		}
-
         // Move to the next node
         curr = curr->next;
     }
     return NULL;
 }
 
+struct NodeDLL* searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento, int idx_visitados[]) {
+    struct NodeDLL* curr = head;
+    
+    const int max_p = 100;
+    struct NodeDLL pilha[max_p];
+    int encont = 0;
+    while (curr != NULL) {
+
+        if(curr->token->tokenType == tokenTypeAbertura && idx_visitados[curr->index] == 0){
+			pilha[encont] = *curr;
+			idx_visitados[curr->index] = 1;
+			encont++;
+
+		}else if(curr->token->tokenType == tokenTypeFechamento && idx_visitados[curr->index] == 0){
+			encont--;
+			idx_visitados[curr->index] = 1;
+			if(encont >= 0){
+				//edge pilha[encont] -> atual;
+				//~ insertEdge(graph, pilha[encont].token->tokenType, curr->token->tokenType);
+				printf("edge: (P: %d)%d -> %d\n", pilha[0].index, pilha[encont].index, curr->index);
+				
+				insertNode(graph, pilha[0].index);
+				insertNode(graph, pilha[encont].index);
+				insertNode(graph, curr->index);
+				/*\/ evitar criar edge de cada vertice para o vertice pai principal; */
+				if( pilha[0].index != pilha[encont].index){
+					searchFaixasIndexs(graph, head, pilha[encont].index, curr->index);
+					insertEdge(graph, pilha[0].index, pilha[encont].index);
+				}
+			}
+
+		}
+        // Move to the next node
+        curr = curr->next;
+    }
+    return NULL;
+}
+
+void printGraph2(struct Graph*, struct NodeDLL*);
+
 void crate_graph(struct NodeDLL *nodeDLL){
 
 	struct Graph* graph = createGraph();
+	
+	const int max_v = 100;
+	int idx_visitados_PAREN[max_v], idx_visitados_BRACK[max_v], idx_visitados_BRACE[max_v];
+	for(int i=0; i<max_v; i++){
+		idx_visitados_PAREN[i] = 0;
+		idx_visitados_BRACK[i] = 0;
+		idx_visitados_BRACE[i] = 0;
+	}
 
     struct NodeDLL* curr = nodeDLL;
     while (curr != NULL) {
@@ -400,39 +430,49 @@ void crate_graph(struct NodeDLL *nodeDLL){
 			
 			int predTokenType = obter_tokenType_predefinido(curr->token->tokenType);
 			if(predTokenType != -1){
-				insertNode(graph, predTokenType);
+				insertNode(graph, curr->index);
 			}
 			if(compare_tokenType_node(curr, IDENTIFIER_NAME)){
-				insertNode(graph, IDENTIFIER_NAME);
+				insertNode(graph, curr->index);
 			}
 			if(compare_tokenType_node(curr, DECIMAL_LITERAL)){
-				insertNode(graph, DECIMAL_LITERAL);
+				insertNode(graph, curr->index);
 			}
 			if(compare_tokenType_node(curr, STRING_LITERAL)){
-				insertNode(graph, STRING_LITERAL);
+				insertNode(graph, curr->index);
 			}
 			if(compare_tokenType_node(curr, HEX_INTEGER_LITERAL)){
-				insertNode(graph, HEX_INTEGER_LITERAL);
+				insertNode(graph, curr->index);
 			}
 			if(compare_tokenType_node(curr, Literal)){
-				insertNode(graph, Literal);
+				insertNode(graph, curr->index);
 			}
 			if(compare_tokenType_node(curr, NULL_LITERAL)){
-				insertNode(graph, NULL_LITERAL);
+				insertNode(graph, curr->index);
+			}
+
+			if(detect_operator(curr, curr->token->tokenType)){
+				insertNode(graph, curr->index);
+				criarEdgeIndexAnterior(graph, curr, curr->index);
+				criarEdgeIndexPos(graph, curr, curr->index);
+			}
+
+			//~ {TOKEN_LPAREN, "("},{TOKEN_RPAREN, ")"},
+			if(compare_tokenType_node(curr, TOKEN_LPAREN)){
+				insertNode(graph, curr->index);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LPAREN, TOKEN_RPAREN, idx_visitados_PAREN);
 			}
 			
-			//ok
-			/*
-			if(detect_operator(curr, curr->token->tokenType)){
-				insertNode(graph, curr->token->tokenType);
-				criarEdgeTokenAnterior(graph, curr, curr->token->tokenType);
-				criarEdgeTokenPos(graph, curr, curr->token->tokenType);
+			//~ {TOKEN_LBRACK, "["},{TOKEN_RBRACK, "]"},
+			if(compare_tokenType_node(curr, TOKEN_LBRACK)){
+				insertNode(graph, curr->index);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACK, TOKEN_RBRACK, idx_visitados_BRACK);
 			}
-			*/
-
-			if(compare_tokenType_node(curr, TOKEN_LPAREN)){
-				insertNode(graph, curr->token->tokenType);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LPAREN, TOKEN_RPAREN);
+			
+			//~ {TOKEN_LBRACE, "{"},{TOKEN_RBRACE, "}"},
+			if(compare_tokenType_node(curr, TOKEN_LBRACE)){
+				insertNode(graph, curr->index);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACE, TOKEN_RBRACE, idx_visitados_BRACE);
 			}
 			
 			
@@ -442,28 +482,46 @@ void crate_graph(struct NodeDLL *nodeDLL){
         curr = curr->next;
     }
 
-	printGraph(graph);
+	//~ printGraph(graph);
+	printGraph2(graph, nodeDLL);
 }
 
-void criarEdgeTokenAnterior(struct Graph* graph, struct NodeDLL* nodeDLL, int tokenType){
-	/*\/ inserir edge do token anterior para o token atual; */
-	struct NodeDLL* node_anterior = nodeDLL->prev;
-	if(node_anterior != NULL){
-		struct Token *token_anterior = node_anterior->token;
-		if(token_anterior != NULL){
-			insertEdge(graph, token_anterior->tokenType, tokenType);
+void printGraph2(struct Graph* graph, struct NodeDLL* head) {
+    struct Node* tempNode = graph->head;
+    struct Edge* tempEdge = NULL;
+
+	FILE *fptr = fopen("graph.txt","w");
+	if(fptr != NULL){
+		while (tempNode != NULL) {
+			printf("\nNodo %d: ", tempNode->val);
+			tempEdge = tempNode->edges;
+			while (tempEdge) {
+				struct NodeDLL* node = searchForwardNodeByIndex(head, tempEdge->dest->val);
+				if(node != NULL){
+					printf(" -> %d('%s')", tempEdge->dest->val, node->data);
+					fprintf(fptr,"%d --> %d[\"%s\"]\n", tempNode->val, tempEdge->dest->val, node->data);
+				}
+				tempEdge = tempEdge->next;
+			}
+			tempNode = tempNode->next;
 		}
 	}
 }
 
-void criarEdgeTokenPos(struct Graph* graph, struct NodeDLL* nodeDLL, int tokenType){
+void criarEdgeIndexAnterior(struct Graph* graph, struct NodeDLL* nodeDLL, int indexAtual){
 	/*\/ inserir edge do token anterior para o token atual; */
+	struct NodeDLL* node_anterior = nodeDLL->prev;
+	if(node_anterior != NULL){
+		insertEdge(graph, node_anterior->index, indexAtual);
+	}
+}
+
+void criarEdgeIndexPos(struct Graph* graph, struct NodeDLL* nodeDLL, int indexAtual){
+	/*\/ inserir edge do token posterior para o token atual; */
 	struct NodeDLL* node_pos = nodeDLL->next;
 	if(node_pos != NULL){
-		struct Token *token_pos = node_pos->token;
-		if(token_pos != NULL){
-			insertEdge(graph, tokenType, token_pos->tokenType);
-		}
+		insertNode(graph, node_pos->index);
+		insertEdge(graph, indexAtual, node_pos->index);
 	}
 }
 
@@ -476,7 +534,6 @@ void parse(char* token, int line, struct NodeDLL* nodeDLL, struct Graph* graph)
 		struct Token token = {str, line, tokenTypePreDef};
 		insertTokenStructInDLL(nodeDLL, &token);
 	}
-	
 	if(isKeyword(str)){
 		int tokenType = tokenType_predefinidos(str);
 		if(tokenType != -1){
