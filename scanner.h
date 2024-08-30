@@ -257,18 +257,12 @@ char* subString(const char* str, int left, int right)
 	return (subStr);
 }
 
-void parse(char*, int, struct NodeDLL*, struct Graph*);
-void crate_graph(struct NodeDLL *);
+void parse(char*, int, struct NodeDLL*);
+void create_graph(struct NodeDLL *, struct Graph* graph);
 
-void tokentize(char* str, int line)
+void tokentize(char* str, int line, struct NodeDLL *nodeDLL)
 {
-	struct NodeDLL *nodeDLL = createNodeDLL("");
 	tokentize_by_delimiters(str, nodeDLL);
-	
-	struct Graph* graph = createGraph();
-
-	//~ forwardTraversal(nodeDLL);
-
 
 	// Start traversal from the head of the list
     struct NodeDLL* curr = nodeDLL;
@@ -276,26 +270,16 @@ void tokentize(char* str, int line)
     // Continue until the current node is not
     // null (end of list)
     while (curr != NULL) {
-      
         // Output data of the current node
         //~ printf("%s -> ", curr->data);
-        parse(curr->data, line, curr, graph);
+        parse(curr->data, line, curr);
         if(curr->token)printf("['%s' -> %d : idx %d]\n", curr->token->identifier, curr->token->tokenType, curr->index);
         //~ printf("['%s']\n", curr->data);
       
         // Move to the next node
         curr = curr->next;
     }
-    
-    //~ if(isAdjacent(graph, src, dest)){}
     printf("\n***\n");
-    
-    struct NodeDLL* copyNode = nodeDLL;
-    crate_graph(copyNode);
-    
-    //~ printGraph(graph);
-    //~ printGraph2(graph);
-
 }
 
 bool compare_tokenType_node(struct NodeDLL* curr, int tokenType){
@@ -409,11 +393,10 @@ struct NodeDLL* searchForwardClosesNodeByTokenType(struct Graph* graph, struct N
 }
 
 void printGraph2(struct Graph*, struct NodeDLL*);
+void printGraphInTree(struct Graph* graph, struct NodeDLL* head);
 
-void crate_graph(struct NodeDLL *nodeDLL){
+void create_graph(struct NodeDLL *nodeDLL, struct Graph* graph){
 
-	struct Graph* graph = createGraph();
-	
 	const int max_v = 100;
 	int idx_visitados_PAREN[max_v], idx_visitados_BRACK[max_v], idx_visitados_BRACE[max_v];
 	for(int i=0; i<max_v; i++){
@@ -451,11 +434,17 @@ void crate_graph(struct NodeDLL *nodeDLL){
 				insertNode(graph, curr->index);
 			}
 
-			if(detect_operator(curr, curr->token->tokenType)){
-				insertNode(graph, curr->index);
-				criarEdgeIndexAnterior(graph, curr, curr->index);
-				criarEdgeIndexPos(graph, curr, curr->index);
-			}
+			//~ if(detect_operator(curr, curr->token->tokenType)){
+				//~ insertNode(graph, curr->index);
+				//~ criarEdgeIndexAnterior(graph, curr, curr->index);
+				//~ criarEdgeIndexPos(graph, curr, curr->index);
+			//~ }
+			
+			//~ {TOKEN_IF, "if"}, {TOKEN_ELSE, "else"},
+			//~ if(compare_tokenType_node(curr, TOKEN_IF)){
+				//~ insertNode(graph, curr->index);
+				//~ searchForwardClosesNodeByTokenType(graph, curr, TOKEN_IF, TOKEN_ELSE, /*idx_visitados_PAREN*/);
+			//~ }
 
 			//~ {TOKEN_LPAREN, "("},{TOKEN_RPAREN, ")"},
 			if(compare_tokenType_node(curr, TOKEN_LPAREN)){
@@ -499,7 +488,7 @@ void printGraph2(struct Graph* graph, struct NodeDLL* head) {
 				struct NodeDLL* node = searchForwardNodeByIndex(head, tempEdge->dest->val);
 				if(node != NULL){
 					printf(" -> %d('%s')", tempEdge->dest->val, node->data);
-					fprintf(fptr,"%d --> %d[\"%s\"]\n", tempNode->val, tempEdge->dest->val, node->data);
+					fprintf(fptr,"%d -> %d[label=\"%s\"];\n", tempNode->val, tempEdge->dest->val, node->data);
 				}
 				tempEdge = tempEdge->next;
 			}
@@ -525,7 +514,7 @@ void criarEdgeIndexPos(struct Graph* graph, struct NodeDLL* nodeDLL, int indexAt
 	}
 }
 
-void parse(char* token, int line, struct NodeDLL* nodeDLL, struct Graph* graph)
+void parse(char* token, int line, struct NodeDLL* nodeDLL)
 {
 	char* str = token;
 	

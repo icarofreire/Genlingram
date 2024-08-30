@@ -241,13 +241,19 @@ int main()
 	//~ parse(str);
 	//~ parse2(str);
 	
-	//~ char *t = "function int a = b + 18; if teste * 0x98";
+	
+	struct NodeDLL *nodeDLL = createNodeDLL("");
+	struct Graph* graph = createGraph();
+	
 	
 	//~ char s_in[] = "function int a=b + 18; if teste * 0x98";
 	//~ char s_in[50] = "int a=b+18;";
 	char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
 	int line = 1;
-    tokentize(s_in, line);
+    tokentize(s_in, line, nodeDLL);
+    
+    //~ struct NodeDLL* copyNode = nodeDLL;
+    create_graph(nodeDLL/*copyNode*/, graph);
     
     //~ long s;
     //~ if (__builtin_types_compatible_p(__typeof__(s), long)) {
