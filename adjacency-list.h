@@ -27,6 +27,7 @@ struct Node* getNode(struct Graph* graph, int val);
 int insertNode(struct Graph* graph, int val);
 int insertEdge(struct Graph* graph, int src, int dest);
 void printGraph(struct Graph* graph);
+int isAdjacent(struct Graph* graph, int src, int dest);
 /* Prototypes */
 
 struct Graph* createGraph() {
@@ -74,6 +75,7 @@ int insertEdge(struct Graph* graph, int src, int dest) {
     struct Node* origNode = getNode(graph, src);
     struct Node* destNode = getNode(graph, dest);
     if (origNode == NULL || destNode == NULL) return -1;
+    if (isAdjacent(graph, src, dest)) return -1;
 
     struct Edge* newEdge  = createEdge(graph, dest);
     struct Edge* tempEdge = NULL;

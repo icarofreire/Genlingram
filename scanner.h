@@ -355,25 +355,22 @@ struct NodeDLL* searchFaixasIndexs(struct Graph* graph, struct NodeDLL* head, in
     return NULL;
 }
 
-void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento) {
+void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento, vector* visitados) {
     struct NodeDLL* curr = head;
-    
-    vector visitados;
-    vector_init(&visitados);
     
     const int max_p = 100;
     struct NodeDLL pilha[max_p];
     int encont = 0;
     while (curr != NULL) {
 
-        if(curr->token->tokenType == tokenTypeAbertura && !vector_contains_int(&visitados, curr->index)){
+        if(curr->token->tokenType == tokenTypeAbertura && !vector_contains_int(visitados, curr->index)){
 			pilha[encont] = *curr;
-			 vector_add(&visitados, &curr->index);
+			 vector_add(visitados, &curr->index);
 			encont++;
 
-		}else if(curr->token->tokenType == tokenTypeFechamento && !vector_contains_int(&visitados, curr->index)){
+		}else if(curr->token->tokenType == tokenTypeFechamento && !vector_contains_int(visitados, curr->index)){
 			encont--;
-			vector_add(&visitados, &curr->index);
+			vector_add(visitados, &curr->index);
 			if(encont >= 0){
 				printf("edge: (P: %d)%d -> %d\n", pilha[0].index, pilha[encont].index, curr->index);
 				
@@ -386,20 +383,20 @@ void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* hea
 					insertEdge(graph, pilha[0].index, pilha[encont].index);
 				}
 			}
-
 		}
         // Move to the next node
         curr = curr->next;
     }
-    
-    vector_delete_all(&visitados);
-    vector_free(&visitados);
+
 }
 
 void printGraph2(struct Graph*, struct NodeDLL*);
 void printGraphInTree(struct Graph* graph, struct NodeDLL* head);
 
 void create_graph(struct NodeDLL *nodeDLL, struct Graph* graph){
+	
+	vector visitados;
+    vector_init(&visitados);
 
     struct NodeDLL* curr = nodeDLL;
     while (curr != NULL) {
@@ -445,19 +442,19 @@ void create_graph(struct NodeDLL *nodeDLL, struct Graph* graph){
 			//~ {TOKEN_LPAREN, "("},{TOKEN_RPAREN, ")"},
 			if(compare_tokenType_node(curr, TOKEN_LPAREN)){
 				insertNode(graph, curr->index);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LPAREN, TOKEN_RPAREN);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LPAREN, TOKEN_RPAREN, &visitados);
 			}
 			
 			//~ {TOKEN_LBRACK, "["},{TOKEN_RBRACK, "]"},
 			if(compare_tokenType_node(curr, TOKEN_LBRACK)){
 				insertNode(graph, curr->index);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACK, TOKEN_RBRACK);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACK, TOKEN_RBRACK, &visitados);
 			}
 			
 			//~ {TOKEN_LBRACE, "{"},{TOKEN_RBRACE, "}"},
 			if(compare_tokenType_node(curr, TOKEN_LBRACE)){
 				insertNode(graph, curr->index);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACE, TOKEN_RBRACE);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACE, TOKEN_RBRACE, &visitados);
 			}
 			
 			
@@ -466,6 +463,9 @@ void create_graph(struct NodeDLL *nodeDLL, struct Graph* graph){
         // Move to the next node
         curr = curr->next;
     }
+    
+    vector_delete_all(&visitados);
+    vector_free(&visitados);
 
 	//~ printGraph(graph);
 	printGraph2(graph, nodeDLL);
