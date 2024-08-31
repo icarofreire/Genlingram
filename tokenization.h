@@ -56,6 +56,15 @@ int next_index_delimiter(char *str, int lim){
 	return -1;
 }
 
+bool is_not_only_space(char* str){
+	for(int i=0; i<strlen(str); i++){
+		if(isspace(str[i]) != 0){
+			return false;
+		}
+	}
+	return true;
+}
+
 void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
     for(; (*str) != '\0'; str++){
 		int index_deli = next_index_delimiter(str, 0);
@@ -66,13 +75,12 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
 			substring(str, word, 1, index_deli);
 			trimString(word);
 
-			//~ printf(">> '%s' -> '%c'\n", word, delimiter);
-			if(strcmp(word, "") != 0){
-				//~ printf(">> '%s'\n", word);
+			if(strcmp(word, "") != 0 && is_not_only_space(word)){
+				//~ printf(">> '%s' p: '%d'\n", word, strlen(word) );
 				insertEnd(nodeDLL, word);
 			}
 			if(delimiter != ' '){
-				//~ printf(">> '%c'\n", delimiter);
+				//~ printf("d>> '%c'\n", delimiter);
 				char temp_str_delimiter[] = {delimiter, '\0'};
 				insertEnd(nodeDLL, temp_str_delimiter);
 			}
@@ -85,10 +93,11 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
 
 				char word_fim[index_prox_fim+1];
 				substring(str, word_fim, 1, strlen(str));
-				insertEnd(nodeDLL, word_fim);
-				str+=strlen(str)-1;
+				if(is_not_only_space(word_fim)){
+					insertEnd(nodeDLL, word_fim);
+					str+=strlen(str)-1;
+				}
 				//~ printf("FIM: %s\n", word_fim);
-
 			}
 		}
 	}

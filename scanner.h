@@ -354,7 +354,7 @@ struct NodeDLL* searchFaixasIndexs(struct Graph* graph, struct NodeDLL* head, in
     return NULL;
 }
 
-struct NodeDLL* searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento, int idx_visitados[]) {
+void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento, int idx_visitados[]) {
     struct NodeDLL* curr = head;
     
     const int max_p = 100;
@@ -389,7 +389,6 @@ struct NodeDLL* searchForwardClosesNodeByTokenType(struct Graph* graph, struct N
         // Move to the next node
         curr = curr->next;
     }
-    return NULL;
 }
 
 void printGraph2(struct Graph*, struct NodeDLL*);

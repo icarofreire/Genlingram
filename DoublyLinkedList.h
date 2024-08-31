@@ -15,7 +15,7 @@ struct NodeDLL {
 struct NodeDLL *createNodeDLL(char* new_data) {
     struct NodeDLL *new_node = (struct NodeDLL *)malloc(sizeof(struct NodeDLL));
     //~ new_node->data = new_data;
-    new_node->data = (char*)malloc((strlen(new_data)) * sizeof(char));
+    new_node->data = (char*)malloc((strlen(new_data)+1) * sizeof(char));
 	strcpy(new_node->data, new_data);
 	
 	new_node->token = NULL;
@@ -29,7 +29,7 @@ void insertTokenStructInDLL(struct NodeDLL *head, struct Token *token) {
 	if(head->token == NULL){
 		struct Token *new_token = (struct Token *)malloc(sizeof(struct Token));
 		
-		new_token->identifier = (char*)malloc((strlen(token->identifier)) * sizeof(char));
+		new_token->identifier = (char*)malloc((strlen(token->identifier)+1) * sizeof(char));
 		strcpy(new_token->identifier, token->identifier);
 		
 		new_token->line = token->line;

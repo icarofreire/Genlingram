@@ -231,6 +231,42 @@ int transversal_grammar_matriz(const int linha[], const int tam_linha){
 	return acertos_totais;
 }
 
+void read_input(char* arquivo){
+    // Create a file pointer and open the file "GFG.txt" in
+    // read mode.
+    FILE* file = fopen(arquivo, "r");
+    
+    struct NodeDLL *nodeDLL = createNodeDLL("");
+	struct Graph* graph = createGraph();
+
+	int con = 0;
+    // Buffer to store each line of the file.
+    char line[256];
+
+    // Check if the file was opened successfully.
+    if (file != NULL) {
+        // Read each line from the file and store it in the
+        // 'line' buffer.
+        while (fgets(line, sizeof(line), file)) {
+			con++;
+            // Print each line to the standard output.
+            //~ printf("[%d]: %s", con, line);
+            tokentize(line, con, nodeDLL);
+        }
+        //~ printf("idx: %d\n", nodeDLL->index );
+        //~ create_graph(nodeDLL, graph);
+		//~ printList(nodeDLL);
+        // Close the file stream once all lines have been
+        // read.
+        fclose(file);
+    }
+    else {
+        // Print an error message to the standard error
+        // stream if the file cannot be opened.
+        fprintf(stderr, "Unable to open file!\n");
+	}
+    
+}
 
 // DRIVER FUNCTION
 int main()
@@ -240,148 +276,11 @@ int main()
 	//~ char str[100] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
 	//~ parse(str);
 	//~ parse2(str);
-	
-	
-	struct NodeDLL *nodeDLL = createNodeDLL("");
-	struct Graph* graph = createGraph();
-	
-	
-	//~ char s_in[] = "function int a=b + 18; if teste * 0x98";
-	//~ char s_in[50] = "int a=b+18;";
-	char s_in[200] = "else if( (linha[i+1] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
-	int line = 1;
-    tokentize(s_in, line, nodeDLL);
-    
-    //~ struct NodeDLL* copyNode = nodeDLL;
-    create_graph(nodeDLL/*copyNode*/, graph);
-    
-    //~ long s;
-    //~ if (__builtin_types_compatible_p(__typeof__(s), long)) {
-        //~ puts("long");
-    //~ } else if (__builtin_types_compatible_p(__typeof__(s), char*)) {
-        //~ puts("str");
-    //~ }
-    
-    //~ if(0){printf("[ok];\n");}else{printf("[No];\n");}
-	
-	//~ struct NodeDLL *nodeDLL = createNodeDLL("");
-	//~ tokentize_by_delimiters(str, nodeDLL);
-	
-	//~ /*\/ remover; */
-	//~ for(int i=0; i<tk.size; i++){
-		//~ free(tk.tokens[i]);
-	//~ }free(tk.tokens);
 
-	//~ forwardTraversal(nodeDLL);
-    
-    
-    // Create an undirected adjList with 3 vertices
-    //~ struct AdjacencyList* undirectedAdjacencyList = createAdjacencyList(3);
 
-    // Add edges to the undirected adjList
-    //~ addEdge(undirectedAdjacencyList, 0, 1);
-    //~ addEdge(undirectedAdjacencyList, 0, 2);
-    //~ addEdge(undirectedAdjacencyList, 1, 2);
+    read_input("code-input.txt");
 
-    //~ printf("Adjacecncy List for Undirected AdjacencyList:\n");
-    //~ printAdjacencyList(undirectedAdjacencyList);
 
-/*
-    // Create a directed adjList with 3 vertices
-    struct AdjacencyList* directedAdjacencyList = createAdjacencyList();
-    
-    addEdge(directedAdjacencyList, 3, 1);
-    addEdge(directedAdjacencyList, 1, 0);
-    addEdge(directedAdjacencyList, 3, 7);
-    addEdge(directedAdjacencyList, 7, 9);
-    addEdge(directedAdjacencyList, 3, 4);
-    addEdge(directedAdjacencyList, 3, 2);
-    addEdge(directedAdjacencyList, 4, 5);
-    addEdge(directedAdjacencyList, 4, 12);
-    addEdge(directedAdjacencyList, 4, 8);
-    addEdge(directedAdjacencyList, 12, 13);
-    addEdge(directedAdjacencyList, 2, 10);
-    addEdge(directedAdjacencyList, 2, 6);
-    addEdge(directedAdjacencyList, 10, 11);
-    
-    //~ printf("taM: %d, %d\n", directedAdjacencyList->numEdges, directedAdjacencyList->numVertices);
-
-    //~ printf("\nAdjacecncy List for Directed AdjacencyList:\n");
-    printAdjacencyList(directedAdjacencyList);
-    
-    //~ int path = BFS_TraversalStarting(directedAdjacencyList, 3, 13);
-    //~ BFS_TraversalStartingEntireGraph(directedAdjacencyList, 1);
-    //~ if(path != -1){
-		//~ printf("[ok];\n");
-	//~ }else{
-		//~ printf("[No];\n");
-	//~ }
-    */
-
-//~ struct Graph* G2 = createGraph();
-
-//~ struct Token token = {"break-1", 1, 99};
-
-//~ insertNode(G2, 0, &token);
-
-//~ struct Token token2 = {"break-2", 1, 99};
-//~ insertNode(G2, 1, &token2);
-
-//~ struct Token token3 = {"break-3", 1, 99};
-//~ insertNode(G2, 2, &token3);
-
-//~ insertEdge(G2, 1, 0);
-//~ insertEdge(G2, 1, 2);
-//~ printGraph(G2);
-
-/*
-struct Graph* G2 = createGraph();
-
-insertNode(G2, 0, NULL);
-insertNode(G2, 1, NULL);
-insertNode(G2, 2, NULL);
-insertNode(G2, 3, NULL);
-insertNode(G2, 4, NULL);
-insertNode(G2, 5, NULL);
-insertNode(G2, 6, NULL);
-insertNode(G2, 7, NULL);
-insertNode(G2, 8, NULL);
-insertNode(G2, 9, NULL);
-insertNode(G2, 10, NULL);
-insertNode(G2, 11, NULL);
-insertNode(G2, 12, NULL);
-insertNode(G2, 13, NULL);
-
-// ***
-
-insertEdge(G2, 3, 1);
-insertEdge(G2, 1, 0);
-insertEdge(G2, 3, 7);
-insertEdge(G2, 7, 9);
-insertEdge(G2, 3, 4);
-insertEdge(G2, 3, 2);
-insertEdge(G2, 4, 5);
-insertEdge(G2, 4, 12);
-insertEdge(G2, 4, 8);
-insertEdge(G2, 12, 13);
-insertEdge(G2, 2, 10);
-insertEdge(G2, 2, 6);
-insertEdge(G2, 10, 11);
-
-printGraph(G2);
-
-printf("\n***\n");
-
-deleteAllGraph(G2);
-//~ printGraph(G2);
-
-//~ int path = isAdjacent(G2, 4, 12);
-//~ if(path == 1){
-	//~ printf("[ok];\n");
-//~ }else{
-	//~ printf("[No];\n");
-//~ }
-*/
 
 /*
 	int tam_operators = 50;
