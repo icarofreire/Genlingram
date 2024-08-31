@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "scanner.h"
+
 //~ #include "Lib-Adjacency-List.h"
 //~ #include "adjacency-list-lib2.h"
 //~ #include "tokens_grammar.h"
@@ -253,8 +254,7 @@ void read_input(char* arquivo){
             //~ printf("[%d]: %s", con, line);
             tokentize(line, con, nodeDLL);
         }
-        //~ printf("idx: %d\n", nodeDLL->index );
-        //~ create_graph(nodeDLL, graph);
+        create_graph(nodeDLL, graph);
 		//~ printList(nodeDLL);
         // Close the file stream once all lines have been
         // read.
@@ -279,7 +279,6 @@ int main()
 
 
     read_input("code-input.txt");
-
 
 
 /*

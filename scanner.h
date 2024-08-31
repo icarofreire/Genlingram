@@ -5,6 +5,7 @@
 #include "adjacency-list.h"
 #include "Token.h"
 #include "tokenization.h"
+#include "vector.h"
 
 //~ #define MAX_TOKEN 100
 
@@ -273,13 +274,13 @@ void tokentize(char* str, int line, struct NodeDLL *nodeDLL)
         // Output data of the current node
         //~ printf("%s -> ", curr->data);
         parse(curr->data, line, curr);
-        if(curr->token)printf("['%s' -> %d : idx %d]\n", curr->token->identifier, curr->token->tokenType, curr->index);
+        //~ if(curr->token)printf("['%s' -> %d : idx %d]\n", curr->token->identifier, curr->token->tokenType, curr->index);
         //~ printf("['%s']\n", curr->data);
       
         // Move to the next node
         curr = curr->next;
     }
-    printf("\n***\n");
+    //~ printf("\n***\n");
 }
 
 bool compare_tokenType_node(struct NodeDLL* curr, int tokenType){
@@ -354,25 +355,26 @@ struct NodeDLL* searchFaixasIndexs(struct Graph* graph, struct NodeDLL* head, in
     return NULL;
 }
 
-void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento, int idx_visitados[]) {
+void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* head, int tokenTypeAbertura, int tokenTypeFechamento) {
     struct NodeDLL* curr = head;
+    
+    vector visitados;
+    vector_init(&visitados);
     
     const int max_p = 100;
     struct NodeDLL pilha[max_p];
     int encont = 0;
     while (curr != NULL) {
 
-        if(curr->token->tokenType == tokenTypeAbertura && idx_visitados[curr->index] == 0){
+        if(curr->token->tokenType == tokenTypeAbertura && !vector_contains_int(&visitados, curr->index)){
 			pilha[encont] = *curr;
-			idx_visitados[curr->index] = 1;
+			 vector_add(&visitados, &curr->index);
 			encont++;
 
-		}else if(curr->token->tokenType == tokenTypeFechamento && idx_visitados[curr->index] == 0){
+		}else if(curr->token->tokenType == tokenTypeFechamento && !vector_contains_int(&visitados, curr->index)){
 			encont--;
-			idx_visitados[curr->index] = 1;
+			vector_add(&visitados, &curr->index);
 			if(encont >= 0){
-				//edge pilha[encont] -> atual;
-				//~ insertEdge(graph, pilha[encont].token->tokenType, curr->token->tokenType);
 				printf("edge: (P: %d)%d -> %d\n", pilha[0].index, pilha[encont].index, curr->index);
 				
 				insertNode(graph, pilha[0].index);
@@ -389,20 +391,15 @@ void searchForwardClosesNodeByTokenType(struct Graph* graph, struct NodeDLL* hea
         // Move to the next node
         curr = curr->next;
     }
+    
+    vector_delete_all(&visitados);
+    vector_free(&visitados);
 }
 
 void printGraph2(struct Graph*, struct NodeDLL*);
 void printGraphInTree(struct Graph* graph, struct NodeDLL* head);
 
 void create_graph(struct NodeDLL *nodeDLL, struct Graph* graph){
-
-	const int max_v = 100;
-	int idx_visitados_PAREN[max_v], idx_visitados_BRACK[max_v], idx_visitados_BRACE[max_v];
-	for(int i=0; i<max_v; i++){
-		idx_visitados_PAREN[i] = 0;
-		idx_visitados_BRACK[i] = 0;
-		idx_visitados_BRACE[i] = 0;
-	}
 
     struct NodeDLL* curr = nodeDLL;
     while (curr != NULL) {
@@ -442,25 +439,25 @@ void create_graph(struct NodeDLL *nodeDLL, struct Graph* graph){
 			//~ {TOKEN_IF, "if"}, {TOKEN_ELSE, "else"},
 			//~ if(compare_tokenType_node(curr, TOKEN_IF)){
 				//~ insertNode(graph, curr->index);
-				//~ searchForwardClosesNodeByTokenType(graph, curr, TOKEN_IF, TOKEN_ELSE, /*idx_visitados_PAREN*/);
+				//~ searchForwardClosesNodeByTokenType(graph, curr, TOKEN_IF, TOKEN_ELSE);
 			//~ }
 
 			//~ {TOKEN_LPAREN, "("},{TOKEN_RPAREN, ")"},
 			if(compare_tokenType_node(curr, TOKEN_LPAREN)){
 				insertNode(graph, curr->index);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LPAREN, TOKEN_RPAREN, idx_visitados_PAREN);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LPAREN, TOKEN_RPAREN);
 			}
 			
 			//~ {TOKEN_LBRACK, "["},{TOKEN_RBRACK, "]"},
 			if(compare_tokenType_node(curr, TOKEN_LBRACK)){
 				insertNode(graph, curr->index);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACK, TOKEN_RBRACK, idx_visitados_BRACK);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACK, TOKEN_RBRACK);
 			}
 			
 			//~ {TOKEN_LBRACE, "{"},{TOKEN_RBRACE, "}"},
 			if(compare_tokenType_node(curr, TOKEN_LBRACE)){
 				insertNode(graph, curr->index);
-				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACE, TOKEN_RBRACE, idx_visitados_BRACE);
+				searchForwardClosesNodeByTokenType(graph, curr, TOKEN_LBRACE, TOKEN_RBRACE);
 			}
 			
 			
