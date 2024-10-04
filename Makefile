@@ -25,6 +25,8 @@ REBUILDABLES = $(OBJS) #$(LINK_TARGET)
 
 FLAGS = -Wall -o
 
+DEPS = earley.h
+
 # There are two standard Targets your Makefile should probably have:
 # "all" and "clean", because they are often command-line Goals.
 # Also, these are both typically Artificial Targets, because they don't typically
@@ -52,7 +54,7 @@ $(LINK_TARGET) : $(OBJS)
 # The rule's command uses some built-in Make Macros:
 # $@ for the pattern-matched target
 # $< for the pattern-matched dependency
-%.o : %.c
+%.o : %.c $(DEPS)
 	gcc $(FLAGS) $@ -c $<
 
 # These are Dependency Rules, which are rules without any command.
