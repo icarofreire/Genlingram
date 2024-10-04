@@ -4,25 +4,29 @@
 struct State {
     int max;
     int *states;
-    int *visite;
+    int vzero;
 };
 
 struct State* ini(){
     struct State* state = (struct State*)malloc(sizeof(struct State));
     state->max = 100;
     state->states = (int*)malloc(state->max * sizeof(int));
-    state->visite = (int*)malloc(state->max * sizeof(int));
+    state->vzero = -1;
 
     for(int i=0; i<state->max; i++){
-        state->states[i] = 0;
-        state->visite[i] = 0;
+        state->states[i] = state->vzero;
     }
     return state;
 }
 
+void print_all_states(struct State *state){
+    for(int i=0; i<state->max; i++){
+        if(state->states[i] != state->vzero) printf("S: %d\n", state->states[i]);
+    }
+}
+
 void free_states(struct State *state){
     free(state->states);
-    free(state->visite);
     free(state);
 }
 
@@ -30,29 +34,11 @@ void add_state(struct State *state, int state_x){
     for(int i=0; i<state->max; i++){
         if(state->states[i] == state_x){
             break;
-        }else if(state->states[i] == 0){
+        }else if(state->states[i] == state->vzero){
             state->states[i] = state_x;
             break;
         }
     }
-}
-
-void add_state_visited(struct State *state, int state_x){
-    for(int i=0; i<state->max; i++){
-        if(state->visite[i] == 0){
-            state->visite[i] = state_x;
-            break;
-        }
-    }
-}
-
-int se_state_visited(struct State *state, int state_x){
-    for(int i=0; i<state->max; i++){
-        if(state->visite[i] == state_x){
-            return 1;
-        }
-    }
-    return -1;
 }
 
 void PREDICTOR(struct Graph* graph, struct State *state, int state_x) {
@@ -133,7 +119,7 @@ int IF_NOT_FINISHED_STATE(struct Graph* graph, int state_x) {
 int NEXT_ELEMENT_OF(struct State *state, int state_x){
     for(int i=0; i<state->max; i++){
         int j = i+1;
-        if( j < state->max && state->states[i] == state_x && state->states[j] != 0){
+        if( j < state->max && state->states[i] == state_x && state->states[j] != state->vzero){
             return state->states[j];
         }
     }
@@ -157,7 +143,7 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         for(int s=0; s<state->max; s++){
             int act_state = state->states[s];
             if(IF_NOT_FINISHED_STATE(graph, act_state) != -1){
-                if(act_state != 0){
+                if(act_state != state->vzero){
                     int next_state = NEXT_ELEMENT_OF(state, act_state);
                     if(next_state != -1 && state_is_a_nonterminal(nonTerminals, max_nonTer, next_state) != -1){
                         PREDICTOR(graph, state, act_state); // non_terminal
@@ -170,6 +156,6 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
             }
         }
     }
-
+    print_all_states(state);
     free_states(state);
 }
