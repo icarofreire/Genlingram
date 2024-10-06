@@ -133,6 +133,54 @@ int isAdjacent(struct Graph* graph, int src, int dest) {
     return 0;
 }
 
+/*\/ detectar caminho por busca em largura(BFS); */
+int isPath(struct Graph* graph, int src, int dest) {
+    struct Node* origNode = getNode(graph, src);
+    struct Node* destNode = getNode(graph, dest);
+    if (origNode == NULL || destNode == NULL) return -1;
+
+    int max = 1000;
+    int visited[max];
+    for(int i=0; i<max; i++){
+        visited[i] = 0;
+    }
+
+    int nthp = 0;
+    visited[nthp] = src;
+    nthp++;
+
+    for(int i=0; i<nthp; i++){
+        if(visited[i] > 0){
+
+            origNode = getNode(graph, visited[i]);
+            struct Edge* tempEdge = origNode->edges;
+            while (tempEdge) {
+
+                if(tempEdge->dest->val == dest){
+                    return 1;
+                }else{
+                    /*\/ verificar presença na pilha de visitados; */
+                    int rep = 0;
+                    for(int v=0; v<nthp; v++){
+                        if(visited[v] == tempEdge->dest->val){
+                            rep = 1; break;
+                        }
+                    }
+
+                    /*\/ adiciona o valor não-visitado na pilha; */
+                    if(rep == 0){
+                        visited[nthp] = tempEdge->dest->val;
+                        nthp++;
+                    }
+                }
+                tempEdge = tempEdge->next;
+            }
+        }
+    }
+
+    return -1;
+}
+
 void deleteAllGraph(struct Graph* graph) {
     struct Node* tempNode = graph->head, *tmpNode = NULL;
     struct Edge* tempEdge = NULL, *tmpEdge = NULL;

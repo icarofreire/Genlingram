@@ -5,9 +5,6 @@ struct State {
     int max;
     int *states;
     int vzero;
-    int src_ini;
-    int dest_ini;
-    int n_ini_edge;
 };
 
 struct State* ini(){
@@ -16,28 +13,16 @@ struct State* ini(){
     state->states = (int*)malloc(state->max * sizeof(int));
     state->vzero = -1;
 
-    state->src_ini = state->vzero;
-    state->dest_ini = state->vzero;
-    state->n_ini_edge = 0;
-
     for(int i=0; i<state->max; i++){
         state->states[i] = state->vzero;
     }
     return state;
 }
 
-void con_ini_edge(struct State *state, int src_ini, int dest_ini){
-    printf("P: %d -> %d\n", src_ini, dest_ini);
-    if(state->src_ini == src_ini && state->dest_ini == dest_ini){
-        state->n_ini_edge++;
-    }
-}
-
 void print_all_states(struct State *state){
     for(int i=0; i<state->max; i++){
         if(state->states[i] != state->vzero) printf("S: %d\n", state->states[i]);
     }
-    printf("Con: %d\n", state->n_ini_edge);
 }
 
 void free_states(struct State *state){
@@ -66,7 +51,6 @@ void PREDICTOR(struct Graph* graph, struct State *state, int state_x) {
         while (tempEdge) {
             // printf(" -> %d", tempEdge->dest->val);
             if( tempEdge->dest->val == state_x){
-                con_ini_edge(state, tempNode->val, tempEdge->dest->val);
                 add_state(state, tempNode->val);
             }
             tempEdge = tempEdge->next;
@@ -86,7 +70,6 @@ void SCANNER(struct Graph* graph, struct State *state, int state_x, int tokens_i
             // printf(" -> %d", tempEdge->dest->val);
             int next_token = (idx_input+1 < len_tokens_input) ? (tokens_input[idx_input+1]) : (-1);
             if(next_token != -1 && tempEdge->dest->val == next_token){
-                con_ini_edge(state, tempNode->val, tempEdge->dest->val);
                 add_state(state, next_token);
             }
             tempEdge = tempEdge->next;
@@ -145,11 +128,9 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
     struct State* state = ini();
     // add_state(state, state_p);
 
-    add_state(state, src_ini);
+    // add_state(state, src_ini);
     add_state(state, dest_ini);
 
-    state->src_ini = src_ini;
-    state->dest_ini = dest_ini;
     printf("P-INI: %d -> %d\n", src_ini, dest_ini);
     for(int i=0; i<len_tokens_input; i++){
         for(int s=0; s<state->max; s++){
