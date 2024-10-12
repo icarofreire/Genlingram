@@ -323,12 +323,14 @@ int main()
 
 	insertEdge(G2, T, NUM);
 
-	EARLEY_PARSE(G2, tokens_input, TAMANHO(tokens_input), nomTerm[0], nomTerm, TAMANHO(nomTerm), P,S);
-	// printf("U: %d\n", TAMANHO(nomTerm) );
-	// printf("U: %d\n", nomTerm[TAMANHO(nomTerm)-1] );
+	struct Graph *ast = createGraph();
+
+	EARLEY_PARSE(G2, tokens_input, TAMANHO(tokens_input), nomTerm[0], nomTerm, TAMANHO(nomTerm), S, ast);
 
 	printGraph(G2);
 	// printf("Path: %d\n", isPath(G2, 4, 6) );
+	printf("\n***\nAST:");
+	printGraph(ast);
 
 
 /*
