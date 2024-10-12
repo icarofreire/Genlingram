@@ -269,6 +269,22 @@ void read_input(char* arquivo){
     
 }
 
+/*
+ <P> ::= <S>      # the start *rule
+ <S> ::= <S> "+" <M> | <M>
+ <M> ::= <M> "*" <T> | <T>
+ <T> ::= "1" | "2" | "3" | "4"
+*/
+enum example{
+P,//0
+S,//1
+M,//2
+T,//3
+PLUS,//4
+MULT,//5
+NUM,//6
+};
+
 // DRIVER FUNCTION
 int main()
 {
@@ -279,7 +295,40 @@ int main()
 	//~ parse2(str);
 
 
-    read_input("code-input.txt");
+    // read_input("code-input.txt");
+	printf("teste make ok 2;)\n");
+
+	// int len_tokens_input = 5;
+	int tokens_input[] = {NUM, PLUS, NUM, MULT, NUM};
+	// int tokens_input[] = {MULT, MULT, MULT, MULT, NUM};
+
+	int nomTerm[] = {/*P,*/S,M,T};
+	struct Graph *G2 = createGraph();
+	insertNode(G2, P);
+	insertNode(G2, S);
+	insertNode(G2, M);
+	insertNode(G2, T);
+	insertNode(G2, PLUS);
+	insertNode(G2, MULT);
+	insertNode(G2, NUM);
+
+	insertEdge(G2, P, S);// # the start rule;
+	insertEdge(G2, S, S);
+	insertEdge(G2, S, PLUS);
+	insertEdge(G2, S, M);
+
+	insertEdge(G2, M, M);
+	insertEdge(G2, M, MULT);
+	insertEdge(G2, M, T);
+
+	insertEdge(G2, T, NUM);
+
+	EARLEY_PARSE(G2, tokens_input, TAMANHO(tokens_input), nomTerm[0], nomTerm, TAMANHO(nomTerm), P,S);
+	// printf("U: %d\n", TAMANHO(nomTerm) );
+	// printf("U: %d\n", nomTerm[TAMANHO(nomTerm)-1] );
+
+	printGraph(G2);
+	// printf("Path: %d\n", isPath(G2, 4, 6) );
 
 
 /*
