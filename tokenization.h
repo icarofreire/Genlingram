@@ -102,3 +102,72 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
 		}
 	}
 }
+
+/**
+ * @brief Call a function for each token found in the input string.
+ * @param s input string
+ * @param sep nul-terminated set of delimiter characters, or NULL for default
+ */
+char** process_tokens(const char *s, const char *sep, int *reftam)
+{
+	if (!sep) {
+		/* use default word separators */
+		sep = " \t\n.!?()";
+	}
+
+	char** strings = NULL;
+	// Declare the initial size of the dynamic array
+	int size = 20;
+
+	// Allocate memory for the array of strings
+	strings = (char**)malloc(size * sizeof(char*));
+	if (strings == NULL) {
+		fprintf(stderr, "Memory allocation failed\n");
+		return NULL;
+	}
+
+	int i = 0;
+	while (*(s+= strspn(s, sep))) {
+		/* s is now pointing at next word character */
+		size_t word_len = strcspn(s, sep);
+
+		// char buf[word_len + 1];
+		// /* copy word into storage, and call user function */
+		// memcpy(buf, s, word_len);
+		// buf[word_len] = 0;
+
+		if(i < size){
+			strings[i] = (char*)malloc((word_len + 1)* sizeof(char));
+			if (strings[i] != NULL) {
+				memcpy(strings[i], s, word_len);
+				strings[i][word_len] = 0;
+				i++;
+			}
+		}else{
+			size++;
+			strings = (char**)realloc(strings, size * sizeof(char*));
+
+			strings[i] = (char*)malloc((word_len + 1)* sizeof(char));
+			if (strings[i] != NULL) {
+				memcpy(strings[i], s, word_len);
+				strings[i][word_len] = 0;
+				i++;
+			}
+		}
+
+		/* advance to next separator */
+		s += word_len;
+	}
+	if(i > 0) *reftam = i;
+
+	return strings;
+}
+
+void free_strings(char **strings, int size){
+	// Free memory for each string
+	for (int i = 0; i < size; i++) {
+		free(strings[i]);
+	}
+	// Free memory for the array of pointers
+	free(strings);
+}
