@@ -127,39 +127,52 @@ char** process_tokens(const char *s, const char *sep, int *reftam)
 	}
 
 	int i = 0;
-	while (*(s+= strspn(s, sep))) {
-		/* s is now pointing at next word character */
-		size_t word_len = strcspn(s, sep);
+	for(; (*s) != '\0'; s++){
 
-		// char buf[word_len + 1];
-		// /* copy word into storage, and call user function */
-		// memcpy(buf, s, word_len);
-		// buf[word_len] = 0;
+		for(int k=0; k<strlen(s); k++){
+			char* sh = strchr(sep, s[k]);
+			if(sh != NULL) {
+				int idx = k;
+				char delim = s[k];
 
-		if(i < size){
-			strings[i] = (char*)malloc((word_len + 1)* sizeof(char));
-			if (strings[i] != NULL) {
-				memcpy(strings[i], s, word_len);
-				strings[i][word_len] = 0;
-				i++;
-			}
-		}else{
-			size++;
-			strings = (char**)realloc(strings, size * sizeof(char*));
+				/*\/ string antes do delimitador; */
+				char buf[idx + 1];
+				memcpy(buf, s, idx);
+				buf[idx] = 0;
+				// printf(">> [%s][%d]\n", s, idx);
+				// printf(">> [%s]\n", buf);
+				// printf(">> [%c]\n", delim);
 
-			strings[i] = (char*)malloc((word_len + 1)* sizeof(char));
-			if (strings[i] != NULL) {
-				memcpy(strings[i], s, word_len);
-				strings[i][word_len] = 0;
-				i++;
+				if((i+2) < size){
+					if(strcmp(buf, "") != 0){
+						strings[i] = (char*)malloc((idx + 1)* sizeof(char));
+						if (strings[i] != NULL) {
+							memcpy(strings[i], s, idx);
+							strings[i][idx] = 0;
+							i++;
+						}
+					}
+
+					if(delim != ' '){
+						strings[i] = (char*)malloc((1)* sizeof(char));
+						if (strings[i] != NULL) {
+							strings[i][0] = delim;
+							strings[i][1] = 0;
+							i++;
+						}
+					}
+				}else{
+					size++;
+					strings = (char**)realloc(strings, size * sizeof(char*));
+					s--; break;
+				}
+				s += idx;
+				break;
 			}
 		}
-
-		/* advance to next separator */
-		s += word_len;
 	}
-	if(i > 0) *reftam = i;
 
+	if(i > 0) *reftam = i;
 	return strings;
 }
 
