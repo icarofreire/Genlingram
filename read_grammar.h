@@ -41,6 +41,25 @@ bool is_string(const char *str)
     }
 }
 
+// C substring function definition
+void get_substring(char s[], char sub[], int pos, int len) {
+    int i = 0;
+    while (i < len) {
+        sub[i] = s[pos+i-1];
+        i++;
+    }
+    sub[i] = '\0';
+}
+
+/* Function to remove white spaces on both sides of a string i.e trim */
+void trim(char *s)
+{
+    int i;
+    while(isspace(*s)) s++;   // skip left side white spaces
+    for(i = strlen(s) - 1; (isspace(s[i])); i--);   // skip right side white spaces
+    s[i + 1] = '\0';
+}
+
 // Returns -1 if line is a string containing only whitespace (or is empty);
 int isBlank (char const * line)
 {
@@ -55,6 +74,54 @@ int isBlank (char const * line)
     return is_blank;
 }
 
+char *get_non_term(char *s){
+    char *p1 = strstr(s, "::=");
+    char *p2 = strstr(s, ":");
+
+    int idx1 = p1-s;
+    int idx2 = p2-s;
+
+    char *sub = (char*)malloc((50)* sizeof(char));
+    if(sub != NULL){
+        if(idx1 > 0){
+            get_substring(s, sub, 0, idx1); trim(sub);
+        }else if(idx2 > 0){
+            get_substring(s, sub, 0, idx2); trim(sub);
+        }
+    }
+    return sub;
+}
+
+int only_alphabets( char *s )
+{
+    unsigned char c;
+    char *p = s;
+    while( (c = *p) && (isalpha(c) || (c == '_')) ) ++p;
+    return *p == '\0';
+}
+
+char *get_production(char *s){
+    char *p1 = strstr(s, "::=");
+    char *p2 = strstr(s, ":");
+
+    int idx1 = p1-s;
+    int idx2 = p2-s;
+
+    char *sub = (char*)malloc((50)* sizeof(char));
+    if(sub != NULL){
+        if(idx1 > 0){
+            get_substring(s, sub, idx1+3, strlen(s));
+            trim(sub);
+            if(only_alphabets(sub)) return sub;
+        }else if(idx2 > 0){
+            get_substring(s, sub, idx2+1, strlen(s));
+            trim(sub);
+            if(only_alphabets(sub)) return sub;
+        }
+    }
+    return NULL;
+}
+
 void read_file_grammar(char* arquivo){
     // Create a file pointer and open the file "GFG.txt" in
     // read mode.
@@ -64,6 +131,7 @@ void read_file_grammar(char* arquivo){
     const int max = 300;
     // Buffer to store each line of the file.
     char line[max];
+    char linha_anterior[max];
 
     // Check if the file was opened successfully.
     if (file != NULL) {
@@ -73,7 +141,25 @@ void read_file_grammar(char* arquivo){
 			con++;
             // Print each line to the standard output.
             //~ printf("[%d]: %s", con, line);
+            trim(line);
+            bool comment = ((isBlank(line) != 1) && (line[0] == '#'));
+            bool production = (!comment && (isBlank(line) != 1) && (line[0] != '|'));
+            bool continue_production = (!comment && (isBlank(line) != 1) && (line[0] == '|'));
             //tokentize... ;
+
+            /*\/ registrar linha que contém o non-terminal; */
+            if(production){
+                // priLineNonTerm = linha;
+                strcpy(linha_anterior, line);
+            }
+
+            /*\/ exibir linha que continua com a primeira linha do non-terminal, ou
+             não, apenas continua *com a linha completa já registrada; */
+            if(continue_production){
+                /*\/ linha encontrada pertencente a linha do non-terminal; */
+            }else if(production){
+            }
+
         }
 
         // Close the file stream once all lines have been
