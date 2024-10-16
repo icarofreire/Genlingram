@@ -3,7 +3,16 @@
 const char delimiters_grammar[] = {
 ' ', /* espaço em branco; */
 ':', /* COLON */
-'|' /* OR */
+'|', /* OR */
+'(', /* LPAREN */
+')', /* RPAREN */
+'[', /* LBRACK */
+']', /* RBRACK */
+'?', /* QUESTION */
+'*', /* MUL */
+'+', /* ADD */
+'\'',
+'"'
 };
 
 int detectLowerOrUpper( const char * string ) /* pass a null-terminated char pointer */
@@ -45,7 +54,7 @@ bool is_string(const char *str)
 void get_substring(char s[], char sub[], int pos, int len) {
     int i = 0;
     while (i < len) {
-        sub[i] = s[pos+i-1];
+        sub[i] = s[pos+i];
         i++;
     }
     sub[i] = '\0';
@@ -112,14 +121,12 @@ char *get_production(char *s){
         if(idx1 > 0){
             get_substring(s, sub, idx1+3, strlen(s));
             trim(sub);
-            if(only_alphabets(sub)) return sub;
         }else if(idx2 > 0){
             get_substring(s, sub, idx2+1, strlen(s));
             trim(sub);
-            if(only_alphabets(sub)) return sub;
         }
     }
-    return NULL;
+    return sub;
 }
 
 void read_file_grammar(char* arquivo){

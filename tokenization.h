@@ -108,13 +108,8 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
  * @param s input string
  * @param sep nul-terminated set of delimiter characters, or NULL for default
  */
-char** process_tokens(const char *s, const char *sep, int *reftam)
+char** process_tokens(const char *s, const char *sep, int *reftam, bool returnDelims)
 {
-	if (!sep) {
-		/* use default word separators */
-		sep = " \t\n.!?()";
-	}
-
 	char** strings = NULL;
 	// Declare the initial size of the dynamic array
 	int size = 20;
@@ -153,7 +148,7 @@ char** process_tokens(const char *s, const char *sep, int *reftam)
 						}
 					}
 
-					if(delim != ' '){
+					if(returnDelims && delim != ' '){
 						strings[i] = (char*)malloc((1)* sizeof(char));
 						if (strings[i] != NULL) {
 							strings[i][0] = delim;
