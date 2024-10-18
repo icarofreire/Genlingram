@@ -22,6 +22,7 @@ struct grammar_symbols {
     struct hashMap* symbolNum;
     struct hashMap* nonTerminals;
     struct Graph *grammar;
+    int tokenType;
 };
 
 int detectLowerOrUpper( const char * string ) /* pass a null-terminated char pointer */
@@ -140,6 +141,16 @@ char *get_production(char *s){
     return sub;
 }
 
+void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
+    int tam = 0;
+    char **tokens = process_tokens(linha, delimiters_grammar, &tam, false);
+    for(int i=0; i<tam; i++){
+        gsymbols->tokenType++;
+        insert(gsymbols->symbolNum, tokens[i], gsymbols->tokenType);
+    }
+    free_strings(tokens, tam);
+}
+
 void read_file_grammar(char* arquivo){
     // Create a file pointer and open the file "GFG.txt" in
     // read mode.
@@ -158,6 +169,7 @@ void read_file_grammar(char* arquivo){
         gsymbols->symbolNum = ini_hashMap();
         gsymbols->nonTerminals = ini_hashMap();
         gsymbols->grammar = createGraph();
+        gsymbols->tokenType = 0;
 
         // Read each line from the file and store it in the
         // 'line' buffer.
@@ -173,7 +185,6 @@ void read_file_grammar(char* arquivo){
 
             /*\/ registrar linha que contém o non-terminal; */
             if(production){
-                // priLineNonTerm = linha;
                 strcpy(linha_anterior, line);
             }
 
@@ -184,21 +195,56 @@ void read_file_grammar(char* arquivo){
                 printf("AN[%s]\n", linha_anterior);
                 printf("[%s]\n", line);
 
-                char *non_term = get_non_term(linha_anterior);
-                if(non_term != NULL){
 
+                /*\/ registra cada production de um não-terminal; */
+                char *non_term = get_non_term(linha_anterior);
+                if(non_term != NULL ){
+                    /*\/ registrar o restante das continuações da production ... | ... | ... */
+                    tokenize_and_reg(gsymbols, line);
+
+                    int idx_nonTerm = get(gsymbols->symbolNum, non_term);
+                    int tam_prod = 0;
+                    char **tokens_prod = process_tokens(line, delimiters_grammar, &tam_prod, false);
+                    for(int i=0; i<tam_prod; i++){
+                        int gprod = get(gsymbols->symbolNum, tokens_prod[i]);
+                        if(gprod != -1){
+                            /*\/ criar vertice dos simbolos da production; */
+                            insertNode(gsymbols->grammar, gprod);
+                            /*\/ criando o vertice do não-terminal para cada simbolo da production; */
+                            insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
+                        }
+                    }
+                    free_strings(tokens_prod, tam_prod);
                 }
 
             }else if(production){
+                /*\/ linha inteira encontrada o non-terminal, até seu fim; */
                 printf("[%s]\n", line);
+
+                 /*\/ registrar cada simbolo de uma production; */
+                tokenize_and_reg(gsymbols, line);
+
+                /*\/ registrar non-terminals em hash particular; */
                 char *non_term = get_non_term(line);
-                if(non_term != NULL){
+                int idx_nonTerm = get(gsymbols->symbolNum, non_term);
+                if(non_term != NULL && idx_nonTerm != -1 ){
+                    insert(gsymbols->nonTerminals, non_term, idx_nonTerm);
+                    /*\/ criar vertice do não-terminal; */
+                    insertNode(gsymbols->grammar, idx_nonTerm);
 
-                }
-
-                char *prod = get_production(line);
-                if(prod != NULL){
-
+                    char *prod = get_production(line);
+                    int tam_prod = 0;
+                    char **tokens_prod = process_tokens(prod, delimiters_grammar, &tam_prod, false);
+                    for(int i=0; i<tam_prod; i++){
+                        int gprod = get(gsymbols->symbolNum, tokens_prod[i]);
+                        if(gprod != -1){
+                            /*\/ criar vertice dos simbolos da production; */
+                            insertNode(gsymbols->grammar, gprod);
+                            /*\/ criando o vertice do não-terminal para cada simbolo da production; */
+                            insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
+                        }
+                    }
+                    free_strings(tokens_prod, tam_prod);
                 }
             }
 
