@@ -101,6 +101,37 @@ int only_alphabets( char *s )
     return *p == '\0';
 }
 
+bool if_non_term(char *s){
+    char *p1 = strstr(s, "::=");
+    char *p2 = strstr(s, ":");
+
+    int idx1 = p1-s;
+    int idx2 = p2-s;
+    int idx_priori = 0;
+
+    if(idx1 > 0){
+        idx_priori = idx1;
+    }else if(idx2 > 0){
+        idx_priori = idx2;
+    }
+
+    int ini = 0;
+    int fim = idx_priori-1;
+    while(ini<idx_priori && isspace(s[++ini]));
+    while(fim >= 0 && isspace(s[--fim]));
+
+    // printf("f: [%d - %d]", ini, fim);
+
+    int onlyLetOrUnder = 1;
+    for(int i=ini; i<=fim; i++){
+        if(!isalpha(s[i]) && s[i] != '_'){
+            onlyLetOrUnder = 0; break;
+        }
+    }
+
+    return (onlyLetOrUnder == 1);
+}
+
 char *get_non_term(char *s){
     char *p1 = strstr(s, "::=");
     char *p2 = strstr(s, ":");
@@ -152,12 +183,26 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
     free_strings(tokens, tam);
 }
 
+void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *linha, int idx_nonTerm){
+    int tam_prod = 0;
+    char **tokens_prod = process_tokens(linha, delimiters_grammar, &tam_prod, false);
+    for(int i=0; i<tam_prod; i++){
+        trim(tokens_prod[i]);
+        int gprod = get(gsymbols->symbolNum, tokens_prod[i]);
+        if(gprod != -1){
+            /*\/ criar vertice dos simbolos da production; */
+            insertNode(gsymbols->grammar, gprod);
+            /*\/ criando o vertice do não-terminal para cada simbolo da production; */
+            insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
+        }
+    }
+    free_strings(tokens_prod, tam_prod);
+}
+
 void read_file_grammar(char* arquivo){
     // Create a file pointer and open the file "GFG.txt" in
     // read mode.
     FILE* file = fopen(arquivo, "r");
-
-	int con = 0;
     const int max = 300;
     // Buffer to store each line of the file.
     char line[max];
@@ -175,14 +220,12 @@ void read_file_grammar(char* arquivo){
         // Read each line from the file and store it in the
         // 'line' buffer.
         while (fgets(line, sizeof(line), file)) {
-			con++;
             // Print each line to the standard output.
             //~ printf("[%d]: %s", con, line);
             trim(line);
             bool comment = ((isBlank(line) != 1) && (line[0] == '#'));
-            bool production = (!comment && (isBlank(line) != 1) && (line[0] != '|'));
-            bool continue_production = (!comment && (isBlank(line) != 1) && (line[0] == '|'));
-            //tokentize... ;
+            bool production = (!comment && (isBlank(line) != 1) && (line[0] != '|') && if_non_term(line));
+            bool continue_production = (!comment && (isBlank(line) != 1) && !production && (line[0] == '|'));
 
             /*\/ registrar linha que contém o non-terminal; */
             if(production){
@@ -205,20 +248,9 @@ void read_file_grammar(char* arquivo){
                 if(non_term != NULL ){
                     int idx_nonTerm = get(gsymbols->symbolNum, non_term);
                     if(idx_nonTerm != -1){
-                        int tam_prod = 0;
-                        char **tokens_prod = process_tokens(line, delimiters_grammar, &tam_prod, false);
-                        for(int i=0; i<tam_prod; i++){
-                            trim(tokens_prod[i]);
-                            int gprod = get(gsymbols->symbolNum, tokens_prod[i]);
-                            if(gprod != -1){
-                                /*\/ criar vertice dos simbolos da production; */
-                                insertNode(gsymbols->grammar, gprod);
-                                /*\/ criando o vertice do não-terminal para cada simbolo da production; */
-                                insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
-                            }
-                        }
-                        free_strings(tokens_prod, tam_prod);
+                        create_vertices_for_nonterminal(gsymbols, line, idx_nonTerm);
                     }
+                    free(non_term);
                 }
 
             }else if(production){
@@ -239,27 +271,17 @@ void read_file_grammar(char* arquivo){
 
                         char *prod = get_production(line);
                         if(prod != NULL){
-                            int tam_prod = 0;
-                            char **tokens_prod = process_tokens(prod, delimiters_grammar, &tam_prod, false);
-                            for(int i=0; i<tam_prod; i++){
-                                trim(tokens_prod[i]);
-                                int gprod = get(gsymbols->symbolNum, tokens_prod[i]);
-                                if(gprod != -1){
-                                    /*\/ criar vertice dos simbolos da production; */
-                                    insertNode(gsymbols->grammar, gprod);
-                                    /*\/ criando o vertice do não-terminal para cada simbolo da production; */
-                                    insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
-                                }
-                            }
-                            free_strings(tokens_prod, tam_prod);
+                            create_vertices_for_nonterminal(gsymbols, prod, idx_nonTerm);
+                            free(prod);
                         }
                     }
+                    free(non_term);
                 }
             }
         }
-        // printMap(gsymbols->symbolNum);
-        // printMap(gsymbols->nonTerminals);
-        // printGraph(gsymbols->grammar);
+        printMap(gsymbols->symbolNum);
+        printMap(gsymbols->nonTerminals);
+        printGraph(gsymbols->grammar);
         // Close the file stream once all lines have been
         // read.
         fclose(file);
