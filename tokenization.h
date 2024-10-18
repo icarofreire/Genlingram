@@ -107,6 +107,8 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
  * @brief Call a function for each token found in the input string.
  * @param s input string
  * @param sep nul-terminated set of delimiter characters, or NULL for default
+ * @param reftam pointer to reference a length of array of tokens to be returned
+ * @param returnDelims bollean to return delimiters or not
  */
 char** process_tokens(const char *s, const char *sep, int *reftam, bool returnDelims)
 {
