@@ -1,5 +1,7 @@
 /* Lib ler arquivo BNF/EBNF; */
 
+#include "hashMap.h"
+
 const char delimiters_grammar[] = {
 ' ', /* espaço em branco; */
 ':', /* COLON */
@@ -13,6 +15,13 @@ const char delimiters_grammar[] = {
 '+', /* ADD */
 '\'',
 '"'
+};
+
+/**  **/
+struct grammar_symbols {
+    struct hashMap* symbolNum;
+    struct hashMap* nonTerminals;
+    struct Graph *grammar;
 };
 
 int detectLowerOrUpper( const char * string ) /* pass a null-terminated char pointer */
@@ -60,13 +69,13 @@ void get_substring(char s[], char sub[], int pos, int len) {
     sub[i] = '\0';
 }
 
-/* Function to remove white spaces on both sides of a string i.e trim */
-void trim(char *s)
-{
-    int i;
-    while(isspace(*s)) s++;   // skip left side white spaces
-    for(i = strlen(s) - 1; (isspace(s[i])); i--);   // skip right side white spaces
-    s[i + 1] = '\0';
+void trim(char *str) {
+    while (isspace((unsigned char)str[0])){
+        memmove(str, str + 1, strlen(str));
+    }
+    while (isspace((unsigned char)str[strlen(str) - 1])){
+        str[strlen(str) - 1] = '\0';
+    }
 }
 
 // Returns -1 if line is a string containing only whitespace (or is empty);
@@ -83,6 +92,14 @@ int isBlank (char const * line)
     return is_blank;
 }
 
+int only_alphabets( char *s )
+{
+    unsigned char c;
+    char *p = s;
+    while( (c = *p) && (isalpha(c) || (c == '_')) ) ++p;
+    return *p == '\0';
+}
+
 char *get_non_term(char *s){
     char *p1 = strstr(s, "::=");
     char *p2 = strstr(s, ":");
@@ -94,19 +111,13 @@ char *get_non_term(char *s){
     if(sub != NULL){
         if(idx1 > 0){
             get_substring(s, sub, 0, idx1); trim(sub);
+            return (only_alphabets(sub) ? (sub) : (NULL));
         }else if(idx2 > 0){
             get_substring(s, sub, 0, idx2); trim(sub);
+            return (only_alphabets(sub) ? (sub) : (NULL));
         }
     }
     return sub;
-}
-
-int only_alphabets( char *s )
-{
-    unsigned char c;
-    char *p = s;
-    while( (c = *p) && (isalpha(c) || (c == '_')) ) ++p;
-    return *p == '\0';
 }
 
 char *get_production(char *s){
@@ -116,7 +127,7 @@ char *get_production(char *s){
     int idx1 = p1-s;
     int idx2 = p2-s;
 
-    char *sub = (char*)malloc((50)* sizeof(char));
+    char *sub = (char*)malloc((100)* sizeof(char));
     if(sub != NULL){
         if(idx1 > 0){
             get_substring(s, sub, idx1+3, strlen(s));
@@ -142,6 +153,12 @@ void read_file_grammar(char* arquivo){
 
     // Check if the file was opened successfully.
     if (file != NULL) {
+
+        struct grammar_symbols* gsymbols = (struct grammar_symbols*)malloc(sizeof(struct grammar_symbols));
+        gsymbols->symbolNum = ini_hashMap();
+        gsymbols->nonTerminals = ini_hashMap();
+        gsymbols->grammar = createGraph();
+
         // Read each line from the file and store it in the
         // 'line' buffer.
         while (fgets(line, sizeof(line), file)) {
@@ -164,7 +181,25 @@ void read_file_grammar(char* arquivo){
              não, apenas continua *com a linha completa já registrada; */
             if(continue_production){
                 /*\/ linha encontrada pertencente a linha do non-terminal; */
+                printf("AN[%s]\n", linha_anterior);
+                printf("[%s]\n", line);
+
+                char *non_term = get_non_term(linha_anterior);
+                if(non_term != NULL){
+
+                }
+
             }else if(production){
+                printf("[%s]\n", line);
+                char *non_term = get_non_term(line);
+                if(non_term != NULL){
+
+                }
+
+                char *prod = get_production(line);
+                if(prod != NULL){
+
+                }
             }
 
         }
@@ -178,5 +213,4 @@ void read_file_grammar(char* arquivo){
         // stream if the file cannot be opened.
         fprintf(stderr, "Unable to open file!\n");
 	}
-
 }

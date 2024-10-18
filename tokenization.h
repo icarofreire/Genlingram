@@ -2,7 +2,7 @@
 
 void trimString(char *str) {
 	while (isspace((unsigned char)str[0])){
-		memmove(str, str + 1, strlen(str));   
+		memmove(str, str + 1, strlen(str));
 	}
 	while (isspace((unsigned char)str[strlen(str) - 1])){
 		str[strlen(str) - 1] = '\0';

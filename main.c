@@ -5,6 +5,7 @@
 
 #include "scanner.h"
 #include "earley.h"
+#include "read_grammar.h"
 
 //~ #include "Lib-Adjacency-List.h"
 //~ #include "adjacency-list-lib2.h"
