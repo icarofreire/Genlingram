@@ -25,6 +25,13 @@ struct grammar_symbols {
     int tokenType;
 };
 
+/*\/ ;*/
+enum languages{
+    PYTHON,
+    RUBY,
+    JS
+};
+
 int detectLowerOrUpper( const char * string ) /* pass a null-terminated char pointer */
 {
     int length = strlen(string); /* Length */
@@ -199,7 +206,7 @@ void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *lin
     free_strings(tokens_prod, tam_prod);
 }
 
-void read_file_grammar(char* arquivo){
+struct grammar_symbols* read_file_grammar(char* arquivo){
     // Create a file pointer and open the file "GFG.txt" in
     // read mode.
     FILE* file = fopen(arquivo, "r");
@@ -279,16 +286,28 @@ void read_file_grammar(char* arquivo){
                 }
             }
         }
-        printMap(gsymbols->symbolNum);
-        printMap(gsymbols->nonTerminals);
-        printGraph(gsymbols->grammar);
+        // printMap(gsymbols->symbolNum);
+        // printMap(gsymbols->nonTerminals);
+        // printGraph(gsymbols->grammar);
         // Close the file stream once all lines have been
         // read.
         fclose(file);
+        return gsymbols;
     }
     else {
         // Print an error message to the standard error
         // stream if the file cannot be opened.
         fprintf(stderr, "Unable to open file!\n");
 	}
+	return NULL;
+}
+
+struct grammar_symbols* read_grammar(int lang){
+    struct grammar_symbols* gsymbols;
+    switch(lang){
+        case RUBY: gsymbols = read_file_grammar("grammars/ruby-grammar.txt"); break;
+        case PYTHON: gsymbols = read_file_grammar("grammars/python-grammar.txt"); break;
+        case JS: gsymbols = read_file_grammar("grammars/js-grammar.txt"); break;
+    }
+    return gsymbols;
 }

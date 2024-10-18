@@ -270,6 +270,46 @@ void read_input(char* arquivo){
     
 }
 
+void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector tokenTypes){
+	// Create a file pointer and open the file "GFG.txt" in
+	// read mode.
+	FILE* file = fopen(arquivo, "r");
+
+	// Buffer to store each line of the file.
+	char line[300];
+
+	// Check if the file was opened successfully.
+	if (file != NULL) {
+		// Read each line from the file and store it in the
+		// 'line' buffer.
+		while (fgets(line, sizeof(line), file)) {
+			// Print each line to the standard output.
+
+			/*\/ inserir simbolos registrados(token types) em um vetor para análise; */
+			int tam = 0;
+			char **tokens = process_tokens(line, delimiters, &tam, true);
+			printf("[%d]\n", tam);
+			for(int i=0; i<tam; i++){
+				trim(tokens[i]);
+				// int sym = get(gsymbols->symbolNum, tokens[i]);
+				// if(sym != -1){
+				// 	VECTOR_ADD(tokenTypes, sym);
+				// }
+			}
+			free_strings(tokens, tam);
+		}
+
+		// Close the file stream once all lines have been
+		// read.
+		fclose(file);
+	}
+	else {
+		// Print an error message to the standard error
+		// stream if the file cannot be opened.
+		fprintf(stderr, "Unable to open file!\n");
+	}
+}
+
 /*
  <P> ::= <S>      # the start *rule
  <S> ::= <S> "+" <M> | <M>
@@ -285,25 +325,24 @@ PLUS,//4
 MULT,//5
 NUM,//6
 };
-
 // DRIVER FUNCTION
 int main()
 {
 	//~ // maximum legth of string is 100 here
 	//~ char str[100] = "function int a = b + 18; if teste * 0x98";
-	//~ char str[100] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
+	// char str[100] = "else if( (linha[i] != 0) && (linha[i] != FIM_PARTE_EXPRESSAO) && (indice_token_primario == -1)){";
 	//~ parse(str);
 	//~ parse2(str);
 
 
     // read_input("code-input.txt");
 	printf("teste make ok 2;)\n");
-
+	/*
 	// int len_tokens_input = 5;
 	int tokens_input[] = {NUM, PLUS, NUM, MULT, NUM};
 	// int tokens_input[] = {MULT, MULT, MULT, MULT, NUM};
 
-	int nomTerm[] = {/*P,*/S,M,T};
+	int nomTerm[] = {S,M,T};
 	struct Graph *G2 = createGraph();
 	insertNode(G2, P);
 	insertNode(G2, S);
@@ -325,14 +364,32 @@ int main()
 	insertEdge(G2, T, NUM);
 
 	struct Graph *ast = createGraph();
+	*/
+	// EARLEY_PARSE(G2, tokens_input, TAMANHO(tokens_input), nomTerm[0], nomTerm, TAMANHO(nomTerm), S, ast);
 
-	EARLEY_PARSE(G2, tokens_input, TAMANHO(tokens_input), nomTerm[0], nomTerm, TAMANHO(nomTerm), S, ast);
-
-	printGraph(G2);
+	// printGraph(G2);
 	// printf("Path: %d\n", isPath(G2, 4, 6) );
-	printf("\n***\nAST:");
-	printGraph(ast);
+	// printf("\n***\nAST:");
+	// printGraph(ast);
 
+	// int tam = 0;
+	// char **parts = process_tokens(str, delimiters, &tam, false);
+	// for(int i=0; i<tam; i++){
+	// 	if(parts[i] != NULL) printf("-> [%s]\n", parts[i]);
+	// }
+	// free_strings(parts, tam);
+
+	struct grammar_symbols* gsymbols = read_grammar(RUBY);
+
+	vector tokenTypes;
+	vector_init(&tokenTypes);
+	read_code_tokenize("code-input.txt", gsymbols, tokenTypes);
+
+	// printMap(gsymbols->symbolNum);
+	// printMap(gsymbols->nonTerminals);
+	// printGraph(gsymbols->grammar);
+	// printf("v[%d]\n", vector_total(&tokenTypes) );
+	printf("v[%d]\n", isChar("'m'") );
 
 /*
 	int tam_operators = 50;

@@ -6,6 +6,7 @@
 #include "Token.h"
 #include "tokenization.h"
 #include "vector.h"
+#include "valid_basic_types.h"
 
 //~ #define MAX_TOKEN 100
 
@@ -22,35 +23,6 @@ bool isDelimiter(char ch)
 	}
 	return (false);
 }
-
-//~ int num_token_delimiter(char *str){
-	//~ int num_token = -1;
-	//~ if (strcmp(str, "=") == 0) num_token = EQ;
-	//~ else if (strcmp(str, "+") == 0) num_token = ADD;
-	//~ else if (strcmp(str, "-") == 0) num_token = SUB;
-	//~ else if (strcmp(str, "!") == 0) num_token = NOT;
-	//~ else if (strcmp(str, "&") == 0) num_token = AND;
-	//~ else if (strcmp(str, "*") == 0) num_token = MUL;
-	//~ else if (strcmp(str, "/") == 0) num_token = DIV;
-	//~ else if (strcmp(str, "(") == 0) num_token = LPAREN;
-	//~ else if (strcmp(str, ")") == 0) num_token = RPAREN;
-	//~ else if (strcmp(str, ".") == 0) num_token = DOT;
-	//~ else if (strcmp(str, ",") == 0) num_token = COMMA;
-	//~ else if (strcmp(str, "?") == 0) num_token = QUESTION;
-	//~ else if (strcmp(str, "~") == 0) num_token = TILDE;
-	//~ else if (strcmp(str, ":") == 0) num_token = COLON;
-	//~ else if (strcmp(str, ";") == 0) num_token = SEMICOLON;
-	//~ else if (strcmp(str, "{") == 0) num_token = LBRACE;
-	//~ else if (strcmp(str, "}") == 0) num_token = RBRACE;
-	//~ else if (strcmp(str, "[") == 0) num_token = LBRACK;
-	//~ else if (strcmp(str, "]") == 0) num_token = RBRACK;
-	//~ else if (strcmp(str, "<") == 0) num_token = LESSER;
-	//~ else if (strcmp(str, "|") == 0) num_token = OR;
-	//~ else if (strcmp(str, "^") == 0) num_token = XOR;
-	//~ else if (strcmp(str, "%") == 0) num_token = MOD;
-	//~ else if (strcmp(str, ">") == 0) num_token = GREATER;
-	//~ return num_token;
-//~ }
 
 int tokenType_predefinidos(char* str){
 	for(int i=0; i<TOKEN_FIM; i++){
@@ -69,19 +41,6 @@ int obter_tokenType_predefinido(int tokenType){
 	return -1;
 }
 
-bool isString(const char *str)
-{
-  int fim = strlen(str);
-  if(
-	(str[0] == '"' || str[0] == '\'') &&
-	(str[fim-1] == '"' || str[fim-1] == '\'')
-   ){
-	return true;
-   }else{
-	return false;
-   }
-}
-
 // Returns 'true' if the character is an OPERATOR.
 bool isOperator(char ch)
 {
@@ -90,21 +49,6 @@ bool isOperator(char ch)
 		ch == '=')
 		return (true);
 	return (false);
-}
-
-// Returns true if [c] is a valid (non-initial) identifier character.
-bool isName(char c)
-{
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-}
-
-// Returns 'true' if the string is a VALID IDENTIFIER.
-bool validIdentifier(const char* str)
-{
-	for(int counter = 0; counter < strlen(str); counter++){
-		if(!isName(str[counter])){ return false; }
-	}
-	return true;
 }
 
 // Returns 'true' if the string is a KEYWORD.
@@ -130,119 +74,6 @@ bool isOpetatorLanguage(const char* str)
 		}
 	}
 	return false;
-}
-
-// Returns 'true' if the string is an INTEGER.
-bool isInteger(const char* str)
-{
-	int i, len = strlen(str);
-
-	if (len == 0)
-		return (false);
-	for (i = 0; i < len; i++) {
-		if ((str[i] != '0' && str[i] != '1' && str[i] != '2'
-			&& str[i] != '3' && str[i] != '4' && str[i] != '5'
-			&& str[i] != '6' && str[i] != '7' && str[i] != '8'
-			&& str[i] != '9') || (str[i] == '-' && i > 0))
-			return (false);
-	}
-	return (true);
-}
-
-// Returns 'true' if the string is a REAL NUMBER.
-bool isRealNumber(const char* str)
-{
-	int i, len = strlen(str);
-	bool hasDecimal = false;
-
-	if (len == 0)
-		return (false);
-	for (i = 0; i < len; i++) {
-		if ((str[i] != '0' && str[i] != '1' && str[i] != '2'
-			&& str[i] != '3' && str[i] != '4' && str[i] != '5'
-			&& str[i] != '6' && str[i] != '7' && str[i] != '8'
-			&& str[i] != '9' && str[i] != '.') ||
-			(str[i] == '-' && i > 0))
-			return (false);
-		if (str[i] == '.')
-			hasDecimal = true;
-	}
-	return (hasDecimal);
-}
-
-// Returns 'true' if the string is a BINARY NUMBER.
-bool isBinaryNumber(const char* str)
-{
-	int i, len = strlen(str);
-	bool fb1 = false, fb2 = true;
-
-	if (len == 0) return (false);
-
-	if( (str[0] == '0' && str[1] == 'b') || (str[0] == '0' && str[1] == 'B') ){ fb1 = true; }
-	for (i = 2; i < len; i++) {
-		if ((str[i] != '0' && str[i] != '1')){
-			fb2 = false;
-		}
-	}
-	return (fb1 && fb2);
-}
-
-bool isBooleanNumber(const char* str)
-{
-	int len = strlen(str);
-	bool f = false;
-
-	if (len == 0) return (false);
-
-	if ((strcmp(str, "true") == 0) || (strcmp(str, "false") == 0)){ f = true; }
-	return (f);
-}
-
-bool isNullLiteral(const char* str)
-{
-	int len = strlen(str);
-	bool f = false;
-
-	if (len == 0) return (false);
-
-	if ((strcmp(str, "null") == 0) || (strcmp(str, "NULL") == 0)){ f = true; }
-	return (f);
-}
-
-bool isOctalNumber(const char* str)
-{
-	int i, len = strlen(str);
-	bool f1 = false, f2 = true;
-
-	if (len == 0) return (false);
-
-	if( (str[0] == '0' && str[1] == 'o') || (str[0] == '0' && str[1] == 'O') ){ f1 = true; }
-	for (i = 2; i < len; i++) {
-		if( isdigit(str[i]) == 0 ){
-			f2 = false;
-		}
-	}
-	return (f1 && f2);
-}
-
-bool isHexNumber(const char* str)
-{
-	int i, len = strlen(str);
-	bool f1 = false, f2 = false;
-
-	if (len == 0) return (false);
-
-	if( (str[0] == '0' && str[1] == 'x') || (str[0] == '0' && str[1] == 'X') ){ f1 = true; }
-	for (i = 2; i < len; i++) {
-		if( (isdigit(str[i]) > 0) &&
-		( str[i] != 'a' && str[i] != 'b' && str[i] != 'c' && str[i] != 'd' && str[i] != 'e' && str[i] != 'f' &&
-		  str[i] != 'A' && str[i] != 'B' && str[i] != 'D' && str[i] != 'E' && str[i] != 'F'
-		)
-		){
-			f2 = true;
-		}
-	}
-	return (f1 == true && f2 == true);
 }
 
 // Extracts the SUBSTRING.
