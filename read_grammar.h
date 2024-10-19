@@ -2,20 +2,7 @@
 
 #include "hashMap.h"
 
-const char delimiters_grammar[] = {
-' ', /* espaço em branco; */
-':', /* COLON */
-'|', /* OR */
-'(', /* LPAREN */
-')', /* RPAREN */
-'[', /* LBRACK */
-']', /* RBRACK */
-'?', /* QUESTION */
-'*', /* MUL */
-'+', /* ADD */
-'\'',
-'"'
-};
+const char delimiters_grammar[] = " :|()[]?*+'\"";
 
 /**  **/
 struct grammar_symbols {
@@ -181,7 +168,7 @@ char *get_production(char *s){
 
 void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
     int tam = 0;
-    char **tokens = process_tokens(linha, delimiters_grammar, &tam, false);
+    char **tokens = process_tokens(linha, delimiters_grammar, &tam, true);
     for(int i=0; i<tam; i++){
         gsymbols->tokenType++;
         trim(tokens[i]);
@@ -192,7 +179,7 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
 
 void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *linha, int idx_nonTerm){
     int tam_prod = 0;
-    char **tokens_prod = process_tokens(linha, delimiters_grammar, &tam_prod, false);
+    char **tokens_prod = process_tokens(linha, delimiters_grammar, &tam_prod, true);
     for(int i=0; i<tam_prod; i++){
         trim(tokens_prod[i]);
         int gprod = get(gsymbols->symbolNum, tokens_prod[i]);

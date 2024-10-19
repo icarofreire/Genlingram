@@ -153,9 +153,7 @@ char** process_tokens(char *s, const char *sep, int *reftam, bool returnDelims)
 				char buf[idx + 1];
 				memcpy(buf, s, idx);
 				buf[idx] = 0;
-				// printf(">> [%s][%d]\n", s, idx);
-				// printf(">> [%s]\n", buf);
-				// printf(">> [%c]\n", delim);
+				// printf(">> buf: [%s] >> delim: [%c]\n", buf, delim);
 
 				if((i+2) < size){
 					if(strcmp(buf, "") != 0){
