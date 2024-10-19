@@ -103,6 +103,17 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
 	}
 }
 
+void appendChar(char *str, char ch) {
+	// Find the length of the string
+	int len = strlen(str);
+
+	// Place the character at the end
+	str[len] = ch;
+
+	// Null-terminate the string
+	str[len + 1] = '\0';
+}
+
 /**
  * @brief Call a function for each token found in the input string.
  * @param s input string
@@ -110,7 +121,7 @@ void tokentize_by_delimiters(char *str, struct NodeDLL *nodeDLL){
  * @param reftam pointer to reference a length of array of tokens to be returned
  * @param returnDelims bollean to return delimiters or not
  */
-char** process_tokens(const char *s, const char *sep, int *reftam, bool returnDelims)
+char** process_tokens(char *s, const char *sep, int *reftam, bool returnDelims)
 {
 	char** strings = NULL;
 	// Declare the initial size of the dynamic array
@@ -121,6 +132,12 @@ char** process_tokens(const char *s, const char *sep, int *reftam, bool returnDe
 	if (strings == NULL) {
 		fprintf(stderr, "Memory allocation failed\n");
 		return NULL;
+	}
+
+	/*\/ inserir um delimitador no final da linha para garantir a tokenização da ultima palavra; */
+	char tokenEnd = ' ';
+	if(s[strlen(s)-1] != tokenEnd){
+		appendChar(s, tokenEnd);
 	}
 
 	int i = 0;

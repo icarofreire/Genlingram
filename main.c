@@ -270,7 +270,7 @@ void read_input(char* arquivo){
     
 }
 
-void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector tokenTypes){
+void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector *tokenTypes){
 	// Create a file pointer and open the file "GFG.txt" in
 	// read mode.
 	FILE* file = fopen(arquivo, "r");
@@ -288,13 +288,13 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 			/*\/ inserir simbolos registrados(token types) em um vetor para análise; */
 			int tam = 0;
 			char **tokens = process_tokens(line, delimiters, &tam, true);
-			printf("[%d]\n", tam);
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
-				// int sym = get(gsymbols->symbolNum, tokens[i]);
-				// if(sym != -1){
-				// 	VECTOR_ADD(tokenTypes, sym);
-				// }
+				int sym = get(gsymbols->symbolNum, tokens[i]);
+				printf("tk: [%s] = [%d]\n", tokens[i], sym);
+				if(sym != -1){
+					vector_add(tokenTypes, (void *)sym);
+				}
 			}
 			free_strings(tokens, tam);
 		}
@@ -383,13 +383,12 @@ int main()
 
 	vector tokenTypes;
 	vector_init(&tokenTypes);
-	read_code_tokenize("code-input.txt", gsymbols, tokenTypes);
+	// read_code_tokenize("code-input.txt", gsymbols, &tokenTypes);
 
 	// printMap(gsymbols->symbolNum);
 	// printMap(gsymbols->nonTerminals);
 	// printGraph(gsymbols->grammar);
-	// printf("v[%d]\n", vector_total(&tokenTypes) );
-	printf("v[%d]\n", isChar("'m'") );
+	// printf("t: [%d]\n", vector_total(&tokenTypes) );
 
 /*
 	int tam_operators = 50;
