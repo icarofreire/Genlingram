@@ -64,6 +64,53 @@ void get_substring(char s[], char sub[], int pos, int len) {
     sub[i] = '\0';
 }
 
+char **get_strings_in_string(char str[], int *len){
+    int max_allocated = 20;
+    char **strings = (char**)malloc(max_allocated * sizeof(char*));
+    int idx_ant = -1, idx_ant_simples = -1, idx_ant_duplas = -1;
+    int ind_str = 0;
+    int ps1 = 0, ps2 = 0;
+    for(int i=0; i<strlen(str); i++){
+
+        if(str[i] == '\''){
+            ps1++;
+            if(ps1 == 1) idx_ant_simples = i;
+        }
+        if(str[i] == '"'){
+            ps2++;
+            if(ps2 == 1) idx_ant_duplas = i;
+        }
+
+        if(ps1 == 3 && (i-idx_ant_simples) ==2){
+            idx_ant = idx_ant_simples;
+            ps1 = 0;
+        }else if(ps2 == 3 && (i-idx_ant_duplas) ==2){
+            idx_ant = idx_ant_duplas;
+            ps2 = 0;
+        }else if(ps1 == 2 && (i-idx_ant_simples) > 2){
+            idx_ant = idx_ant_simples;
+            ps1 = 0;
+        }else if(ps2 == 2 && (i-idx_ant_duplas) > 2){
+            idx_ant = idx_ant_duplas;
+            ps2 = 0;
+        }
+
+        if(idx_ant != -1){
+            int tam = (i-idx_ant)+1;
+            if(ind_str < max_allocated){
+                strings[ind_str] = (char*)malloc((tam)* sizeof(char));
+                get_substring(str, strings[ind_str], idx_ant, tam);
+                ind_str++;
+                (*len)++;
+            }
+            ps1 = ps2 = 0;
+            idx_ant = -1;
+        }
+
+    }
+    return strings;
+}
+
 void trim(char *str) {
     while (isspace((unsigned char)str[0])){
         memmove(str, str + 1, strlen(str));
@@ -91,7 +138,7 @@ int only_alphabets( char *s )
 {
     unsigned char c;
     char *p = s;
-    while( (c = *p) && (isalpha(c) || (c == '_')) ) ++p;
+    while( (c = *p) && (isalpha(c) || (c == '_') || (c == '-')) ) ++p;
     return *p == '\0';
 }
 
@@ -118,7 +165,7 @@ bool if_non_term(char *s){
 
     int onlyLetOrUnder = 1;
     for(int i=ini; i<=fim; i++){
-        if(!isalpha(s[i]) && s[i] != '_'){
+        if(!isalpha(s[i]) && s[i] != '_' && s[i] != '-'){
             onlyLetOrUnder = 0; break;
         }
     }
