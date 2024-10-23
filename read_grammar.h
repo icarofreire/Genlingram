@@ -221,9 +221,11 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
     if(len > 0){
         for(int i=0; i<len; i++){
             if(strings[i] != NULL){
-                gsymbols->tokenType++;
                 trim(strings[i]);
-                insert(gsymbols->symbolNum, strings[i], gsymbols->tokenType);
+                if(get(gsymbols->symbolNum, strings[i]) == -1){
+                    gsymbols->tokenType++;
+                    insert(gsymbols->symbolNum, strings[i], gsymbols->tokenType);
+                }
             }
         }
     }
@@ -232,9 +234,11 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
     int tam = 0;
     char **tokens = process_tokens(linha, delimiters_grammar, &tam, true);
     for(int i=0; i<tam; i++){
-        gsymbols->tokenType++;
         trim(tokens[i]);
-        insert(gsymbols->symbolNum, tokens[i], gsymbols->tokenType);
+        if(get(gsymbols->symbolNum, tokens[i]) == -1){
+            gsymbols->tokenType++;
+            insert(gsymbols->symbolNum, tokens[i], gsymbols->tokenType);
+        }
     }
     free_strings(tokens, tam);
 }
@@ -277,7 +281,6 @@ struct grammar_symbols* read_file_grammar(char* arquivo){
         // 'line' buffer.
         while (fgets(line, sizeof(line), file)) {
             // Print each line to the standard output.
-            //~ printf("[%d]: %s", con, line);
             trim(line);
             bool comment = ((isBlank(line) != 1) && (line[0] == '#'));
             bool production = (!comment && (isBlank(line) != 1) && (line[0] != '|') && if_non_term(line));
@@ -292,8 +295,6 @@ struct grammar_symbols* read_file_grammar(char* arquivo){
              não, apenas continua *com a linha completa já registrada; */
             if(continue_production){
                 /*\/ linha encontrada pertencente a linha do non-terminal; */
-                // printf("AN[%s]\n", linha_anterior);
-                // printf("[%s]\n", line);
 
                 /*\/ registrar cada simbolo de uma continuidade da production; */
                 /*\/ registrar o restante das continuações da production ... | ... | ... */
@@ -311,7 +312,6 @@ struct grammar_symbols* read_file_grammar(char* arquivo){
 
             }else if(production){
                 /*\/ linha inteira encontrada o non-terminal, até seu fim; */
-                // printf("[%s]\n", line);
 
                 /*\/ registrar cada simbolo de uma production; */
                 tokenize_and_reg(gsymbols, line);
