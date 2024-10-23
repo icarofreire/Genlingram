@@ -34,6 +34,10 @@ char* subString(const char* str, int left, int right)
 }
 */
 
+bool is_special_char(char c){
+	return ((isalpha(c) == 0) && (c != '_'));
+}
+
 // Returns 'true' if the character is a DELIMITER.
 bool is_delimiter(char ch)
 {

@@ -82,7 +82,8 @@ char delimiters[] = {
 '|', /* OR */
 '^', /* XOR */
 '%', /* MOD */
-'>' /* GREATER */
+'>', /* GREATER */
+'\0'
 };
 
 /*\/ TOKEN_PALAVRA_CHAVE*/

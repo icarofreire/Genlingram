@@ -1,6 +1,8 @@
 #include <string.h>
 #include <ctype.h>
 
+/* Lib interpreter primitive data types; */
+
 /*\/ Primitive data types; */
 enum Primitive_types {
 CHAR,
@@ -215,6 +217,13 @@ bool isHexNumber(const char* str)
 	return (f1 == true && f2 == true);
 }
 
+int identify_identifier(char* token){
+	if(validIdentifier(token)){
+		return IDENTIFIER;
+	}
+	return -1;
+}
+
 int identify_types(char* token)
 {
     if(isChar(token)){
@@ -222,9 +231,6 @@ int identify_types(char* token)
     }
 	if(isString(token)){
         return STRING;
-	}
-	if(validIdentifier(token)){
-        return IDENTIFIER;
 	}
 	if(isInteger(token)){
         return INT;
