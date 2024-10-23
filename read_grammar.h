@@ -67,46 +67,47 @@ void get_substring(char s[], char sub[], int pos, int len) {
 char **get_strings_in_string(char str[], int *len){
     int max_allocated = 20;
     char **strings = (char**)malloc(max_allocated * sizeof(char*));
-    int idx_ant = -1, idx_ant_simples = -1, idx_ant_duplas = -1;
     int ind_str = 0;
     int ps1 = 0, ps2 = 0;
+    const int quad = 2;
+    int aspas[quad][quad]; // 0 => simples; 1 => duplas;
+    aspas[0][0] = aspas[0][1] = aspas[1][0] = aspas[1][1] = -1;
+
     for(int i=0; i<strlen(str); i++){
+
+        bool nexts = (((i+1)<strlen(str)) && str[i+1] == '\'');
+        bool nextd = (((i+1)<strlen(str)) && str[i+1] == '"');
 
         if(str[i] == '\''){
             ps1++;
-            if(ps1 == 1) idx_ant_simples = i;
+            if(ps1 == 1) {aspas[0][0] = i;}
+            if(ps1 == 2) {aspas[0][1] = i;}
+            if(ps1 == 2 && nexts && (aspas[0][1]-aspas[0][0])==1) {aspas[0][1] = i+1;}
         }
         if(str[i] == '"'){
             ps2++;
-            if(ps2 == 1) idx_ant_duplas = i;
+            if(ps2 == 1) {aspas[1][0] = i;}
+            if(ps2 == 2) {aspas[1][1] = i;}
+            if(ps2 == 2 && nextd && (aspas[1][1]-aspas[1][0])==1) {aspas[1][1] = i+1;}
         }
 
-        if(ps1 == 3 && (i-idx_ant_simples) ==2){
-            idx_ant = idx_ant_simples;
-            ps1 = 0;
-        }else if(ps2 == 3 && (i-idx_ant_duplas) ==2){
-            idx_ant = idx_ant_duplas;
-            ps2 = 0;
-        }else if(ps1 == 2 && (i-idx_ant_simples) > 2){
-            idx_ant = idx_ant_simples;
-            ps1 = 0;
-        }else if(ps2 == 2 && (i-idx_ant_duplas) > 2){
-            idx_ant = idx_ant_duplas;
-            ps2 = 0;
-        }
+        for(int g=0; g<quad; g++){
+            int idx_ant = aspas[g][0];
+            int prese = aspas[g][1];
 
-        if(idx_ant != -1){
-            int tam = (i-idx_ant)+1;
-            if(ind_str < max_allocated){
-                strings[ind_str] = (char*)malloc((tam)* sizeof(char));
-                get_substring(str, strings[ind_str], idx_ant, tam);
-                ind_str++;
-                (*len)++;
+            if(idx_ant != -1 && prese != -1){
+                int tam = (prese-idx_ant)+1;
+                if(ind_str < max_allocated){
+                    strings[ind_str] = (char*)malloc((tam)* sizeof(char));
+                    get_substring(str, strings[ind_str], idx_ant, tam);
+                    ind_str++;
+                    (*len)++;
+                }
+                i = aspas[g][1];
+                ps1 = ps2 = 0;
+                aspas[g][0] = aspas[g][1] = -1;
             }
-            ps1 = ps2 = 0;
-            idx_ant = -1;
         }
-
     }
     return strings;
 }
@@ -214,6 +215,21 @@ char *get_production(char *s){
 }
 
 void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
+    /*\/ obter as strings declaradas na production, ou na continuação da production; */
+    int len = 0;
+    char **strings = get_strings_in_string(linha, &len);
+    if(len > 0){
+        for(int i=0; i<len; i++){
+            if(strings[i] != NULL){
+                gsymbols->tokenType++;
+                trim(strings[i]);
+                printf("[%s]\n", strings[i]);
+                insert(gsymbols->symbolNum, strings[i], gsymbols->tokenType);
+            }
+        }
+    }
+    free_strings(strings, len);
+
     int tam = 0;
     char **tokens = process_tokens(linha, delimiters_grammar, &tam, true);
     for(int i=0; i<tam; i++){
