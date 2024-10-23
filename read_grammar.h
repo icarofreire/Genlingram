@@ -223,7 +223,6 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
             if(strings[i] != NULL){
                 gsymbols->tokenType++;
                 trim(strings[i]);
-                printf("[%s]\n", strings[i]);
                 insert(gsymbols->symbolNum, strings[i], gsymbols->tokenType);
             }
         }

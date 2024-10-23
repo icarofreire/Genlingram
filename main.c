@@ -291,7 +291,7 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
 				int sym = get(gsymbols->symbolNum, tokens[i]);
-				printf("tk: [%s] = [%d]\n", tokens[i], sym);
+				// printf("tk: [%s] = [%d]\n", tokens[i], sym);
 				if(sym != -1){
 					vector_add(tokenTypes, (void *)sym);
 				}
