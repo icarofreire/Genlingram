@@ -31,6 +31,17 @@ const char delimiters[] = {
 '\0'
 };
 
+char *insert_aspas(char *str, bool aspa_simples){
+	char tipo_aspa = (aspa_simples) ? ('\'') : ('\"');
+	int tam = strlen(str);
+	char *copy = (char*)malloc((tam + 3)* sizeof(char));
+	copy[0] = tipo_aspa;
+	memcpy(copy+1, str, strlen(str));
+	copy[tam+1] = tipo_aspa;
+	copy[tam+2] = '\0';
+	return copy;
+}
+
 bool is_special_char(char c){
 	return ((isalpha(c) == 0) && (c != '_'));
 }

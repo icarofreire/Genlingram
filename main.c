@@ -64,7 +64,7 @@ int main()
 {
 	printf("teste make ok 2;)\n");
 
-	apply_earley_in_code("code-input.txt", RUBY);
+	apply_earley_in_code("testes/code-input.rb", RUBY);
 
 	
 	return (0);

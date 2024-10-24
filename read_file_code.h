@@ -6,6 +6,7 @@
 #include "valid_basic_types.h"
 #include "earley.h"
 #include "read_grammar.h"
+#include "verify_ast.h"
 
 int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
 	int tokenType = identify_types(token);
@@ -30,17 +31,6 @@ int get_identifier_tokenType_lang(struct grammar_symbols* gsymbols, char *token,
 		}
 	}
 	return tokenType;
-}
-
-char *insert_aspas(char *str, bool aspa_simples){
-	char tipo_aspa = (aspa_simples) ? ('\'') : ('\"');
-	int tam = strlen(str);
-	char *copy = (char*)malloc((tam + 3)* sizeof(char));
-	copy[0] = tipo_aspa;
-	memcpy(copy+1, str, strlen(str));
-	copy[tam+1] = tipo_aspa;
-	copy[tam+2] = '\0';
-	return copy;
 }
 
 int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *token){
@@ -143,6 +133,8 @@ void apply_earley_in_code(char *file_code, const int lang){
 	EARLEY_PARSE(gsymbols->grammar, ptokenTypes, sizeTokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
 
 	printGraph(ast);
+
+	verify(gsymbols);
 
 	free(ptokenTypes);
 	free(pNonTerminals);

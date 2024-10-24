@@ -222,6 +222,7 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
         for(int i=0; i<len; i++){
             if(strings[i] != NULL){
                 trim(strings[i]);
+                toLower(strings[i]);
                 if(get(gsymbols->symbolNum, strings[i]) == -1){
                     gsymbols->tokenType++;
                     insert(gsymbols->symbolNum, strings[i], gsymbols->tokenType);
