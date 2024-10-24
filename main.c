@@ -348,21 +348,21 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 				/*\/ identificar literal tokentype; */
 				int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_literal != -1){
-					printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
+					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
 					vector_add(tokenTypes, (void *)tokenType_literal);
 				}
 
 				/*\/ identificar identifier tokentype; */
 				int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_identifier != -1){
-					printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
+					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
 					vector_add(tokenTypes, (void *)tokenType_identifier);
 				}
 
 				/*\/ identificar não-terminais tokentype; */
 				int sym = get_nonTerminals_tokenType_lang(gsymbols, tokens[i]);
 				if(sym != -1){
-					printf("tk: [%s] = [%d]\n", tokens[i], sym);
+					// printf("tk: [%s] = [%d]\n", tokens[i], sym);
 					vector_add(tokenTypes, (void *)sym);
 				}
 			}
@@ -378,6 +378,40 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 		// stream if the file cannot be opened.
 		fprintf(stderr, "Unable to open file!\n");
 	}
+}
+
+int* vector_to_array(vector *v, int *reftam){
+	*reftam = v->total;
+	int *dados = (int*)malloc((v->total) * sizeof(int));
+	for (int i = 0; i < v->total; i++) {
+		dados[i] = (int)v->items[i];
+	}
+	return dados;
+}
+
+void apply_earley_in_code(char *file_code, const int lang){
+	struct grammar_symbols* gsymbols = read_grammar(lang);
+	vector tokenTypes;
+	vector_init(&tokenTypes);
+	read_code_tokenize(file_code, gsymbols, &tokenTypes, RUBY);
+
+	/*\/ to array; */
+	int sizeTokenTypes = 0;
+	int *ptokenTypes = vector_to_array(&tokenTypes, &sizeTokenTypes);
+
+	int sizeNonTerm = 0;
+	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
+
+	struct Graph *ast = createGraph();
+	EARLEY_PARSE(gsymbols->grammar, ptokenTypes, sizeTokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
+
+	printGraph(ast);
+
+	free(ptokenTypes);
+	free(pNonTerminals);
+	vector_free(&tokenTypes);
+	deleteAllGraph(ast);
+	free(ast);
 }
 
 void test_get_strings(char str[]){
@@ -461,14 +495,22 @@ int main()
 	// }
 	// free_strings(parts, tam);
 
-	struct grammar_symbols* gsymbols = read_grammar(RUBY);
-	vector tokenTypes;
-	vector_init(&tokenTypes);
-	read_code_tokenize("code-input.txt", gsymbols, &tokenTypes, RUBY);
+	// struct grammar_symbols* gsymbols = read_grammar(RUBY);
+	// vector tokenTypes;
+	// vector_init(&tokenTypes);
+	// read_code_tokenize("code-input.txt", gsymbols, &tokenTypes, RUBY);
 	// printf("[%d]\n", get(gsymbols->symbolNum, "=="));
 	// printf("[%d]\n", get(gsymbols->symbolNum, "!="));
 	// printf("[%d]\n", get(gsymbols->symbolNum, "+="));
 	// printf("[%d]\n", get(gsymbols->symbolNum, "')]'"));
+
+	/*\/ to array; */
+	// int sizeTokenTypes = 0;
+	// int *ptokenTypes = vector_to_array(&tokenTypes, &sizeTokenTypes);
+
+	// int sizeNonTerm = 0;
+	// int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
+
 
 	// char str[] = "|	OP_ASGN		: '+=' | '-=' | '*=' | '/=' | '%=' | '**='   ''' \"\"\"  \"teste g  gds gd sd\" '\"' any_char* '\"' ')'] ";
 	// char str[] = "		| return ['(' [CALL_ARGS] ')']";
@@ -478,8 +520,9 @@ int main()
 	// printMap(gsymbols->symbolNum);
 	// printMap(gsymbols->nonTerminals);
 	// printGraph(gsymbols->grammar);
-	// printf("t: [%d]\n", vector_total(&tokenTypes) );
 
+
+	apply_earley_in_code("code-input.txt", RUBY);
 
 /*
 	int tam_operators = 50;

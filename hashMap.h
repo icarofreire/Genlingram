@@ -64,6 +64,16 @@ int get(struct hashMap* mp, char key[])
     }
 }
 
+int *getValues(struct hashMap* mp, int *reftam)
+{
+    *reftam = mp->size;
+    int *dados = (int*)malloc((mp->size) * sizeof(int));
+    for (int i = 0; i < mp->size; i++) {
+        dados[i] = mp->values[i];
+    }
+    return dados;
+}
+
 // Function to print the map
 void printMap(struct hashMap* mp)
 {

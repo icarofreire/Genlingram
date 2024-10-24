@@ -61,7 +61,7 @@ void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTer
         while (tempEdge) {
             // printf(" -> %d", tempEdge->dest->val);
             if( tempEdge->dest->val == state_x && state_is_a_nonterminal(nonTerminals, max_nonTer, tempNode->val) == 1){
-                printf("PREDICTOR %d to %d;\n", state_x, tempNode->val);
+                // printf("PREDICTOR %d to %d;\n", state_x, tempNode->val);
                 add_state(state, tempNode->val);
 
                 /*\/ criando os vertices e arestas do ast; */
@@ -78,7 +78,7 @@ void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTer
 void get_states_production(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod);
 
 void PREDICTOR2(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod, int *idx_production) {
-    printf("PREDICTOR: %d;\n", state_x);
+    // printf("PREDICTOR: %d;\n", state_x);
     /*\/ apagar dados da production anterior; */
     for(int s=0; s<*con_std_prod; s++) production[s] = -1;
     get_states_production(graph, state_x, production, max_production, con_std_prod);
@@ -86,7 +86,7 @@ void PREDICTOR2(struct Graph* graph, int state_x, int production[], int max_prod
 }
 
 void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer) {
-    printf("SCANNER: %d\n", state_x);
+    // printf("SCANNER: %d\n", state_x);
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
 
@@ -124,7 +124,7 @@ int get_NonTerm(struct Graph* graph, int state_x) {
 }
 
 void COMPLETER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast) {
-    printf("COMPLETER:\n");
+    // printf("COMPLETER:\n");
     for(int i=1; i<state->max; i++){
         if(state->states[i] != state->vzero){
             PREDICTOR(graph, state, state->states[i], nonTerminals, max_nonTer, ast);
@@ -178,19 +178,19 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
     for(int i=0; i<len_tokens_input; i++){
 
         get_states_production(graph, tokens_input[i], production, max_production, &con_std_prod);
-        printf("token: %d;\n", tokens_input[i]);
+        // printf("token: %d;\n", tokens_input[i]);
 
         int colum = 0;
         while(production[colum] != tokens_input[i] && colum < con_std_prod){
             colum++;
         }
-        printf("colum: %d\n", colum);
+        // printf("colum: %d\n", colum);
 
         for(int s=colum/*0*/; s<con_std_prod; s++){
             int act_state = production[s];
             if(act_state != -1){
 
-                printf("std: %d\n", act_state);
+                // printf("std: %d\n", act_state);
 
                 if(state_is_a_nonterminal(nonTerminals, max_nonTer, act_state) != -1){
                     PREDICTOR(graph, state, act_state, nonTerminals, max_nonTer, ast); // non_terminal
@@ -203,21 +203,21 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         }
 
         int act_state = production[con_std_prod-1];
-        printf("prod: [");
-        for(int i=0; i<con_std_prod; i++){
-            printf("%d, ", production[i]);
-        }
-        printf("];\n");
-        print_all_states(state);
+        // printf("prod: [");
+        // for(int i=0; i<con_std_prod; i++){
+        //     printf("%d, ", production[i]);
+        // }
+        // printf("];\n");
+        // print_all_states(state);
 
         COMPLETER(graph, state, act_state, nonTerminals, max_nonTer, ast);
-        print_all_states(state);
+        // print_all_states(state);
 
-        printf("***\n\n");
+        // printf("***\n\n");
         /*\/ apagar dados da production anterior; */
         for(int s=0; s<con_std_prod; s++) production[s] = -1;
         con_std_prod = 0;
     }
-    print_all_states(state);
+    // print_all_states(state);
     free_states(state);
 }
