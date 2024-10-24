@@ -1,9 +1,11 @@
 /* lib to read file code and apply; */
 
-// #include "adjacency-list.h"
-// #include "tokenization.h"
-// #include "vector.h"
-// #include "valid_basic_types.h"
+#include "adjacency-list.h"
+#include "tokenization.h"
+#include "vector.h"
+#include "valid_basic_types.h"
+#include "earley.h"
+#include "read_grammar.h"
 
 int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
 	int tokenType = identify_types(token);
