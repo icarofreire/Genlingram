@@ -6,6 +6,7 @@
 #include "scanner.h"
 #include "earley.h"
 #include "read_grammar.h"
+#include "read_file_code.h"
 
 //~ #include "Lib-Adjacency-List.h"
 //~ #include "adjacency-list-lib2.h"
@@ -270,150 +271,6 @@ void read_input(char* arquivo){
     
 }
 
-int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
-	int tokenType = identify_types(token);
-	if(tokenType != -1){
-		switch(lang){
-			case RUBY: tokenType = get(gsymbols->symbolNum, "LITERAL"); break;
-			case PYTHON: tokenType = get(gsymbols->symbolNum, "literal_pattern"); break;
-			case JS: tokenType = get(gsymbols->symbolNum, "Literal"); break;
-		}
-	}
-	return tokenType;
-}
-
-
-int get_identifier_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
-	int tokenType = identify_identifier(token);
-	if(tokenType != -1){
-		switch(lang){
-			case RUBY: tokenType = get(gsymbols->symbolNum, "IDENTIFIER"); break;
-			case PYTHON: tokenType = get(gsymbols->symbolNum, "NAME"); break;
-			case JS: tokenType = get(gsymbols->symbolNum, "Identifier"); break;
-		}
-	}
-	return tokenType;
-}
-
-char *insert_aspas(char *str, bool aspa_simples){
-	char tipo_aspa = (aspa_simples) ? ('\'') : ('\"');
-	int tam = strlen(str);
-	char *copy = (char*)malloc((tam + 3)* sizeof(char));
-	copy[0] = tipo_aspa;
-	memcpy(copy+1, str, strlen(str));
-	copy[tam+1] = tipo_aspa;
-	copy[tam+2] = '\0';
-	return copy;
-}
-
-int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *token){
-	char *token_aspas_s = insert_aspas(token, true);
-	char *token_aspas_d = insert_aspas(token, false);
-
-	int sym = get(gsymbols->symbolNum, token_aspas_s);
-	if(sym != -1){
-		return sym;
-	}
-	sym = get(gsymbols->symbolNum, token_aspas_d);
-	if(sym != -1){
-		return sym;
-	}
-
-	free(token_aspas_s);
-	free(token_aspas_d);
-	return -1;
-}
-
-void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector *tokenTypes, const int lang){
-	// Create a file pointer and open the file "GFG.txt" in
-	// read mode.
-	FILE* file = fopen(arquivo, "r");
-
-	// Buffer to store each line of the file.
-	char line[300];
-
-	// Check if the file was opened successfully.
-	if (file != NULL) {
-		// Read each line from the file and store it in the
-		// 'line' buffer.
-		while (fgets(line, sizeof(line), file)) {
-			// Print each line to the standard output.
-
-			/*\/ inserir simbolos registrados(token types) em um vetor para análise; */
-			int tam = 0;
-			char **tokens = process_tokens(line, delimiters, &tam, true);
-			for(int i=0; i<tam; i++){
-				trim(tokens[i]);
-
-				/*\/ identificar literal tokentype; */
-				int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
-				if(tokenType_literal != -1){
-					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
-					vector_add(tokenTypes, (void *)tokenType_literal);
-				}
-
-				/*\/ identificar identifier tokentype; */
-				int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
-				if(tokenType_identifier != -1){
-					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
-					vector_add(tokenTypes, (void *)tokenType_identifier);
-				}
-
-				/*\/ identificar não-terminais tokentype; */
-				int sym = get_nonTerminals_tokenType_lang(gsymbols, tokens[i]);
-				if(sym != -1){
-					// printf("tk: [%s] = [%d]\n", tokens[i], sym);
-					vector_add(tokenTypes, (void *)sym);
-				}
-			}
-			free_strings(tokens, tam);
-		}
-
-		// Close the file stream once all lines have been
-		// read.
-		fclose(file);
-	}
-	else {
-		// Print an error message to the standard error
-		// stream if the file cannot be opened.
-		fprintf(stderr, "Unable to open file!\n");
-	}
-}
-
-int* vector_to_array(vector *v, int *reftam){
-	*reftam = v->total;
-	int *dados = (int*)malloc((v->total) * sizeof(int));
-	for (int i = 0; i < v->total; i++) {
-		dados[i] = (int)v->items[i];
-	}
-	return dados;
-}
-
-void apply_earley_in_code(char *file_code, const int lang){
-	struct grammar_symbols* gsymbols = read_grammar(lang);
-	vector tokenTypes;
-	vector_init(&tokenTypes);
-	read_code_tokenize(file_code, gsymbols, &tokenTypes, RUBY);
-
-	/*\/ to array; */
-	int sizeTokenTypes = 0;
-	int *ptokenTypes = vector_to_array(&tokenTypes, &sizeTokenTypes);
-
-	int sizeNonTerm = 0;
-	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
-
-	struct Graph *ast = createGraph();
-	EARLEY_PARSE(gsymbols->grammar, ptokenTypes, sizeTokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
-
-	printGraph(ast);
-
-	free(ptokenTypes);
-	free(pNonTerminals);
-	vector_free(&tokenTypes);
-	deleteAllGraph(ast);
-	free(ast);
-}
-
 void test_get_strings(char str[]){
 	int len = 0;
 	char **strings = get_strings_in_string(str, &len);
@@ -488,12 +345,6 @@ int main()
 	// printf("\n***\nAST:");
 	// printGraph(ast);
 
-	// int tam = 0;
-	// char **parts = process_tokens(str, delimiters, &tam, false);
-	// for(int i=0; i<tam; i++){
-	// 	if(parts[i] != NULL) printf("-> [%s]\n", parts[i]);
-	// }
-	// free_strings(parts, tam);
 
 	// struct grammar_symbols* gsymbols = read_grammar(RUBY);
 	// vector tokenTypes;
@@ -503,19 +354,6 @@ int main()
 	// printf("[%d]\n", get(gsymbols->symbolNum, "!="));
 	// printf("[%d]\n", get(gsymbols->symbolNum, "+="));
 	// printf("[%d]\n", get(gsymbols->symbolNum, "')]'"));
-
-	/*\/ to array; */
-	// int sizeTokenTypes = 0;
-	// int *ptokenTypes = vector_to_array(&tokenTypes, &sizeTokenTypes);
-
-	// int sizeNonTerm = 0;
-	// int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
-
-
-	// char str[] = "|	OP_ASGN		: '+=' | '-=' | '*=' | '/=' | '%=' | '**='   ''' \"\"\"  \"teste g  gds gd sd\" '\"' any_char* '\"' ')'] ";
-	// char str[] = "		| return ['(' [CALL_ARGS] ')']";
-	// char str[] = "ARGLIST		: IDENTIFIER(','IDENTIFIER)*[',' '*'[IDENTIFIER]][',' '&'IDENTIFIER]";
-	// test_get_strings(str);
 
 	// printMap(gsymbols->symbolNum);
 	// printMap(gsymbols->nonTerminals);
