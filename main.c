@@ -62,7 +62,7 @@ void teste_earley(){
 // DRIVER FUNCTION
 int main()
 {
-	printf("teste make ok 2;)\n");
+	printf("Genlingram. ;)\n");
 
 	apply_earley_in_code("testes/code-input.txt", RUBY);
 

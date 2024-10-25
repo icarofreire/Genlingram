@@ -178,8 +178,8 @@ char *get_non_term(char *s){
     char *p1 = strstr(s, "::=");
     char *p2 = strstr(s, ":");
 
-    int idx1 = p1-s;
-    int idx2 = p2-s;
+    int idx1 = (p1 != NULL) ? (p1-s) : (0);
+    int idx2 = (p2 != NULL) ? (p2-s) : (0);
 
     char *sub = (char*)malloc((50)* sizeof(char));
     if(sub != NULL){
@@ -198,8 +198,8 @@ char *get_production(char *s){
     char *p1 = strstr(s, "::=");
     char *p2 = strstr(s, ":");
 
-    int idx1 = p1-s;
-    int idx2 = p2-s;
+    int idx1 = (p1 != NULL) ? (p1-s) : (0);
+    int idx2 = (p2 != NULL) ? (p2-s) : (0);
 
     char *sub = (char*)malloc((300)* sizeof(char));
     if(sub != NULL){
