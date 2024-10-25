@@ -128,24 +128,21 @@ void apply_earley_in_code(char *file_code, const int lang){
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
 
-	// struct Graph *ast = createGraph();
-	// EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
+	struct Graph *ast = createGraph();
+	EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
 
 	// printGraph(ast);
 
 	// verify(gsymbols);
 	// printf("[%d]\n", sizeNonTerm);
 
-	// for(int i=0; i<sizeNonTerm; i++){
-	// 	printf(">>[%d]\n", pNonTerminals[i]);
-	// }
 
-	// free(pNonTerminals);
+	free(pNonTerminals);
 	free(pTokenTypes);
-	// deleteAllGraph(ast);
-	// free(ast);
+	deleteAllGraph(ast);
+	free(ast);
 	free_map(gsymbols->symbolNum);
 	free_map(gsymbols->nonTerminals);
+	deleteAllGraph(gsymbols->grammar);
 	free(gsymbols->grammar);
-
 }
