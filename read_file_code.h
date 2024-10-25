@@ -1,8 +1,7 @@
 /* lib to read file code and apply; */
-
+#include <stdint.h>
 #include "adjacency-list.h"
 #include "tokenization.h"
-#include "vector.h"
 #include "valid_basic_types.h"
 #include "earley.h"
 #include "read_grammar.h"
@@ -51,7 +50,14 @@ int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *toke
 	return -1;
 }
 
-void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector *tokenTypes, const int lang){
+void array_resize(int *items, int *capacity, int plus) {
+	if(plus > *capacity){
+		*capacity += plus;
+		items = (int*)realloc(items, (*capacity) * sizeof(int));
+	}
+}
+
+void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *pTokenTypes, int *sizePtokenTypes, const int lang){
 	// Create a file pointer and open the file "GFG.txt" in
 	// read mode.
 	FILE* file = fopen(arquivo, "r");
@@ -69,6 +75,10 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 			/*\/ inserir simbolos registrados(token types) em um vetor para análise; */
 			int tam = 0;
 			char **tokens = process_tokens(line, delimiters, &tam, true);
+
+			array_resize(pTokenTypes, sizePtokenTypes, tam);
+			int j = 0;
+
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
 
@@ -76,21 +86,21 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 				int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_literal != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
-					vector_add(tokenTypes, (void *)tokenType_literal);
+					pTokenTypes[j++] = tokenType_literal;
 				}
 
 				/*\/ identificar identifier tokentype; */
 				int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_identifier != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
-					vector_add(tokenTypes, (void *)tokenType_identifier);
+					pTokenTypes[j++] = tokenType_identifier;
 				}
 
 				/*\/ identificar não-terminais tokentype; */
 				int sym = get_nonTerminals_tokenType_lang(gsymbols, tokens[i]);
 				if(sym != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], sym);
-					vector_add(tokenTypes, (void *)sym);
+					pTokenTypes[j++] = sym;
 				}
 			}
 			free_strings(tokens, tam);
@@ -107,38 +117,35 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, vector 
 	}
 }
 
-int* vector_to_array(vector *v, int *reftam){
-	*reftam = v->total;
-	int *dados = (int*)malloc((v->total) * sizeof(int));
-	for (int i = 0; i < v->total; i++) {
-		dados[i] = (int)v->items[i];
-	}
-	return dados;
-}
-
 void apply_earley_in_code(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
-	vector tokenTypes;
-	vector_init(&tokenTypes);
-	read_code_tokenize(file_code, gsymbols, &tokenTypes, RUBY);
 
-	/*\/ to array; */
-	int sizeTokenTypes = 0;
-	int *ptokenTypes = vector_to_array(&tokenTypes, &sizeTokenTypes);
+	int sizePtokenTypes = 20;
+	int *pTokenTypes = (int*)malloc((sizePtokenTypes) * sizeof(int));
+
+	read_code_tokenize(file_code, gsymbols, pTokenTypes, &sizePtokenTypes, RUBY);
 
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
 
-	struct Graph *ast = createGraph();
-	EARLEY_PARSE(gsymbols->grammar, ptokenTypes, sizeTokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
+	// struct Graph *ast = createGraph();
+	// EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
 
-	printGraph(ast);
+	// printGraph(ast);
 
-	verify(gsymbols);
+	// verify(gsymbols);
+	// printf("[%d]\n", sizeNonTerm);
 
-	free(ptokenTypes);
-	free(pNonTerminals);
-	vector_free(&tokenTypes);
-	deleteAllGraph(ast);
-	free(ast);
+	// for(int i=0; i<sizeNonTerm; i++){
+	// 	printf(">>[%d]\n", pNonTerminals[i]);
+	// }
+
+	// free(pNonTerminals);
+	free(pTokenTypes);
+	// deleteAllGraph(ast);
+	// free(ast);
+	free_map(gsymbols->symbolNum);
+	free_map(gsymbols->nonTerminals);
+	free(gsymbols->grammar);
+
 }
