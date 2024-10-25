@@ -147,8 +147,8 @@ bool if_non_term(char *s){
     char *p1 = strstr(s, "::=");
     char *p2 = strstr(s, ":");
 
-    int idx1 = p1-s;
-    int idx2 = p2-s;
+    int idx1 = (p1 != NULL) ? (p1-s) : (0);
+    int idx2 = (p2 != NULL) ? (p2-s) : (0);
     int idx_priori = 0;
 
     if(idx1 > 0){
@@ -162,7 +162,7 @@ bool if_non_term(char *s){
     while(ini<idx_priori && isspace(s[++ini]));
     while(fim >= 0 && isspace(s[--fim]));
 
-    // printf("f: [%d - %d]", ini, fim);
+    // printf("f: [%d - %d]\n", ini, fim);
 
     int onlyLetOrUnder = 1;
     for(int i=ini; i<=fim; i++){
