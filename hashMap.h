@@ -74,6 +74,16 @@ int *getValues(struct hashMap* mp, int *reftam)
     return dados;
 }
 
+char *getKeyByValue(struct hashMap* mp, int val)
+{
+    for (int i = 0; i < mp->size; i++) {
+        if(mp->values[i] == val){
+            return mp->keys[i];
+        }
+    }
+    return NULL;
+}
+
 // Function to print the map
 void printMap(struct hashMap* mp)
 {

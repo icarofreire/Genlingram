@@ -13,19 +13,25 @@ int get_tokenType_token(struct grammar_symbols* gsymbols, char *token){
     if(sym != -1){
         return sym;
     }
+    sym = get(gsymbols->symbolNum, token);
+    if(sym != -1){
+        return sym;
+    }
     return -1;
 }
 
 /*\/ criar exemplos de verificação de regras; */
 void verify(struct grammar_symbols* gsymbols){
 
-    int tkSTMT = get(gsymbols->symbolNum, "STMT");
-    if(tkSTMT != -1 && getNode(gsymbols->grammar, tkSTMT) != NULL){
+    int tk = get(gsymbols->symbolNum, "STMT");
+    if(tk != -1 && getNode(gsymbols->grammar, tk) != NULL){
         printf("[Ok STMT];\n");
     }
+    tk = get(gsymbols->symbolNum, "ARG");
+    if(tk != -1 && getNode(gsymbols->grammar, tk) != NULL){
+        printf("[Ok ARG];\n");
+    }
 
-    int tokenType = get(gsymbols->symbolNum, "if");
-    printf("[%d]\n", tokenType);
+    /** ... */
 
-    // printf("[%d]\n", verify_token(gsymbols, "if") );
 }

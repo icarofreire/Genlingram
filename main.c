@@ -65,6 +65,7 @@ int main()
 	printf("Genlingram. ;)\n");
 
 	apply_earley_in_code("testes/code-input.txt", RUBY);
+	// apply_earley_in_code("testes/AStarSearch.txt", PYTHON);
 
 	
 	return (0);

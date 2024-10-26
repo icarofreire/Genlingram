@@ -51,7 +51,7 @@ int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *toke
 }
 
 void array_resize(int *items, int *capacity, int plus) {
-	if(plus > *capacity){
+	if(plus >= *capacity){
 		*capacity += plus;
 		items = (int*)realloc(items, (*capacity) * sizeof(int));
 	}
@@ -117,13 +117,29 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *pT
 	}
 }
 
+/*\/ imprimir o ast como forma de debug; */
+void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols) {
+    struct Node* tempNode = graph->head;
+    struct Edge* tempEdge = NULL;
+
+    while (tempNode != NULL) {
+        printf("\nNodo %d: ", tempNode->val);
+        tempEdge = tempNode->edges;
+        while (tempEdge) {
+            printf(" -> %d(%s)", tempEdge->dest->val, getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val));
+            tempEdge = tempEdge->next;
+        }
+        tempNode = tempNode->next;
+    }
+}
+
 void apply_earley_in_code(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
 	int sizePtokenTypes = 20;
 	int *pTokenTypes = (int*)malloc((sizePtokenTypes) * sizeof(int));
 
-	read_code_tokenize(file_code, gsymbols, pTokenTypes, &sizePtokenTypes, RUBY);
+	read_code_tokenize(file_code, gsymbols, pTokenTypes, &sizePtokenTypes, lang);
 
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
@@ -132,9 +148,11 @@ void apply_earley_in_code(char *file_code, const int lang){
 	EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
 
 	// printGraph(ast);
+	printGraphNonTerm(ast, gsymbols);
 
 	// verify(gsymbols);
-	// printf("[%d]\n", sizeNonTerm);
+	printf("[%d] Non-Terminals;\n", sizeNonTerm);
+	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
 
 
 	free(pNonTerminals);
