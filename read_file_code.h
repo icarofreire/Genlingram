@@ -36,22 +36,34 @@ int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *toke
 	char *token_aspas_s = insert_aspas(token, true);
 	char *token_aspas_d = insert_aspas(token, false);
 
+	int tk = -1;
 	int sym = get(gsymbols->symbolNum, token_aspas_s);
 	if(sym != -1){
-		return sym;
+		tk = sym;
 	}
 	sym = get(gsymbols->symbolNum, token_aspas_d);
 	if(sym != -1){
-		return sym;
+		tk = sym;
 	}
+	sym = get(gsymbols->symbolNum, token);
+    if(sym != -1){
+        tk = sym;
+    }
 
 	free(token_aspas_s);
 	free(token_aspas_d);
-	return -1;
+	return tk;
 }
 
 void array_resize(int *items, int *capacity, int plus) {
-	if(plus >= *capacity){
+	if(plus > 0 && plus >= *capacity){
+		*capacity += plus;
+		items = (int*)realloc(items, (*capacity) * sizeof(int));
+	}
+}
+
+void array_add_size(int *items, int *capacity, int plus) {
+	if(plus > 0){
 		*capacity += plus;
 		items = (int*)realloc(items, (*capacity) * sizeof(int));
 	}
