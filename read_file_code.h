@@ -55,21 +55,21 @@ int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *toke
 	return tk;
 }
 
-void array_resize(int *items, int *capacity, int plus) {
+void array_resize(int **items, int *capacity, int plus) {
 	if(plus > 0 && plus >= *capacity){
 		*capacity += plus;
-		items = (int*)realloc(items, (*capacity) * sizeof(int));
+		*items = (int*)realloc(*items, (*capacity) * sizeof(int));
 	}
 }
 
-void array_add_size(int *items, int *capacity, int plus) {
+void array_add_size(int **items, int *capacity, int plus) {
 	if(plus > 0){
 		*capacity += plus;
-		items = (int*)realloc(items, (*capacity) * sizeof(int));
+		*items = (int*)realloc(*items, (*capacity) * sizeof(int));
 	}
 }
 
-void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *pTokenTypes, int *sizePtokenTypes, const int lang){
+void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int **pTokenTypes, int *sizePtokenTypes, const int lang){
 	// Create a file pointer and open the file "GFG.txt" in
 	// read mode.
 	FILE* file = fopen(arquivo, "r");
@@ -87,8 +87,7 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *pT
 			/*\/ inserir simbolos registrados(token types) em um vetor para análise; */
 			int tam = 0;
 			char **tokens = process_tokens(line, delimiters, &tam, true);
-
-			array_resize(pTokenTypes, sizePtokenTypes, tam);
+			array_add_size(pTokenTypes, sizePtokenTypes, tam);
 			int j = 0;
 
 			for(int i=0; i<tam; i++){
@@ -98,21 +97,21 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *pT
 				int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_literal != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
-					pTokenTypes[j++] = tokenType_literal;
+					(*pTokenTypes)[j++] = tokenType_literal;
 				}
 
 				/*\/ identificar identifier tokentype; */
 				int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_identifier != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
-					pTokenTypes[j++] = tokenType_identifier;
+					(*pTokenTypes)[j++] = tokenType_identifier;
 				}
 
 				/*\/ identificar não-terminais tokentype; */
 				int sym = get_nonTerminals_tokenType_lang(gsymbols, tokens[i]);
 				if(sym != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], sym);
-					pTokenTypes[j++] = sym;
+					(*pTokenTypes)[j++] = sym;
 				}
 			}
 			free_strings(tokens, tam);
@@ -148,10 +147,10 @@ void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols) {
 void apply_earley_in_code(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
-	int sizePtokenTypes = 20;
+	int sizePtokenTypes = 2;
 	int *pTokenTypes = (int*)malloc((sizePtokenTypes) * sizeof(int));
 
-	read_code_tokenize(file_code, gsymbols, pTokenTypes, &sizePtokenTypes, lang);
+	read_code_tokenize(file_code, gsymbols, &pTokenTypes, &sizePtokenTypes, lang);
 
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
