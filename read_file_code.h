@@ -8,7 +8,7 @@
 #include "verify_ast.h"
 
 int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
-	int tokenType = identify_types(token);
+	int tokenType = identify_primitive_types(token);
 	if(tokenType != -1){
 		switch(lang){
 			case RUBY: tokenType = get(gsymbols->symbolNum, "LITERAL"); break;
@@ -81,6 +81,7 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int **p
 	if (file != NULL) {
 		// Read each line from the file and store it in the
 		// 'line' buffer.
+		int j = 0;
 		while (fgets(line, sizeof(line), file)) {
 			// Print each line to the standard output.
 
@@ -88,7 +89,6 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int **p
 			int tam = 0;
 			char **tokens = process_tokens(line, delimiters, &tam, true);
 			array_add_size(pTokenTypes, sizePtokenTypes, tam);
-			int j = 0;
 
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
@@ -97,21 +97,29 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int **p
 				int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
 				if(tokenType_literal != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
+					// printf("[%d, %d]\n", *sizePtokenTypes, j++);
 					(*pTokenTypes)[j++] = tokenType_literal;
+					// printf("1tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
 				}
 
 				/*\/ identificar identifier tokentype; */
-				int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
-				if(tokenType_identifier != -1){
-					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
-					(*pTokenTypes)[j++] = tokenType_identifier;
-				}
+				// int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
+				// if(tokenType_identifier != -1){
+				// 	// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
+				// 	// printf("[%d, %d]\n", *sizePtokenTypes, j++);
+				// 	(*pTokenTypes)[j++] = tokenType_identifier;
+				// 	// printf("2tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
+				// }
+
+				/*\/ TODO identificar keywords tokentype; */
 
 				/*\/ identificar não-terminais tokentype; */
 				int sym = get_nonTerminals_tokenType_lang(gsymbols, tokens[i]);
 				if(sym != -1){
 					// printf("tk: [%s] = [%d]\n", tokens[i], sym);
+					// printf("[%d, %d]\n", *sizePtokenTypes, j++);
 					(*pTokenTypes)[j++] = sym;
+					// printf("3tk: [%s] = [%d]\n", tokens[i], sym);
 				}
 			}
 			free_strings(tokens, tam);

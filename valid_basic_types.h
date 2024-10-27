@@ -50,6 +50,7 @@ bool isString(const char *str)
    }
 }
 
+/* IDENTIFIER is the seqeunce of characters in the pattern of /[a-zA-Z_][a-zA-Z0-9_-]; */
 int validIdentifier( char *s )
 {
 	int ind = 0;
@@ -220,7 +221,7 @@ int identify_identifier(char* token){
 	return -1;
 }
 
-int identify_types(char* token)
+int identify_primitive_types(char* token)
 {
     if(isChar(token)){
         return CHAR;
