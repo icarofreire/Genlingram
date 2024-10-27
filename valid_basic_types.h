@@ -50,20 +50,16 @@ bool isString(const char *str)
    }
 }
 
-// Returns true if [c] is a valid (non-initial) identifier character.
-bool isName(char c)
+int validIdentifier( char *s )
 {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= '0' && c <= '9');
-}
-
-// Returns 'true' if the string is a VALID IDENTIFIER.
-bool validIdentifier(const char* str)
-{
-	if(str[0] >= '0' && str[0] <= '9') return false;
-	for(int counter = 1; counter < strlen(str); counter++){
-		if(!isName(str[counter])){ return false; }
+	int ind = 0;
+    unsigned char c;
+    char *p = s;
+    while( (c = *p) && (isalpha(c) || (c == '_') || ((ind > 0) && (c == '-')) || ((ind > 0) && (c >= '0' && c <= '9'))) ) {
+		++p;
+		ind++;
 	}
-	return true;
+    return *p == '\0';
 }
 
 // Returns 'true' if the string is an INTEGER.
