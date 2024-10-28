@@ -1,5 +1,6 @@
 /* Lib read keywords of lang; */
 
+
 char **read_file_keywords(char* arquivo, int *reftam){
     // Create a file pointer and open the file "GFG.txt" in
     // read mode.

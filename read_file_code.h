@@ -4,9 +4,10 @@
 #include "tokenization.h"
 #include "valid_basic_types.h"
 #include "earley.h"
+#include "structs.h"
+#include "read_file_keywords.h"
 #include "read_grammar.h"
 #include "verify_ast.h"
-#include "read_file_keywords.h"
 
 int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
 	int tokenType = identify_primitive_types(token);

@@ -1,6 +1,7 @@
 /* lib to tokenize strings; */
 
 #include <ctype.h>
+#include "str.h"
 
 const char delimiters[] = {
 ' ', /* espaço em branco; */
@@ -30,32 +31,6 @@ const char delimiters[] = {
 '>', /* GREATER */
 '\0'
 };
-
-char *insert_aspas(char *str, bool aspa_simples){
-	char tipo_aspa = (aspa_simples) ? ('\'') : ('\"');
-	int tam = strlen(str);
-	char *copy = (char*)malloc((tam + 3)* sizeof(char));
-	copy[0] = tipo_aspa;
-	memcpy(copy+1, str, strlen(str));
-	copy[tam+1] = tipo_aspa;
-	copy[tam+2] = '\0';
-	return copy;
-}
-
-bool is_special_char(char c){
-	return ((isalpha(c) == 0) && (c != '_'));
-}
-
-void appendChar(char *str, char ch) {
-	// Find the length of the string
-	int len = strlen(str);
-
-	// Place the character at the end
-	str[len] = ch;
-
-	// Null-terminate the string
-	str[len + 1] = '\0';
-}
 
 /**
  * @brief Call a function for each token found in the input string.
@@ -129,13 +104,4 @@ char** process_tokens(char *s, const char *sep, int *reftam, bool returnDelims)
 
 	if(i > 0) *reftam = i;
 	return strings;
-}
-
-void free_strings(char **strings, int size){
-	// Free memory for each string
-	for (int i = 0; i < size; i++) {
-		free(strings[i]);
-	}
-	// Free memory for the array of pointers
-	free(strings);
 }
