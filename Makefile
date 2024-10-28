@@ -25,7 +25,7 @@ REBUILDABLES = $(OBJS) #$(LINK_TARGET)
 
 FLAGS = -Wall -o
 
-DEPS = earley.h read_grammar.h tokenization.h hashMap.h valid_basic_types.h read_file_code.h verify_ast.h
+DEPS = earley.h read_grammar.h tokenization.h hashMap.h valid_basic_types.h read_file_code.h verify_ast.h read_file_keywords.h
 
 # There are two standard Targets your Makefile should probably have:
 # "all" and "clean", because they are often command-line Goals.
