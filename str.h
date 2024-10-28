@@ -41,7 +41,7 @@ void get_substring(char s[], char sub[], int pos, int len) {
     sub[i] = '\0';
 }
 
-char *insert_aspas(char *str, bool aspa_simples){
+char *insert_aspas(const char *str, bool aspa_simples){
 	char tipo_aspa = (aspa_simples) ? ('\'') : ('\"');
 	int tam = strlen(str);
 	char *copy = (char*)malloc((tam + 3)* sizeof(char));
@@ -50,6 +50,18 @@ char *insert_aspas(char *str, bool aspa_simples){
 	copy[tam+1] = tipo_aspa;
 	copy[tam+2] = '\0';
 	return copy;
+}
+
+/*\/ ; */
+char* str_retirar_aspas(const char *str){
+    if((str[0] == '\'' || str[0] == '\"') && (str[strlen(str)-1] == '\'' || str[strlen(str)-1] == '\"'))
+    {
+        char* word_sasp = (char*)malloc((strlen(str))* sizeof(char));
+        memcpy(word_sasp, str+1, strlen(str)-2);
+        word_sasp[strlen(str)-2] = '\0';
+        return word_sasp;
+    }
+    return NULL;
 }
 
 bool is_special_char(char c){

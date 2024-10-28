@@ -75,6 +75,14 @@ char *get_production(char *s){
     return sub;
 }
 
+/*\/ verificar se string já foi adicionada na estrutura de simbolos; */
+bool if_string_reg(struct grammar_symbols* gsymbols, char *str){
+    char* str_saspas = str_retirar_aspas(str);
+    bool f = (str_saspas != NULL && get(gsymbols->symbolNum, str_saspas) == -1);
+    free(str_saspas);
+    return f;
+}
+
 void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
     /*\/ obter as strings declaradas na production, ou na continuação da production; */
     int len = 0;
@@ -84,7 +92,10 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
             if(strings[i] != NULL){
                 trim(strings[i]);
                 toLower(strings[i]);
-                if(get(gsymbols->symbolNum, strings[i]) == -1){
+                if(
+                    // (get(gsymbols->symbolNum, strings[i]) == -1) &&
+                    (!if_string_reg(gsymbols, strings[i]))
+                ){
                     gsymbols->tokenType++;
                     insert(gsymbols->symbolNum, strings[i], gsymbols->tokenType);
                 }

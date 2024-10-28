@@ -178,7 +178,8 @@ void apply_earley_in_code(char *file_code, const int lang){
 	EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
 
 	// printGraph(ast);
-	printGraphNonTerm(ast, gsymbols);
+	// printGraphNonTerm(ast, gsymbols);
+	// printMap(gsymbols->symbolNum);
 
 	// verify(gsymbols);
 	printf("[%d] Non-Terminals;\n", sizeNonTerm);
