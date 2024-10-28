@@ -154,6 +154,15 @@ void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols) {
     }
 }
 
+/*\/ free dates for struct grammar_symbols; */
+void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
+	free_map(gsymbols->symbolNum);
+	free_map(gsymbols->nonTerminals);
+	deleteAllGraph(gsymbols->grammar);
+	free_strings(gsymbols->keywords_lang, gsymbols->len_keywords);
+	free(gsymbols->grammar);
+}
+
 void apply_earley_in_code(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
@@ -180,8 +189,7 @@ void apply_earley_in_code(char *file_code, const int lang){
 	free(pTokenTypes);
 	deleteAllGraph(ast);
 	free(ast);
-	free_map(gsymbols->symbolNum);
-	free_map(gsymbols->nonTerminals);
-	deleteAllGraph(gsymbols->grammar);
-	free(gsymbols->grammar);
+
+	/*\/ free dates for struct grammar_symbols; */
+	free_dates_grammar_symbols(gsymbols);
 }

@@ -121,6 +121,27 @@ void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *lin
     free_strings(tokens_prod, tam_prod);
 }
 
+void reg_keywords_lang(struct grammar_symbols* gsymbols, const int lang){
+    /*\/ obter as kerwords da linguagem; */
+    int len_keywords = 0;
+    /*\/ no final da execução do projeto, esta memória será liberada; */
+    char **keywords_lang = read_keywords(&len_keywords, lang);
+    /*\/ reg em estrututra geral; */
+    gsymbols->len_keywords = len_keywords;
+    gsymbols->keywords_lang = keywords_lang;
+
+    for(int i=0; i<len_keywords; i++){
+        char* word = keywords_lang[i];
+        if(word != NULL){
+            toLower(word);
+            if(get(gsymbols->symbolNum, word) == -1){
+                gsymbols->tokenType++;
+                insert(gsymbols->symbolNum, word, gsymbols->tokenType);
+            }
+        }
+    }
+}
+
 struct grammar_symbols* read_file_grammar(char* arquivo, const int lang){
     // Create a file pointer and open the file "GFG.txt" in
     // read mode.
@@ -139,10 +160,8 @@ struct grammar_symbols* read_file_grammar(char* arquivo, const int lang){
         gsymbols->grammar = createGraph();
         gsymbols->tokenType = 0;
 
-        int len_keywords = 0;
-		char **keywords_lang = read_keywords(&len_keywords, lang);
-		for(int k=0; k<len_keywords; k++){
-		}
+        /*\/ registrar primeiro as keywords; */
+        reg_keywords_lang(gsymbols, lang);
 
         // Read each line from the file and store it in the
         // 'line' buffer.
