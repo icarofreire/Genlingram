@@ -1,5 +1,6 @@
 /* lib to read file code and apply; */
 #include <stdint.h>
+#include "hashMap.h"
 #include "adjacency-list.h"
 #include "tokenization.h"
 #include "valid_basic_types.h"
@@ -144,7 +145,7 @@ void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols) {
     struct Edge* tempEdge = NULL;
 
     while (tempNode != NULL) {
-        printf("\nNodo %d: ", tempNode->val);
+        printf("\nNodo %d(%s): ", tempNode->val, getKeyByValue(gsymbols->symbolNum, tempNode->val));
         tempEdge = tempNode->edges;
         while (tempEdge) {
             printf(" -> %d(%s)", tempEdge->dest->val, getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val));
@@ -152,6 +153,12 @@ void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols) {
         }
         tempNode = tempNode->next;
     }
+}
+
+void printTokenTypesInput(int *pTokenTypes, int sizePtokenTypes, struct grammar_symbols* gsymbols){
+	for(int i=0; i<sizePtokenTypes; i++){
+		printf("tk-Num: [%d][%s]\n", pTokenTypes[i], getKeyByValue(gsymbols->symbolNum, pTokenTypes[i]));
+	}
 }
 
 /*\/ free dates for struct grammar_symbols; */
@@ -180,6 +187,7 @@ void apply_earley_in_code(char *file_code, const int lang){
 	// printGraph(ast);
 	// printGraphNonTerm(ast, gsymbols);
 	// printMap(gsymbols->symbolNum);
+	printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
 
 	// verify(gsymbols);
 	printf("[%d] Non-Terminals;\n", sizeNonTerm);

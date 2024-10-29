@@ -1,6 +1,5 @@
 /* Lib ler arquivo BNF/EBNF; */
 
-#include "hashMap.h"
 
 const char delimiters_grammar[] = " :|()[]?*+'\"";
 
