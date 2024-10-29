@@ -1,4 +1,5 @@
 /* lib to read file code and apply; */
+
 #include <stdint.h>
 #include "hashMap.h"
 #include "adjacency-list.h"
@@ -22,20 +23,34 @@ int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, co
 	return tokenType;
 }
 
+bool if_token_keyword(struct grammar_symbols* gsymbols, const char *token){
+	char copy[strlen(token)];
+	strcpy(copy, token);
+	toLower(copy);
+	for(int i=0; i<gsymbols->len_keywords; i++){
+		if(strcmp(gsymbols->keywords_lang[i], copy) == 0){
+			return true;
+		}
+	}
+	return false;
+}
 
 int get_identifier_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
-	int tokenType = identify_identifier(token);
-	if(tokenType != -1){
-		switch(lang){
-			case RUBY: tokenType = get(gsymbols->symbolNum, "IDENTIFIER"); break;
-			case PYTHON: tokenType = get(gsymbols->symbolNum, "NAME"); break;
-			case JS: tokenType = get(gsymbols->symbolNum, "Identifier"); break;
+	int tokenType = -1;
+	if(!if_token_keyword(gsymbols, token)){
+		tokenType = identify_identifier(token);
+		if(tokenType != -1){
+			switch(lang){
+				case RUBY: tokenType = get(gsymbols->symbolNum, "IDENTIFIER"); break;
+				case PYTHON: tokenType = get(gsymbols->symbolNum, "NAME"); break;
+				case JS: tokenType = get(gsymbols->symbolNum, "Identifier"); break;
+			}
 		}
 	}
 	return tokenType;
 }
 
-int get_nonTerminals_tokenType_lang(struct grammar_symbols* gsymbols, char *token){
+int get_tokenType_symbols_grammar(struct grammar_symbols* gsymbols, char *token){
 	char *token_aspas_s = insert_aspas(token, true);
 	char *token_aspas_d = insert_aspas(token, false);
 
@@ -95,35 +110,32 @@ void read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int **p
 
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
+				if(strcmp(tokens[i], "") != 0){
+					// printf("tk: [%s]\n", tokens[i]);
 
-				/*\/ identificar literal tokentype; */
-				int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
-				if(tokenType_literal != -1){
-					// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
-					// printf("[%d, %d]\n", *sizePtokenTypes, j++);
-					(*pTokenTypes)[j++] = tokenType_literal;
-					// printf("1tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
-				}
+					/*\/ identificar literal tokentype; */
+					int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
+					if(tokenType_literal != -1){
+						(*pTokenTypes)[j++] = tokenType_literal;
+						// printf("1tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
+					}
 
-				/*\/ identificar identifier tokentype; */
-				// int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
-				// if(tokenType_identifier != -1){
-				// 	// printf("tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
-				// 	// printf("[%d, %d]\n", *sizePtokenTypes, j++);
-				// 	(*pTokenTypes)[j++] = tokenType_identifier;
-				// 	// printf("2tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
-				// }
+					/*\/ identificar identifier tokentype; */
+					int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
+					if(tokenType_identifier != -1){
+						(*pTokenTypes)[j++] = tokenType_identifier;
+						// printf("2tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
+					}
 
-				/*\/ TODO identificar keywords tokentype; */
+					/*\/ TODO identificar keywords tokentype; */
 
-				/*\/ identificar não-terminais tokentype; */
-				int sym = get_nonTerminals_tokenType_lang(gsymbols, tokens[i]);
-				if(sym != -1){
-					// printf("tk: [%s] = [%d]\n", tokens[i], sym);
-					// printf("[%d, %d]\n", *sizePtokenTypes, j++);
-					(*pTokenTypes)[j++] = sym;
-					// printf("3tk: [%s] = [%d]\n", tokens[i], sym);
-				}
+					/*\/ identificar não-terminais tokentype; */
+					int sym = get_tokenType_symbols_grammar(gsymbols, tokens[i]);
+					if(sym != -1){
+						(*pTokenTypes)[j++] = sym;
+						// printf("3tk: [%s] = [%d]\n", tokens[i], sym);
+					}
+				}// fim if;
 			}
 			free_strings(tokens, tam);
 		}
