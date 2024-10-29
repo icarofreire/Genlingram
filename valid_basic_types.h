@@ -83,22 +83,27 @@ bool isInteger(const char* str)
 // Returns 'true' if the string is a REAL NUMBER.
 bool isRealNumber(const char* str)
 {
-	int i, len = strlen(str);
-	bool hasDecimal = false;
+	int len = strlen(str);
 
-	if (len == 0)
+	if (len == 0 || str[0] == '.')
 		return (false);
-	for (i = 0; i < len; i++) {
-		if ((str[i] != '0' && str[i] != '1' && str[i] != '2'
-			&& str[i] != '3' && str[i] != '4' && str[i] != '5'
-			&& str[i] != '6' && str[i] != '7' && str[i] != '8'
-			&& str[i] != '9' && str[i] != '.') ||
-			(str[i] == '-' && i > 0))
-			return (false);
-		if (str[i] == '.')
-			hasDecimal = true;
+
+	int point = 0, neg = 0, dig = 0, dig_pos_point = 0;
+	for (int i = 0; i < len; i++) {
+		int isdig = isdigit(str[i]);
+		if(isdig){
+			dig++;
+		}else if(i == 0 && str[i] == '-'){
+			neg++;
+		}else if(i > 0 && str[i] == '.'){
+			point++;
+		}
+		if(point > 0 && isdig){
+			dig_pos_point++;
+		}
 	}
-	return (hasDecimal);
+
+	return ((neg <= 1) && (point >= 1) && (dig > 0) && (dig_pos_point > 0));
 }
 
 // Returns 'true' if the string is a BINARY NUMBER.

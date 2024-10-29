@@ -115,28 +115,36 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
 				if(strcmp(tokens[i], "") != 0){
-					printf("tk: [%s]\n", tokens[i]);
 
+					int take = 0;
 					/*\/ identificar literal tokentype; */
 					int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
 					if(tokenType_literal != -1){
 						pTokenTypes[j++] = tokenType_literal;
-						// printf("1tk: [%s] = [%d]\n", tokens[i], tokenType_literal);
+						// printf("1tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
+						take = tokenType_literal;
 					}
 
 					/*\/ identificar identifier tokentype; */
 					int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
 					if(tokenType_identifier != -1){
 						pTokenTypes[j++] = tokenType_identifier;
-						// printf("2tk: [%s] = [%d]\n", tokens[i], tokenType_identifier);
+						// printf("2tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_identifier));
+						take = tokenType_identifier;
 					}
 
 					/*\/ identificar não-terminais tokentype; */
 					int sym = get_tokenType_symbols_grammar(gsymbols, tokens[i]);
 					if(sym != -1){
 						pTokenTypes[j++] = sym;
-						// printf("3tk: [%s] = [%d]\n", tokens[i], sym);
+						// printf("3tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, sym));
+						take = sym;
 					}
+
+					if(take > 0){
+						printf("tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, take));
+					}
+
 				}// fim if;
 			}
 			free_strings(tokens, tam);
