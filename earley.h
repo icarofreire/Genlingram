@@ -25,6 +25,12 @@ void print_all_states(struct State *state){
     }
 }
 
+void print_all_states_tokens(struct grammar_symbols* gsymbols, struct State *state){
+    for(int i=0; i<state->max; i++){
+        if(state->states[i] != state->vzero) printf("S: %d(%s)\n", state->states[i], getKeyByValue(gsymbols->symbolNum, state->states[i]) );
+    }
+}
+
 void free_states(struct State *state){
     free(state->states);
     free(state);
@@ -165,7 +171,7 @@ void get_states_production(struct Graph* graph, int state_x, int production[], i
     }
 }
 
-void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int state_p, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast){
+void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols){
     struct State* state = ini();
 
     add_state(state, state_ini_grammar);
@@ -219,5 +225,6 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         con_std_prod = 0;
     }
     // print_all_states(state);
+    print_all_states_tokens(gsymbols, state);
     free_states(state);
 }

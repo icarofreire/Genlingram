@@ -4,8 +4,8 @@
 #include "adjacency-list.h"
 #include "tokenization.h"
 #include "valid_basic_types.h"
-#include "earley.h"
 #include "structs.h"
+#include "earley.h"
 #include "read_file_keywords.h"
 #include "read_grammar.h"
 #include "verify_ast.h"
@@ -17,6 +17,7 @@ int literal_tokenType_grammar_lang(struct grammar_symbols* gsymbols, const int l
 		case RUBY: tokenType = get(gsymbols->symbolNum, "LITERAL"); break;
 		case PYTHON: tokenType = get(gsymbols->symbolNum, "literal_pattern"); break;
 		case JS: tokenType = get(gsymbols->symbolNum, "Literal"); break;
+		case JAVA: tokenType = get(gsymbols->symbolNum, "literal"); break;
 	}
 	return tokenType;
 }
@@ -50,6 +51,7 @@ int get_identifier_tokenType_lang(struct grammar_symbols* gsymbols, char *token,
 				case RUBY: tokenType = get(gsymbols->symbolNum, "IDENTIFIER"); break;
 				case PYTHON: tokenType = get(gsymbols->symbolNum, "NAME"); break;
 				case JS: tokenType = get(gsymbols->symbolNum, "Identifier"); break;
+				case JAVA: tokenType = get(gsymbols->symbolNum, "identifier"); break;
 			}
 		}
 	}
@@ -226,6 +228,17 @@ void printTokenTypesInput(int *pTokenTypes, int sizePtokenTypes, struct grammar_
 	}
 }
 
+int get_ini_nonTerm_grammar(struct grammar_symbols* gsymbols, const int lang){
+	int ini_grammar = -1;
+	switch(lang){
+		case RUBY: ini_grammar = get(gsymbols->nonTerminals, "PROGRAM"); break;
+		case PYTHON: ini_grammar = get(gsymbols->nonTerminals, "statements"); break;
+		case JS: ini_grammar = get(gsymbols->nonTerminals, "Program"); break;
+		case JAVA: ini_grammar = get(gsymbols->nonTerminals, "compilation_unit"); break;
+	}
+	return ini_grammar;
+}
+
 /*\/ free dates for struct grammar_symbols; */
 void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
 	free_map(gsymbols->symbolNum);
@@ -245,7 +258,10 @@ void apply_earley_in_code(char *file_code, const int lang){
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
 
 	struct Graph *ast = createGraph();
-	EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals[0], pNonTerminals, sizeNonTerm, pNonTerminals[0], ast);
+	int ini_grammar = get_ini_nonTerm_grammar(gsymbols, lang);
+	if(ini_grammar != -1){
+		EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols);
+	}
 
 	// printGraph(ast);
 	// printGraphNonTerm(ast, gsymbols);
