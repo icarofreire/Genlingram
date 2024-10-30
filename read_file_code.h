@@ -11,14 +11,20 @@
 #include "read_grammar.h"
 #include "verify_ast.h"
 
+int literal_tokenType_grammar_lang(struct grammar_symbols* gsymbols, const int lang){
+	int tokenType = -1;
+	switch(lang){
+		case RUBY: tokenType = get(gsymbols->symbolNum, "LITERAL"); break;
+		case PYTHON: tokenType = get(gsymbols->symbolNum, "literal_pattern"); break;
+		case JS: tokenType = get(gsymbols->symbolNum, "Literal"); break;
+	}
+	return tokenType;
+}
+
 int get_literal_tokenType_lang(struct grammar_symbols* gsymbols, char *token, const int lang){
 	int tokenType = identify_primitive_types(token);
 	if(tokenType != -1){
-		switch(lang){
-			case RUBY: tokenType = get(gsymbols->symbolNum, "LITERAL"); break;
-			case PYTHON: tokenType = get(gsymbols->symbolNum, "literal_pattern"); break;
-			case JS: tokenType = get(gsymbols->symbolNum, "Literal"); break;
-		}
+		tokenType = literal_tokenType_grammar_lang(gsymbols, lang);
 	}
 	return tokenType;
 }
@@ -73,6 +79,35 @@ int get_tokenType_symbols_grammar(struct grammar_symbols* gsymbols, char *token)
 	return tk;
 }
 
+int veri_string_counter_based(const char *str, int *con_str)
+{
+	int fim = strlen(str);
+	/* \/ por conta do processo de tokenização,
+	uma string grande poderá ter partida em N pedaços.
+	Ex: 'Color Wheel teste mazee', esta string seria dividida em 4 pedaços;
+	*/
+
+	int meio = 0;
+	if(
+		(str[0] == '"' || str[0] == '\'') ||
+		(str[fim-1] == '"' || str[fim-1] == '\'')
+	){
+		(*con_str)++;
+	}else{
+		meio = 1;
+	}
+
+	int part = 0;
+	if(*con_str == 1) part = 1; // << inicio;
+	if(meio == 1 && *con_str == 1) part = 2; // << meio;
+	if(*con_str == 2) { // << fim;
+		part = 3;
+		(*con_str) = 0;
+	}
+
+	return part;
+}
+
 void array_resize(int **items, int *capacity, int plus) {
 	if(plus > 0 && plus >= *capacity){
 		*capacity += plus;
@@ -104,6 +139,8 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 		// Read each line from the file and store it in the
 		// 'line' buffer.
 		int j = 0;
+		int tk_obtidos = 0;
+		int con_str_part = 0;
 		while (fgets(line, sizeof(line), file)) {
 			// Print each line to the standard output.
 
@@ -115,30 +152,49 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
 				if(strcmp(tokens[i], "") != 0){
-
+					tk_obtidos++;
 					int take = 0;
+
+					if(!take){
+						int part = veri_string_counter_based(tokens[i], &con_str_part);
+						if(part >= 1 && part <= 3){
+							// printf("[%s] part [%d] \n", tokens[i], part);
+							int tokenType_literal = literal_tokenType_grammar_lang(gsymbols, lang);
+							if(tokenType_literal != -1){
+								pTokenTypes[j++] = tokenType_literal;
+								take = tokenType_literal;
+							}
+						}
+					}
+
 					/*\/ identificar literal tokentype; */
-					int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
-					if(tokenType_literal != -1){
-						pTokenTypes[j++] = tokenType_literal;
-						// printf("1tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
-						take = tokenType_literal;
+					if(!take){
+						int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
+						if(tokenType_literal != -1){
+							pTokenTypes[j++] = tokenType_literal;
+							// printf("1tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
+							take = tokenType_literal;
+						}
 					}
 
 					/*\/ identificar identifier tokentype; */
-					int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
-					if(tokenType_identifier != -1){
-						pTokenTypes[j++] = tokenType_identifier;
-						// printf("2tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_identifier));
-						take = tokenType_identifier;
+					if(!take){
+						int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
+						if(tokenType_identifier != -1){
+							pTokenTypes[j++] = tokenType_identifier;
+							// printf("2tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_identifier));
+							take = tokenType_identifier;
+						}
 					}
 
 					/*\/ identificar não-terminais tokentype; */
-					int sym = get_tokenType_symbols_grammar(gsymbols, tokens[i]);
-					if(sym != -1){
-						pTokenTypes[j++] = sym;
-						// printf("3tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, sym));
-						take = sym;
+					if(!take){
+						int sym = get_tokenType_symbols_grammar(gsymbols, tokens[i]);
+						if(sym != -1){
+							pTokenTypes[j++] = sym;
+							// printf("3tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, sym));
+							take = sym;
+						}
 					}
 
 					if(take > 0){
@@ -149,6 +205,7 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 			}
 			free_strings(tokens, tam);
 		}
+		if(tk_obtidos == j) printf("[todos os tokens reconhecidos];\n");
 		*reftam = j;
 		// Close the file stream once all lines have been
 		// read.
@@ -209,7 +266,7 @@ void apply_earley_in_code(char *file_code, const int lang){
 	// printGraph(ast);
 	// printGraphNonTerm(ast, gsymbols);
 	// printMap(gsymbols->symbolNum);
-	printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
+	// printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
 
 	// verify(gsymbols);
 	printf("[%d] Non-Terminals;\n", sizeNonTerm);

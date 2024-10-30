@@ -1,0 +1,13 @@
+var x = 5;
+var y = 6;
+var z = x + y;
+
+function update(textBox, n)
+{
+    textBox.value = n;
+    runningTotal = runningTotal + n;
+    runningTotalText.value = runningTotal;
+    for (let i = 1; i <= 3; i++)
+    if (runningTotal + i > 21)
+        choiceButtons[i].disabled = true;
+}

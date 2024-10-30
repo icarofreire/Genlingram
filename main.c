@@ -64,9 +64,9 @@ int main()
 {
 	printf("Genlingram. ;)\n");
 
-	// apply_earley_in_code("testes/code-input.txt", RUBY);
+	apply_earley_in_code("testes/code-input.txt", RUBY);
 	// apply_earley_in_code("testes/AStarSearch.txt", PYTHON);
-	apply_earley_in_code("testes/code-input.txt", JS);
+	// apply_earley_in_code("testes/code-example-js.txt", JS);
 
 	
 	return (0);
