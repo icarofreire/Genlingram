@@ -253,6 +253,7 @@ struct grammar_symbols* read_grammar(const int lang){
         case RUBY: gsymbols = read_file_grammar("grammars/ruby-grammar.txt", lang); break;
         case PYTHON: gsymbols = read_file_grammar("grammars/python-grammar.txt", lang); break;
         case JS: gsymbols = read_file_grammar("grammars/js-grammar.txt", lang); break;
+        case JAVA: gsymbols = read_file_grammar("grammars/java-grammar.txt", lang); break;
     }
     return gsymbols;
 }

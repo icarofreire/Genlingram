@@ -47,6 +47,7 @@ char **read_keywords(int *reftam, const int lang){
         case RUBY: strings = read_file_keywords("grammars/ruby-keywords.txt", reftam); break;
         case PYTHON: strings = read_file_keywords("grammars/python-keywords.txt", reftam); break;
         case JS: strings = read_file_keywords("grammars/js-keywords.txt", reftam); break;
+        case JAVA: strings = read_file_keywords("grammars/java-keywords.txt", reftam); break;
     }
     return strings;
 }

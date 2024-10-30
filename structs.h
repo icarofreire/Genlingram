@@ -19,5 +19,6 @@ struct grammar_symbols {
 enum languages{
     PYTHON,
     RUBY,
-    JS
+    JS,
+    JAVA
 };
