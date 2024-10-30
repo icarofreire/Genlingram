@@ -1,6 +1,5 @@
 /* lib to read file code and apply; */
 
-#include <stdint.h>
 #include "hashMap.h"
 #include "adjacency-list.h"
 #include "tokenization.h"
