@@ -10,6 +10,7 @@
 #include "read_file_keywords.h"
 #include "read_grammar.h"
 #include "verify_ast.h"
+#include "scan_spaced_things.h"
 
 int literal_tokenType_grammar_lang(struct grammar_symbols* gsymbols, const int lang){
 	int tokenType = -1;
@@ -79,35 +80,6 @@ int get_tokenType_symbols_grammar(struct grammar_symbols* gsymbols, char *token)
 	return tk;
 }
 
-int veri_string_counter_based(const char *str, int *con_str)
-{
-	int fim = strlen(str);
-	/* \/ por conta do processo de tokenização,
-	uma string grande poderá ter partida em N pedaços.
-	Ex: 'Color Wheel teste mazee', esta string seria dividida em 4 pedaços;
-	*/
-
-	int meio = 0;
-	if(
-		(str[0] == '"' || str[0] == '\'') ||
-		(str[fim-1] == '"' || str[fim-1] == '\'')
-	){
-		(*con_str)++;
-	}else{
-		meio = 1;
-	}
-
-	int part = 0;
-	if(*con_str == 1) part = 1; // << inicio;
-	if(meio == 1 && *con_str == 1) part = 2; // << meio;
-	if(*con_str == 2) { // << fim;
-		part = 3;
-		(*con_str) = 0;
-	}
-
-	return part;
-}
-
 void array_resize(int **items, int *capacity, int plus) {
 	if(plus > 0 && plus >= *capacity){
 		*capacity += plus;
@@ -140,7 +112,10 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 		// 'line' buffer.
 		int j = 0;
 		int tk_obtidos = 0;
+		/*\/ para detectar strings espaçadas; */
 		int con_str_part = 0;
+		/*\/ para detectar comentários; */
+		int con_comment_part = 0, ncoment = 0;
 		while (fgets(line, sizeof(line), file)) {
 			// Print each line to the standard output.
 
@@ -152,18 +127,27 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
 				if(strcmp(tokens[i], "") != 0){
+					// printf("tk: [%s]\n", tokens[i]);
 					tk_obtidos++;
 					int take = 0;
 
 					if(!take){
 						int part = veri_string_counter_based(tokens[i], &con_str_part);
 						if(part >= 1 && part <= 3){
-							// printf("[%s] part [%d] \n", tokens[i], part);
 							int tokenType_literal = literal_tokenType_grammar_lang(gsymbols, lang);
 							if(tokenType_literal != -1){
 								pTokenTypes[j++] = tokenType_literal;
+								// printf("4tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
 								take = tokenType_literal;
 							}
+						}
+					}
+
+					/*\/ detect comment; */
+					if(!take){
+						int part = veri_comment_counter_based(tokens[i], &con_comment_part);
+						if((part >= 1 && part <= 3) || veri_comment_ini_line(tokens[i])){
+							ncoment++;
 						}
 					}
 
@@ -205,7 +189,8 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 			}
 			free_strings(tokens, tam);
 		}
-		if(tk_obtidos == j) printf("[todos os tokens reconhecidos];\n");
+		if(tk_obtidos == (j+ncoment)) printf("[todos os tokens reconhecidos];\n");
+		// printf("tt: [%d, %d, %d]\n", tk_obtidos, j, ncoment);
 		*reftam = j;
 		// Close the file stream once all lines have been
 		// read.
