@@ -206,31 +206,50 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 	return NULL;
 }
 
-/*\/ imprimir o ast como forma de debug;
-@in_file: true para criar arquivo .dot e poder criar o grafo;
-comando para criar a imagem do grafo: $ dot -Tjpg ast.dot > ast.jpg
-*/
-void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols, bool in_file) {
+void printGraphNonTerm(struct Graph* graph, struct grammar_symbols* gsymbols) {
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
-
-	FILE *fptr;
-   	if(in_file) fptr = fopen("ast.dot","w");
-	if(in_file) fprintf(fptr,"digraph G {\n");
 
     while (tempNode != NULL) {
         printf("\nNodo %d(%s): ", tempNode->val, getKeyByValue(gsymbols->symbolNum, tempNode->val));
         tempEdge = tempNode->edges;
         while (tempEdge) {
             printf(" -> %d(%s)", tempEdge->dest->val, getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val));
-			if(in_file){
-				fprintf(fptr,"\"%s\" -> \"%s\"\n", getKeyByValue(gsymbols->symbolNum, tempNode->val), getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val) );
-			}
             tempEdge = tempEdge->next;
         }
         tempNode = tempNode->next;
     }
-	if(in_file) fprintf(fptr,"}\n");
+}
+
+/*\/ Criar arquivo .dot com dados do grafo para
+poder gerar uma imagem do grafo; 
+criar arquivo .dot e poder criar o grafo(Graphviz);
+# instalar Graphviz:
+https://graphviz.org/download/
+$ sudo apt install graphviz
+
+# comando para criar a imagem do grafo:
+$ dot -Tjpg ast.dot > ast.jpg
+https://graphviz.org/doc/info/command.html
+*/
+void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols) {
+    struct Node* tempNode = graph->head;
+    struct Edge* tempEdge = NULL;
+
+	FILE *fptr;
+   	fptr = fopen("ast.dot","w");
+	if(fptr == NULL) return;
+	fprintf(fptr,"digraph G {\n");
+
+    while (tempNode != NULL) {
+        tempEdge = tempNode->edges;
+        while (tempEdge) {
+			fprintf(fptr,"\"%s\" -> \"%s\"\n", getKeyByValue(gsymbols->symbolNum, tempNode->val), getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val) );
+            tempEdge = tempEdge->next;
+        }
+        tempNode = tempNode->next;
+    }
+	fprintf(fptr,"}\n");
 }
 
 void printTokenTypesInput(int *pTokenTypes, int sizePtokenTypes, struct grammar_symbols* gsymbols){
@@ -275,7 +294,8 @@ void apply_earley_in_code(char *file_code, const int lang){
 	}
 
 	// printGraph(ast);
-	printGraphNonTerm(ast, gsymbols, true);
+	// printGraphNonTerm(ast, gsymbols);
+	create_file_dot_graph(ast, gsymbols);
 	// printMap(gsymbols->symbolNum);
 	// printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
 

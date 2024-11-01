@@ -132,7 +132,8 @@ int get_NonTerm(struct Graph* graph, int state_x) {
 void COMPLETER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast) {
     // printf("COMPLETER:\n");
     for(int i=1; i<state->max; i++){
-        if(state->states[i] != state->vzero){
+        // if(state->states[i] != state->vzero){
+        if(state->states[i] == state_x){
             PREDICTOR(graph, state, state->states[i], nonTerminals, max_nonTer, ast);
         }
     }
@@ -225,6 +226,6 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         con_std_prod = 0;
     }
     // print_all_states(state);
-    print_all_states_tokens(gsymbols, state);
+    // print_all_states_tokens(gsymbols, state);
     free_states(state);
 }
