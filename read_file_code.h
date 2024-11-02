@@ -239,7 +239,10 @@ void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols
 	FILE *fptr;
    	fptr = fopen("ast.dot","w");
 	if(fptr == NULL) return;
-	fprintf(fptr,"digraph G {\n");
+	fprintf(fptr,"digraph {\n");
+	fprintf(fptr,"overlap=prism\n");
+	fprintf(fptr,"rankdir=\"LR\"\n");
+	fprintf(fptr,"splines=curved\n");
 
     while (tempNode != NULL) {
         tempEdge = tempNode->edges;
