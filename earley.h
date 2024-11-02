@@ -81,6 +81,31 @@ void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTer
     }
 }
 
+void PREDICTOR_COMPLETE(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast) {
+    // printf("PREDICTOR: %d\n", state_x);
+    struct Node* tempNode = graph->head;
+    struct Edge* tempEdge = NULL;
+
+    while (tempNode != NULL) {
+        // printf("\nNodo %d: ", tempNode->val);
+        tempEdge = tempNode->edges;
+        while (tempEdge) {
+            // printf(" -> %d", tempEdge->dest->val);
+            if( tempEdge->dest->val == state_x && state_is_a_nonterminal(nonTerminals, max_nonTer, tempNode->val) == 1){
+                // printf("PREDICTOR %d to %d;\n", state_x, tempNode->val);
+                // add_state(state, tempNode->val);
+
+                /*\/ criando os vertices e arestas do ast; */
+                insertNode(ast, state_x);
+                insertNode(ast, tempNode->val);
+                insertEdge(ast, tempNode->val, state_x);
+            }
+            tempEdge = tempEdge->next;
+        }
+        tempNode = tempNode->next;
+    }
+}
+
 void get_states_production(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod);
 
 void PREDICTOR2(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod, int *idx_production) {
@@ -139,6 +164,15 @@ void COMPLETER(struct Graph* graph, struct State *state, int state_x, int nonTer
     }
 }
 
+void COMPLETER2(struct Graph* graph, struct State *state, int *colum, int production[], int con_std_prod, int nonTerminals[], int max_nonTer, struct Graph *ast) {
+    for(int j=*colum; j<state->max; j++){
+        if(state->states[j] != state->vzero){
+            PREDICTOR_COMPLETE(graph, state, state->states[j], nonTerminals, max_nonTer, ast);
+            *colum=j;
+        }
+    }
+}
+
 void get_states_production(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod) {
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
@@ -177,11 +211,11 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
 
     add_state(state, state_ini_grammar);
 
-    int max_production = 100;
+    int max_production = 200;
     int production[max_production];
     int con_std_prod = 0;
     for(int i=0; i<max_production; i++) production[i] = -1;
-
+    int k = 0;
     for(int i=0; i<len_tokens_input; i++){
 
         get_states_production(graph, tokens_input[i], production, max_production, &con_std_prod);
@@ -217,7 +251,8 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         // printf("];\n");
         // print_all_states(state);
 
-        COMPLETER(graph, state, act_state, nonTerminals, max_nonTer, ast);
+        // COMPLETER(graph, state, act_state, nonTerminals, max_nonTer, ast);
+        COMPLETER2(graph, state, &k, production, con_std_prod, nonTerminals, max_nonTer, ast);
         // print_all_states(state);
 
         // printf("***\n\n");

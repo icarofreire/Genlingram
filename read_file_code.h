@@ -247,7 +247,13 @@ void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols
     while (tempNode != NULL) {
         tempEdge = tempNode->edges;
         while (tempEdge) {
-			fprintf(fptr,"\"%s\" -> \"%s\"\n", getKeyByValue(gsymbols->symbolNum, tempNode->val), getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val) );
+			char *a = getKeyByValue(gsymbols->symbolNum, tempNode->val);
+			char *b = getKeyByValue(gsymbols->symbolNum, tempEdge->dest->val);
+
+			char *sl = "";
+			if(strcmp(b, "\"") == 0) sl = "\\";
+
+			fprintf(fptr,"\"%s\" -> \"%s%s\"\n", a, sl, b );
             tempEdge = tempEdge->next;
         }
         tempNode = tempNode->next;
@@ -303,7 +309,7 @@ void apply_earley_in_code(char *file_code, const int lang){
 	// printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
 
 	// verify(gsymbols);
-	printf("[%d] Non-Terminals;\n", sizeNonTerm);
+	// printf("[%d] Non-Terminals;\n", sizeNonTerm);
 	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
 
 
