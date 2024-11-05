@@ -198,6 +198,32 @@ void deleteAllGraph(struct Graph* graph) {
     }
 }
 
+int removeEdge(struct Graph* graph, int src, int dest) {
+    struct Node* origNode = getNode(graph, src);
+    struct Node* destNode = getNode(graph, dest);
+    if (origNode != NULL && destNode != NULL && isAdjacent(graph, src, dest)){
+            struct Edge* tempEdge = origNode->edges, *prev = NULL;
+            while (tempEdge) {
+                if(tempEdge->dest->val == dest){
+                    if(prev != NULL){
+                        prev->next = tempEdge->next;// Unlink the node from linked list
+                        free(tempEdge);
+                    }else{
+                        origNode->edges = tempEdge->next;// Changed head
+                        free(tempEdge);
+                    }
+                    return 1;
+                }else{
+                    prev = tempEdge;
+                }
+                tempEdge = tempEdge->next;
+            }
+    }else{
+        return -1;
+    }
+    return -1;
+}
+
 /* ***
  * example;
  * */
