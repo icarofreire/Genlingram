@@ -24,8 +24,17 @@ int get_tokenType_token(struct grammar_symbols* gsymbols, char *token){
     return tk;
 }
 
+int get_NonTerm_token(struct grammar_symbols* gsymbols, struct Graph* ast, char *token){
+    int tk = get(gsymbols->symbolNum, token);
+    if(tk != -1 && getNode(ast, tk) != NULL){
+        int nonTerm = get_NonTerm(ast, tk);
+        return nonTerm;
+    }
+    return -1;
+}
+
 /*\/ criar exemplos de verificação de regras; */
-void verify(struct grammar_symbols* gsymbols){
+void verify(struct grammar_symbols* gsymbols, struct Graph* ast){
 
     int tk = get(gsymbols->symbolNum, "STMT");
     if(tk != -1 && getNode(gsymbols->grammar, tk) != NULL){
@@ -37,5 +46,11 @@ void verify(struct grammar_symbols* gsymbols){
     }
 
     /** ... */
+
+    int tk_if = get_NonTerm_token(gsymbols, ast, "if");
+    int tk_ig = get(gsymbols->symbolNum, "=");
+    int is = isPath(ast, tk_if, tk_ig);
+    printf("[%d, %d]\n", tk_if, tk_ig);
+    printf("path: [%d]\n", is);
 
 }

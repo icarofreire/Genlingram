@@ -10,6 +10,7 @@
 #include "read_grammar.h"
 #include "verify_ast.h"
 #include "scan_spaced_things.h"
+#include "n-ary-tree.h"
 
 int literal_tokenType_grammar_lang(struct grammar_symbols* gsymbols, const int lang){
 	int tokenType = -1;
@@ -308,7 +309,7 @@ void apply_earley_in_code(char *file_code, const int lang){
 	// printMap(gsymbols->symbolNum);
 	// printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
 
-	// verify(gsymbols);
+	verify(gsymbols, ast);
 	// printf("[%d] Non-Terminals;\n", sizeNonTerm);
 	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
 

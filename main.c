@@ -59,6 +59,91 @@ void teste_earley(){
 	// printGraph(ast);
 }
 
+void testeGRaph(){
+	struct Graph* G2 = createGraph();
+
+insertNode(G2, 0);
+insertNode(G2, 1);
+insertNode(G2, 2);
+insertNode(G2, 3);
+insertNode(G2, 4);
+insertNode(G2, 5);
+insertNode(G2, 6);
+insertNode(G2, 7);
+insertNode(G2, 8);
+insertNode(G2, 9);
+insertNode(G2, 10);
+insertNode(G2, 11);
+insertNode(G2, 12);
+insertNode(G2, 13);
+
+// ***
+
+insertEdge(G2, 3, 1);
+insertEdge(G2, 1, 0);
+insertEdge(G2, 3, 7);
+insertEdge(G2, 7, 9);
+insertEdge(G2, 3, 4);
+insertEdge(G2, 3, 2);
+insertEdge(G2, 4, 5);
+insertEdge(G2, 4, 12);
+insertEdge(G2, 4, 8);
+insertEdge(G2, 12, 13);
+insertEdge(G2, 2, 10);
+insertEdge(G2, 2, 6);
+insertEdge(G2, 10, 11);
+
+removeEdge(G2, 10, 11);
+// removeEdge(G2, 3, 2);
+
+printGraph(G2);
+}
+
+void	exampleB()
+{
+	printf("\e[4mExample B:\e[0m\n");
+	/*
+	 *     o  
+	 *   / |
+	 *  o  o
+	 *   / | \
+	 *  o  o  o
+	 *    /  / \
+	 *   o  o   o
+	 */
+	Leaf *n;
+	
+	n = leafNew(1);
+	if (! leafAppend(n, leafNew(89)) ||
+		! leafAppend(n, leafNew(99)) ||
+		! leafAppend(findLeafFromRootIterative(n, 99), leafNew(1)) ||
+		! leafAppend(findLeafFromRootIterative(n, 99), leafNew(2)) ||
+		! leafAppend(findLeafFromRootIterative(n, 99), leafNew(3)) ||
+		! leafAppend(findLeafFromRootIterative(n, 2), leafNew(31)) //||
+		// ! leafAppend(findLeafFromRootIterative(n, 3), leafNew(42)) ||
+		// ! leafAppend(findLeafFromRootIterative(n, 3), leafNew(42))
+		)
+		{
+			leafDestroy(n);
+		}
+	if (! n)
+	{
+		printf("Error during tree initialization!\n");
+		return;
+	}
+	// leafPrint("n", n);
+	// leafPrint("n->children->next", n->children->next);
+	// printf(" \e[4mtotal:\e[0m %d\n", leafTotal(n));
+
+	// leafAppend(n->children, leafNew(11));
+	// correrFilhos(leafFind(n, "child1-1"));
+	// correrFilhos(leafFind(n, "child1-2"));
+	// correrFilhos(n->children->next->children->next->next);
+	printTree(n);
+
+	leafDestroy(n);
+}
+
 // DRIVER FUNCTION
 int main()
 {
