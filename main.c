@@ -114,32 +114,25 @@ void	exampleB()
 	Leaf *n;
 	
 	n = leafNew(1);
-	if (! leafAppend(n, leafNew(89)) ||
-		! leafAppend(n, leafNew(99)) ||
-		! leafAppend(findLeafFromRootIterative(n, 99), leafNew(1)) ||
-		! leafAppend(findLeafFromRootIterative(n, 99), leafNew(2)) ||
-		! leafAppend(findLeafFromRootIterative(n, 99), leafNew(3)) ||
-		! leafAppend(findLeafFromRootIterative(n, 2), leafNew(31)) //||
-		// ! leafAppend(findLeafFromRootIterative(n, 3), leafNew(42)) ||
-		// ! leafAppend(findLeafFromRootIterative(n, 3), leafNew(42))
-		)
-		{
-			leafDestroy(n);
-		}
-	if (! n)
-	{
-		printf("Error during tree initialization!\n");
-		return;
-	}
-	// leafPrint("n", n);
-	// leafPrint("n->children->next", n->children->next);
-	// printf(" \e[4mtotal:\e[0m %d\n", leafTotal(n));
+	leafAppend(n, leafNew(89));
+	// leafAppend(findLeafFromRootIterative(n, 89), leafNew(33));
+	leafAppend(n, leafNew(99));
+	leafAppend(findLeafFromRootIterative(n, 99), leafNew(1));
+	leafAppend(findLeafFromRootIterative(n, 99), leafNew(2));
+	leafAppend(findLeafFromRootIterative(n, 99), leafNew(3));
+	leafAppend(findLeafFromRootIterative(n, 2), leafNew(31));
+	// leafAppend(findLeafFromRootIterative(n, 89), leafNew(3));
+	leafAppend(findLeafFromRootIterative(n, 31), leafNew(42));
 
-	// leafAppend(n->children, leafNew(11));
-	// correrFilhos(leafFind(n, "child1-1"));
-	// correrFilhos(leafFind(n, "child1-2"));
-	// correrFilhos(n->children->next->children->next->next);
 	printTree(n);
+	// printf("se filho [%d]\n", ifLeafIsChildren(n, 2, 31));
+	// printf("ult filho [%d]\n", findLastLeafFromRootIterative(n, 31)->data);
+	// printf("f: [%d]\n", findLeafFromRoot(n, 99)->data );
+	// printf("f: [%d]\n", findLeafFromRoot(n, 89)->data );
+	printf("f: [%d]\n", findLastLeafFromRootIterative(n, 31)->data );
+	printf("f: [%d]\n", findLeafFromRoot(n, 31)->data );
+	// printLeafs(findLastLeafFromRootIterative(n, 31));
+
 
 	leafDestroy(n);
 }
@@ -151,10 +144,11 @@ int main()
 
 	// apply_earley_in_code("testes/code-input.txt", RUBY);
 	// apply_earley_in_code("testes/AStarSearch.txt", PYTHON);
-	apply_earley_in_code("testes/code-example-js.txt", JS);
+	// apply_earley_in_code("testes/code-example-js.txt", JS);
 	// apply_earley_in_code("testes/code-js-2.txt", JS);
 	// apply_earley_in_code("testes/prisioners-js.txt", JS);
-
+	// testeGRaph();
+	exampleB();
 	
 	return (0);
 }

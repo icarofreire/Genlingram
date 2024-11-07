@@ -181,10 +181,10 @@ Leaf*	leafFind(Leaf *leaf, int data)
 		// return leaf;
     if (compareInts(data, leaf->data))
 		return leaf;
+    if (leaf->children)
+		return leafFind(leaf->children, data);
 	if (leaf->next)
 		return leafFind(leaf->next, data);
-	if (leaf->children)
-		return leafFind(leaf->children, data);
 	return NULL;
 }
 
@@ -209,6 +209,24 @@ Leaf*	findLeafFromRootIterative(Leaf *leaf, int data)
         root = (root->children) ? (root->children->next) : (NULL);
     }
     return NULL;
+}
+
+Leaf*	findLastLeafFromRootIterative(Leaf *leaf, int data)
+{
+    Leaf* last_child = NULL;
+    Leaf* child = NULL;
+    Leaf* root = leafRoot(leaf);
+    while(root){
+        child = root->children;
+        while (child){
+            if(child->data == data){
+                last_child = child;
+            }
+            child = child->next;
+        }
+        root = (root->children) ? (root->children->next) : (NULL);
+    }
+    return last_child;
 }
 
 Leaf*	leafNthChild(Leaf *leaf, int n)
@@ -293,4 +311,10 @@ void printTree(Leaf *leaf){
 void leafAppendFromData(Leaf *leaf, int data, int data_new_leaf){
     Leaf* root = leafRoot(leaf);
     leafAppend(findLeafFromRootIterative(root, data), leafNew(data_new_leaf));
+}
+
+bool ifLeafIsChildren(Leaf *leaf, int data_leaf_pai, int data_children){
+    Leaf* root = leafRoot(leaf);
+    Leaf* child = findLastLeafFromRootIterative(root, data_children);
+    return (child && child->parent && child->parent->data == data_leaf_pai);
 }
