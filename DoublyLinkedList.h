@@ -81,6 +81,10 @@ struct NodeDLL* insertEnd(struct NodeDLL *head, int new_data) {
     return head;
 }
 
+void append(struct NodeDLL **head, int new_data) {
+    *head = insertEnd(*head, new_data);
+}
+
 // Function to insert a new node at a given position
 struct NodeDLL* insertAtPosition(struct NodeDLL *head, int pos, int new_data) {
     // Create a new node
@@ -280,7 +284,7 @@ struct NodeDLL * delPos(struct NodeDLL * head, int pos) {
        if (head == curr)
                head = curr -> next;
 
-       free(curr->data);
+    //    free(curr->data);
     // Deallocate memory for the deleted node
     free(curr);
     return head;
@@ -307,7 +311,7 @@ void deleteNode(struct NodeDLL** head_ref, struct NodeDLL* del)
        if (del->prev != NULL) 
                del->prev->next = del->next; 
   
-       free(del->data);
+    //    free(del->data);
     /* Finally, free the memory occupied by del*/
     free(del);
 }
@@ -328,7 +332,21 @@ void deleteAllNodes(struct NodeDLL** head_ref)
 void printList(struct NodeDLL *head) {
     struct NodeDLL *curr = head;
     while (curr != NULL) {
-        printf(" %d", curr->data);
+        printf("%d -> ", curr->data);
+        curr = curr->next;
+    }
+    printf("\n");
+}
+
+void printListAndChildrens(struct NodeDLL *head) {
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        printf("[%d]:\n", curr->data);
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1) printf("%d -> ", curr->children_datas[i]);
+            }printf("\n");
+        }
         curr = curr->next;
     }
     printf("\n");
@@ -381,7 +399,9 @@ void backwardTraversal(struct NodeDLL* tail) {
 void add_date_for_array(struct NodeDLL *nodeDLL, int new_data){
     int idx_vago = -1;
     for(int i=0; i<nodeDLL->len_children_datas; i++){
-        if(nodeDLL->children_datas[i] == -1){
+        if(nodeDLL->children_datas[i] == new_data){
+            return;
+        }else if(nodeDLL->children_datas[i] == -1){
             idx_vago = i; break;
         }
     }
@@ -391,7 +411,7 @@ void add_date_for_array(struct NodeDLL *nodeDLL, int new_data){
         nodeDLL->children_datas[idx_vago] = new_data;
     }else{
         /*\/ adicionar mais 1 capacidade ao array; */
-        array_plus_size(&nodeDLL->children_datas, nodeDLL->len_children_datas, 1);
+        array_plus_size(&nodeDLL->children_datas, &nodeDLL->len_children_datas, 1);
         /*\/ add o dado como o ultimo; */
         nodeDLL->children_datas[nodeDLL->len_children_datas-1] = new_data;
     }
