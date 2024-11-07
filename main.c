@@ -101,40 +101,20 @@ printGraph(G2);
 
 void	exampleB()
 {
-	printf("\e[4mExample B:\e[0m\n");
-	/*
-	 *     o  
-	 *   / |
-	 *  o  o
-	 *   / | \
-	 *  o  o  o
-	 *    /  / \
-	 *   o  o   o
-	 */
-	Leaf *n;
-	
-	n = leafNew(1);
-	leafAppend(n, leafNew(89));
-	// leafAppend(findLeafFromRootIterative(n, 89), leafNew(33));
-	leafAppend(n, leafNew(99));
-	leafAppend(findLeafFromRootIterative(n, 99), leafNew(1));
-	leafAppend(findLeafFromRootIterative(n, 99), leafNew(2));
-	leafAppend(findLeafFromRootIterative(n, 99), leafNew(3));
-	leafAppend(findLeafFromRootIterative(n, 2), leafNew(31));
-	// leafAppend(findLeafFromRootIterative(n, 89), leafNew(3));
-	leafAppend(findLeafFromRootIterative(n, 31), leafNew(42));
+	// 1 <-> 2 <-> 3
+    struct NodeDLL *head = createNodeDLL(1);
+	append(&head, 2);
+	append(&head, 3);
 
-	printTree(n);
-	// printf("se filho [%d]\n", ifLeafIsChildren(n, 2, 31));
-	// printf("ult filho [%d]\n", findLastLeafFromRootIterative(n, 31)->data);
-	// printf("f: [%d]\n", findLeafFromRoot(n, 99)->data );
-	// printf("f: [%d]\n", findLeafFromRoot(n, 89)->data );
-	printf("f: [%d]\n", findLastLeafFromRootIterative(n, 31)->data );
-	printf("f: [%d]\n", findLeafFromRoot(n, 31)->data );
-	// printLeafs(findLastLeafFromRootIterative(n, 31));
+	add_date_in_array_node(head, 2, 55);
+	add_date_in_array_node(head, 3, 56);
+	add_date_in_array_node(head, 3, 57);
 
+	append(&head, 55);
+	add_date_in_array_node(head, 55, 99);
 
-	leafDestroy(n);
+	// printList(head);
+	printListAndChildrens(head);
 }
 
 // DRIVER FUNCTION
@@ -144,11 +124,11 @@ int main()
 
 	// apply_earley_in_code("testes/code-input.txt", RUBY);
 	// apply_earley_in_code("testes/AStarSearch.txt", PYTHON);
-	// apply_earley_in_code("testes/code-example-js.txt", JS);
+	apply_earley_in_code("testes/code-example-js.txt", JS);
 	// apply_earley_in_code("testes/code-js-2.txt", JS);
 	// apply_earley_in_code("testes/prisioners-js.txt", JS);
 	// testeGRaph();
-	exampleB();
+	// exampleB();
 	
 	return (0);
 }

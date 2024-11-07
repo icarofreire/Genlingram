@@ -424,9 +424,6 @@ void add_date_in_array_node(struct NodeDLL* head, int key, int new_data){
     }
 }
 
-/**********************************************************************/
-/*** buscas customizadas; ***/
-
 struct NodeDLL* searchForwardNodeByIndex(struct NodeDLL* head, int index) {
 
     // Start traversal from the tail of the list
@@ -446,4 +443,53 @@ struct NodeDLL* searchForwardNodeByIndex(struct NodeDLL* head, int index) {
 
     // If there is no node with value as key, return false
     return NULL;
+}
+
+/*\/ detectar caminho por busca em largura(BFS); */
+int isPathInDLL(struct NodeDLL* head, int src, int dest) {
+    struct NodeDLL* origNode = searchNodeByKey(head, src);
+    struct NodeDLL* destNode = searchNodeByKey(head, dest);
+    if (origNode == NULL || destNode == NULL) return -1;
+
+    int max = 1000;
+    int visited[max];
+    for(int i=0; i<max; i++){
+        visited[i] = 0;
+    }
+
+    int nthp = 0;
+    visited[nthp] = src;
+    nthp++;
+
+    for(int i=0; i<nthp; i++){
+        if(visited[i] > 0){
+
+            origNode = searchNodeByKey(head, visited[i]);
+            for(int k=0; k<origNode->len_children_datas; k++){
+                int filho = origNode->children_datas[k];
+                if(filho != -1){
+
+                    if(filho == destNode->data){
+                        return 1;
+                    }else{
+                        /*\/ verificar presença na pilha de visitados; */
+                        int rep = 0;
+                        for(int v=0; v<nthp; v++){
+                            if(visited[v] == filho){
+                                rep = 1; break;
+                            }
+                        }
+
+                        /*\/ adiciona o valor não-visitado na pilha; */
+                        if(rep == 0){
+                            visited[nthp] = filho;
+                            nthp++;
+                        }
+                    }
+                }
+            }// fim for;
+        }
+    }
+
+    return -1;
 }
