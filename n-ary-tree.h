@@ -206,7 +206,7 @@ Leaf*	findLeafFromRootIterative(Leaf *leaf, int data)
             }
             child = child->next;
         }
-        root = root->children->next;
+        root = (root->children) ? (root->children->next) : (NULL);
     }
     return NULL;
 }
@@ -286,7 +286,7 @@ void printTree(Leaf *leaf){
     Leaf* root = leafRoot(leaf);
     while(root){
 	    printLeafs(root);
-        root = root->children->next;
+        root = (root->children) ? (root->children->next) : (NULL);
     }
 }
 
