@@ -493,3 +493,36 @@ int isPathInDLL(struct NodeDLL* head, int src, int dest) {
 
     return -1;
 }
+
+/*\/ verificar se todos os tokens de entrada são alcançáveis por algum nó da arvore; */
+struct NodeDLL *reduce_tree(struct NodeDLL *head, int *pTokenTypes, int sizePtokenTypes) {
+    struct NodeDLL *reduceTree = createNodeDLL(0);
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        int pai = curr->data;
+        if(curr->len_children_datas > 0){
+            int npath = 0;
+            for(int k=0; k<sizePtokenTypes; k++){
+                int is_path = isPathInDLL(head, pai, pTokenTypes[k]);
+                if(is_path == 1){
+                    npath++;
+                }
+            }
+            // printf("path [%d, %d]\n", npath, sizePtokenTypes );
+            if(npath == sizePtokenTypes){
+                for(int k=0; k<sizePtokenTypes; k++){
+                    int token = pTokenTypes[k];
+                    if(!searchNodeByKey(reduceTree, pai)){
+                        append(&reduceTree, pai);
+                    }
+                    if(!searchNodeByKey(reduceTree, token)){
+                        append(&reduceTree, token);
+                    }
+                    add_date_in_array_node(reduceTree, pai, token);
+                }
+            }
+        }
+        curr = curr->next;
+    }
+    return reduceTree;
+}

@@ -34,7 +34,7 @@ int get_NonTerm_token(struct grammar_symbols* gsymbols, struct Graph* ast, char 
 }
 
 /*\/ criar exemplos de verificação de regras; */
-void verify(struct grammar_symbols* gsymbols, struct Graph* ast){
+void verify(struct grammar_symbols* gsymbols, struct Graph* ast, struct NodeDLL *tree){
 
     int tk = get(gsymbols->symbolNum, "STMT");
     if(tk != -1 && getNode(gsymbols->grammar, tk) != NULL){
@@ -49,7 +49,8 @@ void verify(struct grammar_symbols* gsymbols, struct Graph* ast){
 
     int tk_if = get_NonTerm_token(gsymbols, ast, "if");
     int tk_ig = get(gsymbols->symbolNum, "=");
-    int is = isPath(ast, tk_if, tk_ig);
+    // int is = isPath(ast, tk_if, tk_ig);
+    int is = isPathInDLL(tree, tk_if, tk_ig);
     printf("[%d, %d]\n", tk_if, tk_ig);
     printf("path: [%d]\n", is);
 

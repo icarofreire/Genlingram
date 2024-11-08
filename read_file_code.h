@@ -2,6 +2,7 @@
 
 #include "hashMap.h"
 #include "adjacency-list.h"
+#include "DoublyLinkedList.h"
 #include "tokenization.h"
 #include "valid_basic_types.h"
 #include "structs.h"
@@ -10,7 +11,6 @@
 #include "read_grammar.h"
 #include "verify_ast.h"
 #include "scan_spaced_things.h"
-#include "n-ary-tree.h"
 
 int literal_tokenType_grammar_lang(struct grammar_symbols* gsymbols, const int lang){
 	int tokenType = -1;
@@ -262,6 +262,36 @@ void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols
 	fprintf(fptr,"}\n");
 }
 
+/*\/ criar arquivo .dot a partir da arvore em DLL; */
+void create_file_dot_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head) {
+
+	FILE *fptr;
+   	fptr = fopen("tree.dot","w");
+	if(fptr == NULL) return;
+	fprintf(fptr,"digraph {\n");
+	fprintf(fptr,"overlap=prism\n");
+	fprintf(fptr,"rankdir=\"LR\"\n");
+	fprintf(fptr,"splines=curved\n");
+	
+	struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1){
+					char *a = getKeyByValue(gsymbols->symbolNum, curr->data);
+					char *b = getKeyByValue(gsymbols->symbolNum, curr->children_datas[i]);
+					char *sl = "";
+					if(strcmp(b, "\"") == 0) sl = "\\";
+					fprintf(fptr,"\"%s\" -> \"%s%s\"\n", a, sl, b );
+				}
+            }
+        }
+        curr = curr->next;
+    }
+
+	fprintf(fptr,"}\n");
+}
+
 void printTokenTypesInput(int *pTokenTypes, int sizePtokenTypes, struct grammar_symbols* gsymbols){
 	for(int i=0; i<sizePtokenTypes; i++){
 		printf("tk-Num: [%d][%s]\n", pTokenTypes[i], getKeyByValue(gsymbols->symbolNum, pTokenTypes[i]));
@@ -297,10 +327,13 @@ void apply_earley_in_code(char *file_code, const int lang){
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
 
+	/*\/ tree; */
+	struct NodeDLL *tree = createNodeDLL(0);
+
 	struct Graph *ast = createGraph();
 	int ini_grammar = get_ini_nonTerm_grammar(gsymbols, lang);
 	if(ini_grammar != -1){
-		EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols);
+		EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree);
 	}
 
 	// printGraph(ast);
@@ -308,8 +341,10 @@ void apply_earley_in_code(char *file_code, const int lang){
 	create_file_dot_graph(ast, gsymbols);
 	// printMap(gsymbols->symbolNum);
 	// printTokenTypesInput(pTokenTypes, sizePtokenTypes, gsymbols);
-
-	verify(gsymbols, ast);
+	struct NodeDLL *reduceTree = reduce_tree(tree, pTokenTypes, sizePtokenTypes);
+	// verify(gsymbols, ast, tree);
+	// printListAndChildrens(tree);
+	create_file_dot_tree(gsymbols, reduceTree);
 	// printf("[%d] Non-Terminals;\n", sizeNonTerm);
 	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
 
@@ -318,6 +353,9 @@ void apply_earley_in_code(char *file_code, const int lang){
 	free(pTokenTypes);
 	deleteAllGraph(ast);
 	free(ast);
+
+	deleteAllNodes(&tree);
+	free(tree);
 
 	/*\/ free dates for struct grammar_symbols; */
 	free_dates_grammar_symbols(gsymbols);

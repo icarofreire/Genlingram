@@ -56,7 +56,7 @@ int state_is_a_nonterminal(int nonTerminals[], int max_nonTer, int state_x){
     return -1;
 }
 
-void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast) {
+void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree) {
     // printf("PREDICTOR: %d\n", state_x);
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
@@ -74,6 +74,16 @@ void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTer
                 insertNode(ast, state_x);
                 insertNode(ast, tempNode->val);
                 insertEdge(ast, tempNode->val, state_x);
+
+                /*\/ tree; */
+                if(!searchNodeByKey(tree, tempNode->val)){
+                    append(&tree, tempNode->val);
+                }
+                if(!searchNodeByKey(tree, state_x)){
+                    append(&tree, state_x);
+                }
+                add_date_in_array_node(tree, tempNode->val, state_x);
+
             }
             tempEdge = tempEdge->next;
         }
@@ -154,12 +164,11 @@ int get_NonTerm(struct Graph* graph, int state_x) {
     return -1;
 }
 
-void COMPLETER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast) {
+void COMPLETER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree) {
     // printf("COMPLETER:\n");
     for(int i=1; i<state->max; i++){
-        // if(state->states[i] != state->vzero){
-        if(state->states[i] == state_x){
-            PREDICTOR(graph, state, state->states[i], nonTerminals, max_nonTer, ast);
+        if(state->states[i] != state->vzero){
+            PREDICTOR(graph, state, state->states[i], nonTerminals, max_nonTer, ast, tree);
         }
     }
 }
@@ -206,7 +215,7 @@ void get_states_production(struct Graph* graph, int state_x, int production[], i
     }
 }
 
-void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols){
+void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols, struct NodeDLL *tree){
     struct State* state = ini();
 
     add_state(state, state_ini_grammar);
@@ -234,7 +243,7 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
                 // printf("std: %d\n", act_state);
 
                 if(state_is_a_nonterminal(nonTerminals, max_nonTer, act_state) != -1){
-                    PREDICTOR(graph, state, act_state, nonTerminals, max_nonTer, ast); // non_terminal
+                    PREDICTOR(graph, state, act_state, nonTerminals, max_nonTer, ast, tree); // non_terminal
                     // PREDICTOR2(graph, act_state, production, max_production, &con_std_prod, &s);
                 }else{
                     SCANNER(graph, state, tokens_input[i], nonTerminals, max_nonTer); // terminal
@@ -251,8 +260,9 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         // printf("];\n");
         // print_all_states(state);
 
-        // COMPLETER(graph, state, act_state, nonTerminals, max_nonTer, ast);
-        COMPLETER2(graph, state, &k, production, con_std_prod, nonTerminals, max_nonTer, ast);
+        /*\/ utilizando esta forma de complete para obter uma maior amplitude de reduce dos tokens da production; */
+        COMPLETER(graph, state, act_state, nonTerminals, max_nonTer, ast, tree);
+        // COMPLETER2(graph, state, &k, production, con_std_prod, nonTerminals, max_nonTer, ast);
         // print_all_states(state);
 
         // printf("***\n\n");
