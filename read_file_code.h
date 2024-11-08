@@ -104,6 +104,31 @@ void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
 	free(gsymbols->grammar);
 }
 
+/*\/ exibindo a arvore para verificar a ordem dos tokens inseridos; */
+void printListAndChildrens_tk_ordem(struct grammar_symbols* gsymbols, struct NodeDLL *head, int *pTokenTypes, int sizePtokenTypes) {
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        printf("[%d]:\n", curr->data);
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1) {
+                    printf("%d -> ", curr->children_datas[i]);
+
+                    for(int k=0; k<sizePtokenTypes; k++){
+                        if(pTokenTypes[k] == curr->data || pTokenTypes[k] == curr->children_datas[i]){
+                            printf("[%s] ", getKeyByValue(gsymbols->symbolNum, pTokenTypes[k]));
+                            break;
+                        }
+                    }
+
+                }
+            }printf("\n");
+        }
+        curr = curr->next;
+    }
+    printf("\n");
+}
+
 void apply_earley_in_code(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
@@ -128,8 +153,8 @@ void apply_earley_in_code(char *file_code, const int lang){
 	struct NodeDLL *reduceTree = reduce_tree(tree, pTokenTypes, sizePtokenTypes);
 	// verify(gsymbols, ast, tree);
 	// printListAndChildrens(tree);
+	printListAndChildrens_tk_ordem(gsymbols, tree, pTokenTypes, sizePtokenTypes);
 	create_file_dot_tree(gsymbols, reduceTree);
-	// printf("[%d] Non-Terminals;\n", sizeNonTerm);
 	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
 
 

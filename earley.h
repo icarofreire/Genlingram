@@ -83,7 +83,7 @@ void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTer
                     append(&tree, state_x);
                 }
                 add_date_in_array_node(tree, tempNode->val, state_x);
-
+                /* --- */
             }
             tempEdge = tempEdge->next;
         }
@@ -126,7 +126,7 @@ void PREDICTOR2(struct Graph* graph, int state_x, int production[], int max_prod
     *idx_production = 0;
 }
 
-void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer) {
+void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree) {
     // printf("SCANNER: %d\n", state_x);
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
@@ -138,6 +138,21 @@ void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTermi
             // printf(" -> %d", tempEdge->dest->val);
             if( tempEdge->dest->val == state_x /*&& state_is_a_nonterminal(nonTerminals, max_nonTer, state_x) == -1*/){
                 add_state(state, state_x);
+
+                /*\/ criando os vertices e arestas do ast; */
+                insertNode(ast, state_x);
+                insertNode(ast, tempNode->val);
+                insertEdge(ast, tempNode->val, state_x);
+
+                /*\/ tree; */
+                if(!searchNodeByKey(tree, tempNode->val)){
+                    append(&tree, tempNode->val);
+                }
+                if(!searchNodeByKey(tree, state_x)){
+                    append(&tree, state_x);
+                }
+                add_date_in_array_node(tree, tempNode->val, state_x);
+                /* --- */
             }
             tempEdge = tempEdge->next;
         }
@@ -246,7 +261,7 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
                     PREDICTOR(graph, state, act_state, nonTerminals, max_nonTer, ast, tree); // non_terminal
                     // PREDICTOR2(graph, act_state, production, max_production, &con_std_prod, &s);
                 }else{
-                    SCANNER(graph, state, tokens_input[i], nonTerminals, max_nonTer); // terminal
+                    SCANNER(graph, state, tokens_input[i], nonTerminals, max_nonTer, ast, tree); // terminal
                 }
 
             }
