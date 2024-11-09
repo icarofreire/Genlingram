@@ -118,22 +118,43 @@ void	exampleB()
 	printListAndChildrens(head);
 }
 
+void apply_for_file_rules(struct grammar_symbols* gsymbols, char *file_code, const int lang, int *tokensRules, int sizeTokensRules){
+
+	struct NodeDLL *tree = apply_earley_in_code(gsymbols, file_code, lang);
+
+	/*\/ ; */
+	verify(gsymbols, tree, tokensRules, sizeTokensRules);
+
+	deleteAllNodes(&tree);
+	free(tree);
+}
+
+void apply_files_rule(const int lang, char *file_rules){
+	struct grammar_symbols* gsymbols = read_grammar(lang);
+
+	// char *file_code = "testes/code-input.txt";
+	// char *file_code = "testes/AStarSearch.txt";
+	// char *file_code = "testes/code-js-2.txt";
+	// char *file_code = "testes/prisioners-js.txt";
+	char *file_code = "testes/code-example-js.txt";
+
+	/*\/ read file rules; */
+	int sizeTokens = 0;
+	int *tokensRules = read_file_code_rules(file_rules, lang, &sizeTokens);
+
+	apply_for_file_rules(gsymbols, file_code, lang, tokensRules, sizeTokens);
+	free(tokensRules);
+
+	/*\/ free dates for struct grammar_symbols; */
+	free_dates_grammar_symbols(gsymbols);
+}
+
 // DRIVER FUNCTION
 int main()
 {
 	printf("Genlingram. ;)\n");
 
-	// apply_earley_in_code("testes/code-input.txt", RUBY);
-	// apply_earley_in_code("testes/AStarSearch.txt", PYTHON);
-	struct NodeDLL *tree = apply_earley_in_code("testes/code-example-js.txt", JS);
-	// apply_earley_in_code("testes/code-js-2.txt", JS);
-	// apply_earley_in_code("testes/prisioners-js.txt", JS);
-	// testeGRaph();
-	// exampleB();
-
-	/*\/ read file rules; */
-	// int sizeNonTerm = 0;
-	// int *pNonTerminals = read_file_code_rules("rules/code-example-js.txt", JS, &sizeNonTerm);
+	apply_files_rule(JS, "rules/code-example-js.txt");
 	
 	return (0);
 }

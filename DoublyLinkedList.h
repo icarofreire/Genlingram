@@ -526,3 +526,18 @@ struct NodeDLL *reduce_tree(struct NodeDLL *head, int *pTokenTypes, int sizePtok
     }
     return reduceTree;
 }
+
+struct NodeDLL* searchNodeByChildren(struct NodeDLL *head, int child) {
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1 && curr->children_datas[i] == child){
+                    return curr;
+                }
+            }
+        }
+        curr = curr->next;
+    }
+    return NULL;
+}

@@ -121,8 +121,7 @@ void printListAndChildrens_tk_ordem(struct grammar_symbols* gsymbols, struct Nod
 }
 
 /*\/ ; */
-struct NodeDLL* apply_earley_in_code(char *file_code, const int lang){
-	struct grammar_symbols* gsymbols = read_grammar(lang);
+struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, char *file_code, const int lang){
 
 	int sizePtokenTypes = 0;
 	int *pTokenTypes = read_code_tokenize(file_code, gsymbols, &sizePtokenTypes, lang);
@@ -156,9 +155,6 @@ struct NodeDLL* apply_earley_in_code(char *file_code, const int lang){
 
 	// deleteAllNodes(&tree);
 	// free(tree);
-
-	/*\/ free dates for struct grammar_symbols; */
-	free_dates_grammar_symbols(gsymbols);
 
 	return tree;
 }
