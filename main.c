@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "read_file_code.h"
+#include "verify_ast.h"
 
 
 /*
@@ -124,11 +125,15 @@ int main()
 
 	// apply_earley_in_code("testes/code-input.txt", RUBY);
 	// apply_earley_in_code("testes/AStarSearch.txt", PYTHON);
-	apply_earley_in_code("testes/code-example-js.txt", JS);
+	struct NodeDLL *tree = apply_earley_in_code("testes/code-example-js.txt", JS);
 	// apply_earley_in_code("testes/code-js-2.txt", JS);
 	// apply_earley_in_code("testes/prisioners-js.txt", JS);
 	// testeGRaph();
 	// exampleB();
+
+	/*\/ read file rules; */
+	// int sizeNonTerm = 0;
+	// int *pNonTerminals = read_file_code_rules("rules/code-example-js.txt", JS, &sizeNonTerm);
 	
 	return (0);
 }

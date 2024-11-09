@@ -11,7 +11,7 @@
 #include "read_grammar.h"
 #include "scan_spaced_things.h"
 #include "tokenize_code.h"
-#include "verify_ast.h"
+#include "read_file_rules.h"
 
 
 /*\/ Criar arquivo .dot com dados do grafo para
@@ -95,15 +95,6 @@ int get_ini_nonTerm_grammar(struct grammar_symbols* gsymbols, const int lang){
 	return ini_grammar;
 }
 
-/*\/ free dates for struct grammar_symbols; */
-void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
-	free_map(gsymbols->symbolNum);
-	free_map(gsymbols->nonTerminals);
-	deleteAllGraph(gsymbols->grammar);
-	free_strings(gsymbols->keywords_lang, gsymbols->len_keywords);
-	free(gsymbols->grammar);
-}
-
 /*\/ exibindo a arvore para verificar a ordem dos tokens inseridos; */
 void printListAndChildrens_tk_ordem(struct grammar_symbols* gsymbols, struct NodeDLL *head, int *pTokenTypes, int sizePtokenTypes) {
     struct NodeDLL *curr = head;
@@ -129,7 +120,8 @@ void printListAndChildrens_tk_ordem(struct grammar_symbols* gsymbols, struct Nod
     printf("\n");
 }
 
-void apply_earley_in_code(char *file_code, const int lang){
+/*\/ ; */
+struct NodeDLL* apply_earley_in_code(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
 	int sizePtokenTypes = 0;
@@ -151,9 +143,8 @@ void apply_earley_in_code(char *file_code, const int lang){
 	create_file_dot_graph(ast, gsymbols);
 
 	struct NodeDLL *reduceTree = reduce_tree(tree, pTokenTypes, sizePtokenTypes);
-	// verify(gsymbols, ast, tree);
-	// printListAndChildrens(tree);
-	printListAndChildrens_tk_ordem(gsymbols, tree, pTokenTypes, sizePtokenTypes);
+
+	// printListAndChildrens_tk_ordem(gsymbols, tree, pTokenTypes, sizePtokenTypes);
 	create_file_dot_tree(gsymbols, reduceTree);
 	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
 
@@ -163,9 +154,11 @@ void apply_earley_in_code(char *file_code, const int lang){
 	deleteAllGraph(ast);
 	free(ast);
 
-	deleteAllNodes(&tree);
-	free(tree);
+	// deleteAllNodes(&tree);
+	// free(tree);
 
 	/*\/ free dates for struct grammar_symbols; */
 	free_dates_grammar_symbols(gsymbols);
+
+	return tree;
 }

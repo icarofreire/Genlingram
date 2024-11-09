@@ -1,28 +1,5 @@
 /* lib to verify AST; */
 
-/*\/ obter alguns tokenTypes de tokens inseridos; */
-int get_tokenType_token(struct grammar_symbols* gsymbols, char *token){
-    char *token_aspas_s = insert_aspas(token, true);
-    char *token_aspas_d = insert_aspas(token, false);
-
-    int tk = -1;
-    int sym = get(gsymbols->symbolNum, token_aspas_s);
-    if(sym != -1){
-        tk = sym;
-    }
-    sym = get(gsymbols->symbolNum, token_aspas_d);
-    if(sym != -1){
-        tk = sym;
-    }
-    sym = get(gsymbols->symbolNum, token);
-    if(sym != -1){
-        tk = sym;
-    }
-
-    free(token_aspas_s);
-	free(token_aspas_d);
-    return tk;
-}
 
 int get_NonTerm_token(struct grammar_symbols* gsymbols, struct Graph* ast, char *token){
     int tk = get(gsymbols->symbolNum, token);

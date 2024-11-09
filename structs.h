@@ -22,3 +22,12 @@ enum languages{
     JS,
     JAVA
 };
+
+/*\/ free dates for struct grammar_symbols; */
+void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
+	free_map(gsymbols->symbolNum);
+	free_map(gsymbols->nonTerminals);
+	deleteAllGraph(gsymbols->grammar);
+	free_strings(gsymbols->keywords_lang, gsymbols->len_keywords);
+	free(gsymbols->grammar);
+}
