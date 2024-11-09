@@ -8,28 +8,19 @@ bool isNonTerm(struct grammar_symbols* gsymbols, int token){
 /*\/ criar exemplos de verificação de regras; */
 void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensRules, int sizeTokens){
 
-    // int tk = get(gsymbols->symbolNum, "STMT");
-    // if(tk != -1 && getNode(gsymbols->grammar, tk) != NULL){
-    //     printf("[Ok STMT];\n");
-    // }
-    // tk = get(gsymbols->symbolNum, "ARG");
-    // if(tk != -1 && getNode(gsymbols->grammar, tk) != NULL){
-    //     printf("[Ok ARG];\n");
-    // }
-
     /** ... */
     int n_path = 0;
-    for(int i=0; i<sizeTokens; i++){
-        int j = i+1;
-        if(j < sizeTokens){
-            int tk1 = tokensRules[i];
-            int tk2 = tokensRules[j];
-            if(!isNonTerm(gsymbols, tk1)){// << terminal;
-                struct NodeDLL* nodeNonTerm = searchNodeByChildren(tree, tk1);
-                if(nodeNonTerm){
-                    tk1 = nodeNonTerm->data;
-                }
+    if(sizeTokens > 0){
+        int tk1 = tokensRules[0];
+        if(!isNonTerm(gsymbols, tk1)){// << terminal;
+            struct NodeDLL* nodeNonTerm = searchNodeByChildren(tree, tk1);
+            if(nodeNonTerm){
+                tk1 = nodeNonTerm->data;
             }
+        }
+
+        for(int i=1; i<sizeTokens; i++){
+            int tk2 = tokensRules[i];
             if(!isNonTerm(gsymbols, tk2)){// << terminal;
                 struct NodeDLL* nodeNonTerm = searchNodeByChildren(tree, tk2);
                 if(nodeNonTerm){
@@ -51,5 +42,4 @@ void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensR
     // int is = isPathInDLL(tree, tk_if, tk_ig);
     // printf("[%d, %d]\n", tk_if, tk_ig);
     // printf("path: [%d]\n", is);
-
 }
