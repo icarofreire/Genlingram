@@ -118,17 +118,21 @@ void	exampleB()
 	printListAndChildrens(head);
 }
 
-void apply_for_file_rules(struct grammar_symbols* gsymbols, char *file_code, const int lang, int *tokensRules, int sizeTokensRules){
+void apply_for_file_rules(struct grammar_symbols* gsymbols, char *file_code, const int lang, struct tokens_reads* tokensRules){
 
 	struct tokens_reads* tokensFileCode = read_code_tokenize(file_code, gsymbols, lang);
 	struct NodeDLL *tree = apply_earley_in_code(gsymbols, tokensFileCode, lang);
 
+	/*\/ aplicar earley em arquivo de regras para analise; */
+	struct NodeDLL *treeFileRules = apply_earley_in_code(gsymbols, tokensRules, lang);
+
 	/*[FAZER] >>> exibir linha onde foi encontrado pardão, dado a estrutura struct tokens_reads* tokensFileCode; */
 	/*\/ ; */
-	verify(gsymbols, tree, tokensRules, sizeTokensRules);
+	verify(gsymbols, tree, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
 
 	deleteAllNodes(&tree);
 	free(tree);
+	free(treeFileRules);
 	free_tokens_reads(tokensFileCode);
 }
 
@@ -138,7 +142,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ read file rules; */
 	struct tokens_reads* tokensRules = read_file_rules(file_rules, lang);
 
-	apply_for_file_rules(gsymbols, file_code, lang, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
+	apply_for_file_rules(gsymbols, file_code, lang, tokensRules);
 
 	free_tokens_reads(tokensRules);
 
