@@ -121,10 +121,9 @@ void printListAndChildrens_tk_ordem(struct grammar_symbols* gsymbols, struct Nod
 }
 
 /*\/ ; */
-struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, char *file_code, const int lang){
+struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct tokens_reads* tokensFileCode, const int lang){
 
-	int sizePtokenTypes = 0;
-	int *pTokenTypes = read_code_tokenize(file_code, gsymbols, &sizePtokenTypes, lang);
+	struct tokens_reads* tksReads = tokensFileCode;
 
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
@@ -135,26 +134,22 @@ struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, char *fil
 	struct Graph *ast = createGraph();
 	int ini_grammar = get_ini_nonTerm_grammar(gsymbols, lang);
 	if(ini_grammar != -1){
-		EARLEY_PARSE(gsymbols->grammar, pTokenTypes, sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree);
+		EARLEY_PARSE(gsymbols->grammar, tksReads->pTokenTypes, tksReads->sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree);
 	}
 
 
 	create_file_dot_graph(ast, gsymbols);
 
-	struct NodeDLL *reduceTree = reduce_tree(tree, pTokenTypes, sizePtokenTypes);
+	struct NodeDLL *reduceTree = reduce_tree(tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
 
-	// printListAndChildrens_tk_ordem(gsymbols, tree, pTokenTypes, sizePtokenTypes);
+	// printListAndChildrens_tk_ordem(gsymbols, tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
 	create_file_dot_tree(gsymbols, reduceTree);
-	printf("[%d] tokens de entrada;\n", sizePtokenTypes);
+	printf("[%d] tokens de entrada;\n", tksReads->sizePtokenTypes);
 
 
 	free(pNonTerminals);
-	free(pTokenTypes);
 	deleteAllGraph(ast);
 	free(ast);
-
-	// deleteAllNodes(&tree);
-	// free(tree);
 
 	return tree;
 }

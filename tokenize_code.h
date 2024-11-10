@@ -84,7 +84,7 @@ void array_add_size(int **items, int *capacity, int plus) {
 	}
 }
 
-int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *reftam, const int lang){
+struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, const int lang){
 	// Create a file pointer and open the file "GFG.txt" in
 	// read mode.
 	FILE* file = fopen(arquivo, "r");
@@ -95,12 +95,17 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 	// Check if the file was opened successfully.
 	if (file != NULL) {
 
-		int sizePtokenTypes = 2;
+		int sizePtokenTypes = 1;
 		int *pTokenTypes = (int*)malloc((sizePtokenTypes) * sizeof(int));
+
+		int sizeLineTokens = 1;
+		int *lineTokens = (int*)malloc((sizeLineTokens) * sizeof(int));
 
 		// Read each line from the file and store it in the
 		// 'line' buffer.
-		int j = 0;
+		int con_lines = 0;
+		/*\/ indice para registrar os tokenTypes; */
+		int idx_reg = 0;
 		int tk_obtidos = 0;
 		/*\/ para detectar strings espaçadas; */
 		int con_str_part = 0;
@@ -108,11 +113,13 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 		int con_comment_part = 0, ncoment = 0;
 		while (fgets(line, sizeof(line), file)) {
 			// Print each line to the standard output.
+			con_lines++;
 
 			/*\/ inserir simbolos registrados(token types) em um vetor para análise; */
 			int tam = 0;
 			char **tokens = process_tokens(line, delimiters, &tam, true);
 			array_add_size(&pTokenTypes, &sizePtokenTypes, tam);
+			array_add_size(&lineTokens, &sizeLineTokens, tam);
 
 			for(int i=0; i<tam; i++){
 				trim(tokens[i]);
@@ -126,7 +133,9 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 						if(part >= 1 && part <= 3){
 							int tokenType_literal = literal_tokenType_grammar_lang(gsymbols, lang);
 							if(tokenType_literal != -1){
-								pTokenTypes[j++] = tokenType_literal;
+								pTokenTypes[idx_reg] = tokenType_literal;
+								lineTokens[idx_reg] = con_lines;
+								idx_reg++;
 								// printf("4tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
 								take = tokenType_literal;
 							}
@@ -145,7 +154,9 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 					if(!take){
 						int tokenType_literal = get_literal_tokenType_lang(gsymbols, tokens[i], lang);
 						if(tokenType_literal != -1){
-							pTokenTypes[j++] = tokenType_literal;
+							pTokenTypes[idx_reg] = tokenType_literal;
+							lineTokens[idx_reg] = con_lines;
+							idx_reg++;
 							// printf("1tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
 							take = tokenType_literal;
 						}
@@ -155,7 +166,9 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 					if(!take){
 						int tokenType_identifier = get_identifier_tokenType_lang(gsymbols, tokens[i], lang);
 						if(tokenType_identifier != -1){
-							pTokenTypes[j++] = tokenType_identifier;
+							pTokenTypes[idx_reg] = tokenType_identifier;
+							lineTokens[idx_reg] = con_lines;
+							idx_reg++;
 							// printf("2tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_identifier));
 							take = tokenType_identifier;
 						}
@@ -165,7 +178,9 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 					if(!take){
 						int sym = get_tokenType_symbols_grammar(gsymbols, tokens[i]);
 						if(sym != -1){
-							pTokenTypes[j++] = sym;
+							pTokenTypes[idx_reg] = sym;
+							lineTokens[idx_reg] = con_lines;
+							idx_reg++;
 							// printf("3tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, sym));
 							take = sym;
 						}
@@ -179,13 +194,18 @@ int* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, int *re
 			}
 			free_strings(tokens, tam);
 		}
-		if(tk_obtidos == (j+ncoment)) printf("[todos os tokens reconhecidos];\n");
+		if(tk_obtidos == (idx_reg+ncoment)) printf("[todos os tokens reconhecidos];\n");
 		// printf("tt: [%d, %d, %d]\n", tk_obtidos, j, ncoment);
-		*reftam = j;
 		// Close the file stream once all lines have been
 		// read.
 		fclose(file);
-		return pTokenTypes;
+
+		struct tokens_reads* tksReads = (struct tokens_reads *)malloc(sizeof(struct tokens_reads));
+		tksReads->sizePtokenTypes = idx_reg;
+		tksReads->pTokenTypes = pTokenTypes;
+		tksReads->lineTokens = lineTokens;
+
+		return tksReads;
 	}
 	else {
 		// Print an error message to the standard error

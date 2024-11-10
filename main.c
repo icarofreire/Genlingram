@@ -120,30 +120,27 @@ void	exampleB()
 
 void apply_for_file_rules(struct grammar_symbols* gsymbols, char *file_code, const int lang, int *tokensRules, int sizeTokensRules){
 
-	struct NodeDLL *tree = apply_earley_in_code(gsymbols, file_code, lang);
+	struct tokens_reads* tokensFileCode = read_code_tokenize(file_code, gsymbols, lang);
+	struct NodeDLL *tree = apply_earley_in_code(gsymbols, tokensFileCode, lang);
 
+	/*[FAZER] >>> exibir linha onde foi encontrado pardão, dado a estrutura struct tokens_reads* tokensFileCode; */
 	/*\/ ; */
 	verify(gsymbols, tree, tokensRules, sizeTokensRules);
 
 	deleteAllNodes(&tree);
 	free(tree);
+	free_tokens_reads(tokensFileCode);
 }
 
-void apply_files_rule(const int lang, char *file_rules){
+void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
-	// char *file_code = "testes/code-input.txt";
-	// char *file_code = "testes/AStarSearch.txt";
-	// char *file_code = "testes/code-js-2.txt";
-	// char *file_code = "testes/prisioners-js.txt";
-	char *file_code = "testes/code-example-js.txt";
-
 	/*\/ read file rules; */
-	int sizeTokens = 0;
-	int *tokensRules = read_file_code_rules(file_rules, lang, &sizeTokens);
+	struct tokens_reads* tokensRules = read_file_rules(file_rules, lang);
 
-	apply_for_file_rules(gsymbols, file_code, lang, tokensRules, sizeTokens);
-	free(tokensRules);
+	apply_for_file_rules(gsymbols, file_code, lang, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
+
+	free_tokens_reads(tokensRules);
 
 	/*\/ free dates for struct grammar_symbols; */
 	free_dates_grammar_symbols(gsymbols);
@@ -154,7 +151,12 @@ int main()
 {
 	printf("Genlingram. ;)\n");
 
-	apply_files_rule(JS, "rules/code-example-js.txt");
+	// char *file_code = "testes/code-input.txt";
+	// char *file_code = "testes/AStarSearch.txt";
+	// char *file_code = "testes/code-js-2.txt";
+	// char *file_code = "testes/prisioners-js.txt";
+	// char *file_code = "testes/code-example-js.txt";
+	apply_files_rule("testes/code-example-js.txt", "rules/code-example-js.txt", JS);
 	
 	return (0);
 }

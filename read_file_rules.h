@@ -2,17 +2,15 @@
 
 
 /*\/ ; */
-int *read_file_code_rules(char *file_code, const int lang, int *size){
+struct tokens_reads* read_file_rules(char *file_code, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
-	int sizePtokenTypes = 0;
-	int *pTokenTypes = read_code_tokenize(file_code, gsymbols, &sizePtokenTypes, lang);
+	struct tokens_reads* tksReads = read_code_tokenize(file_code, gsymbols, lang);
 
-    *size = sizePtokenTypes;
 	/* ... */
 
 
 	/*\/ free dates for struct grammar_symbols; */
 	free_dates_grammar_symbols(gsymbols);
-    return pTokenTypes;
+    return tksReads;
 }
