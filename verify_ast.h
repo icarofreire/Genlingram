@@ -27,8 +27,9 @@ void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensR
                     tk2 = nodeNonTerm->data;
                 }
             }
-            printf("[%d - %d]\n", tk1, tk2);
+            // printf("[%d - %d]\n", tk1, tk2);
             int is_path = isPathInDLL(tree, tk1, tk2);
+            printf("[%s - %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
             if(is_path == 1){
                 n_path++;
             }
@@ -42,4 +43,55 @@ void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensR
     // int is = isPathInDLL(tree, tk_if, tk_ig);
     // printf("[%d, %d]\n", tk_if, tk_ig);
     // printf("path: [%d]\n", is);
+}
+
+/*\/ passar para um array nós pai que não são terminais; */
+void get_nos_nao_term(struct NodeDLL *head, struct tokens_reads* tokens_reads, int* nodesNaoTerm_file, int* ind, int* max){
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        int pfcode = curr->data;
+        if(pfcode > 0){
+
+            bool ifTerm = false;
+            for(int i=0; i<tokens_reads->sizePtokenTypes; i++){
+                 if(tokens_reads->pTokenTypes[i] == pfcode){
+                    ifTerm = true; break;
+                 }
+            }
+            if(!ifTerm && *ind < *max){
+                nodesNaoTerm_file[*ind] = pfcode;
+                (*ind)++;
+            }
+        }
+        curr = curr->next;
+    }
+}
+
+void verify_for_reduce_tree(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct NodeDLL *tree_file_rules, struct tokens_reads* tokensRules){
+
+    /*\/ reduce tree file code; */
+    struct NodeDLL *reduceTreeFileCode = reduce_tree_term(tree, tokensFileCode->pTokenTypes, tokensFileCode->sizePtokenTypes);
+
+    /*\/ reduce tree file rules code; */
+	struct NodeDLL *reduceTreeFileRules = reduce_tree_term(tree_file_rules, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
+
+
+    int ind1 = 0, ind2 = 0, max = 300;
+    int nodesNaoTerm_file_code[max];
+    int nodesNaoTerm_file_rules[max];
+
+    get_nos_nao_term(reduceTreeFileCode, tokensFileCode, nodesNaoTerm_file_code, &ind1, &max);
+
+    get_nos_nao_term(reduceTreeFileRules, tokensRules, nodesNaoTerm_file_rules, &ind2, &max);
+
+
+    for(int i=0; i<ind1; i++){
+        for(int j=0; j<ind2; j++){
+            if(nodesNaoTerm_file_code[i] == nodesNaoTerm_file_rules[j]){
+                printf("P: [%s];\n", getKeyByValue(gsymbols->symbolNum, nodesNaoTerm_file_code[i]));
+                break;
+            }
+        }
+    }
+
 }

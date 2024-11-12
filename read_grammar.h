@@ -1,7 +1,7 @@
 /* Lib ler arquivo BNF/EBNF; */
 
 
-const char delimiters_grammar[] = " :|()[]?*+'\"";
+const char delimiters_grammar[] = " :|()[]?*+'\"\t";
 
 bool if_non_term(char *s){
     char *p1 = strstr(s, "::=");

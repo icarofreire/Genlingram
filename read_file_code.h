@@ -46,7 +46,7 @@ void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols
 			char *sl = "";
 			if(strcmp(b, "\"") == 0) sl = "\\";
 
-			fprintf(fptr,"\"%s\" -> \"%s%s\"\n", a, sl, b );
+			if(strcmp(a, "") != 0 && strcmp(b, "") != 0)fprintf(fptr,"\"%s\" -> \"%s%s\"\n", a, sl, b );
             tempEdge = tempEdge->next;
         }
         tempNode = tempNode->next;
@@ -74,7 +74,7 @@ void create_file_dot_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head
 					char *b = getKeyByValue(gsymbols->symbolNum, curr->children_datas[i]);
 					char *sl = "";
 					if(strcmp(b, "\"") == 0) sl = "\\";
-					fprintf(fptr,"\"%s\" -> \"%s%s\"\n", a, sl, b );
+					if(strcmp(a, "") != 0 && strcmp(b, "") != 0)fprintf(fptr,"\"%s\" -> \"%s%s\"\n", a, sl, b );
 				}
             }
         }
@@ -140,7 +140,8 @@ struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct to
 
 	create_file_dot_graph(ast, gsymbols);
 
-	struct NodeDLL *reduceTree = reduce_tree(tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
+	struct NodeDLL *reduceTree = reduce_tree_term(tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
+	// struct NodeDLL *reduceTree = reduce_tree_term(tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
 
 	// printListAndChildrens_tk_ordem(gsymbols, tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
 	create_file_dot_tree(gsymbols, reduceTree);

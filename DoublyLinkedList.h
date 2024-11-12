@@ -527,6 +527,32 @@ struct NodeDLL *reduce_tree(struct NodeDLL *head, int *pTokenTypes, int sizePtok
     return reduceTree;
 }
 
+/*\/ criar uma arvore com nós cujos filhos possuem caminhos com terminais; */
+struct NodeDLL *reduce_tree_term(struct NodeDLL *head, int *pTokenTypes, int sizePtokenTypes) {
+    struct NodeDLL *reduceTree = createNodeDLL(0);
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        int pai = curr->data;
+        if(curr->len_children_datas > 0){
+            for(int k=0; k<sizePtokenTypes; k++){
+                int token = pTokenTypes[k];
+                int is_path = isPathInDLL(head, pai, token);
+                if(is_path == 1){
+                    if(!searchNodeByKey(reduceTree, pai)){
+                        append(&reduceTree, pai);
+                    }
+                    if(!searchNodeByKey(reduceTree, token)){
+                        append(&reduceTree, token);
+                    }
+                    add_date_in_array_node(reduceTree, pai, token);
+                }
+            }
+        }
+        curr = curr->next;
+    }
+    return reduceTree;
+}
+
 struct NodeDLL* searchNodeByChildren(struct NodeDLL *head, int child) {
     struct NodeDLL *curr = head;
     while (curr != NULL) {
