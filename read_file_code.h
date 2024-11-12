@@ -55,10 +55,10 @@ void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols
 }
 
 /*\/ criar arquivo .dot a partir da arvore em DLL; */
-void create_file_dot_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head) {
+void create_file_dot_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head, char* name_file) {
 
 	FILE *fptr;
-   	fptr = fopen("tree.dot","w");
+   	fptr = fopen(name_file,"w");
 	if(fptr == NULL) return;
 	fprintf(fptr,"digraph {\n");
 	fprintf(fptr,"overlap=prism\n");
@@ -137,16 +137,8 @@ struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct to
 		EARLEY_PARSE(gsymbols->grammar, tksReads->pTokenTypes, tksReads->sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree);
 	}
 
-
-	create_file_dot_graph(ast, gsymbols);
-
-	struct NodeDLL *reduceTree = reduce_tree_term(tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
-	// struct NodeDLL *reduceTree = reduce_tree_term(tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
-
 	// printListAndChildrens_tk_ordem(gsymbols, tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
-	create_file_dot_tree(gsymbols, reduceTree);
 	printf("[%d] tokens de entrada;\n", tksReads->sizePtokenTypes);
-
 
 	free(pNonTerminals);
 	deleteAllGraph(ast);
