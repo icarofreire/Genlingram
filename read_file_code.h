@@ -52,6 +52,7 @@ void create_file_dot_graph(struct Graph* graph, struct grammar_symbols* gsymbols
         tempNode = tempNode->next;
     }
 	fprintf(fptr,"}\n");
+	fclose(fptr);
 }
 
 /*\/ criar arquivo .dot a partir da arvore em DLL; */
@@ -82,6 +83,7 @@ void create_file_dot_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head
     }
 
 	fprintf(fptr,"}\n");
+	fclose(fptr);
 }
 
 int get_ini_nonTerm_grammar(struct grammar_symbols* gsymbols, const int lang){
@@ -96,28 +98,26 @@ int get_ini_nonTerm_grammar(struct grammar_symbols* gsymbols, const int lang){
 }
 
 /*\/ exibindo a arvore para verificar a ordem dos tokens inseridos; */
-void printListAndChildrens_tk_ordem(struct grammar_symbols* gsymbols, struct NodeDLL *head, int *pTokenTypes, int sizePtokenTypes) {
+void gerate_txt_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head) {
+
+	FILE *fptr;
+   	fptr = fopen("tree.txt","w");
+	if(fptr == NULL) return;
+
     struct NodeDLL *curr = head;
     while (curr != NULL) {
-        printf("[%d]:\n", curr->data);
+		fprintf(fptr, "[%d](%s):\n", curr->data, getKeyByValue(gsymbols->symbolNum, curr->data) );
         if(curr->len_children_datas > 0){
+			fprintf(fptr, "\t");
             for(int i=0; i<curr->len_children_datas; i++){
                 if(curr->children_datas[i] != -1) {
-                    printf("%d -> ", curr->children_datas[i]);
-
-                    for(int k=0; k<sizePtokenTypes; k++){
-                        if(pTokenTypes[k] == curr->data || pTokenTypes[k] == curr->children_datas[i]){
-                            printf("[%s] ", getKeyByValue(gsymbols->symbolNum, pTokenTypes[k]));
-                            break;
-                        }
-                    }
-
+					fprintf(fptr, "[%d](%s) -> ", curr->children_datas[i], getKeyByValue(gsymbols->symbolNum, curr->children_datas[i]));
                 }
-            }printf("\n");
+            }fprintf(fptr, "\n\n");
         }
         curr = curr->next;
     }
-    printf("\n");
+	fclose(fptr);
 }
 
 /*\/ ; */
@@ -136,9 +136,6 @@ struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct to
 	if(ini_grammar != -1){
 		EARLEY_PARSE(gsymbols->grammar, tksReads->pTokenTypes, tksReads->sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree);
 	}
-
-	// printListAndChildrens_tk_ordem(gsymbols, tree, tksReads->pTokenTypes, tksReads->sizePtokenTypes);
-	printf("[%d] tokens de entrada;\n", tksReads->sizePtokenTypes);
 
 	free(pNonTerminals);
 	deleteAllGraph(ast);

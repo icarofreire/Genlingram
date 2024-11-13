@@ -194,7 +194,7 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 			}
 			free_strings(tokens, tam);
 		}
-		if(tk_obtidos == (idx_reg+ncoment)) printf("[todos os tokens reconhecidos];\n");
+		if(tk_obtidos == (idx_reg+ncoment)) printf("[todos os tokens reconhecidos; %d tokens de entrada];\n", tk_obtidos);
 		// printf("tt: [%d, %d, %d]\n", tk_obtidos, j, ncoment);
 		// Close the file stream once all lines have been
 		// read.

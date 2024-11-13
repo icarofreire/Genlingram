@@ -139,7 +139,8 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*[FAZER] >>> exibir linha onde foi encontrado pardão, dado a estrutura struct tokens_reads* tokensFileCode; */
 	/*\/ ; */
 	// verify(gsymbols, tree, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
-	verify_for_reduce_tree(gsymbols, tree, tokensFileCode, treeFileRules, tokensRules);
+	gerate_txt_tree(gsymbols, tree);
+	verify(gsymbols, tree, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
 
 
 	free(treeFileRules);
