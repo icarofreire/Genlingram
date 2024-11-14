@@ -27,26 +27,18 @@ int adler32_wiki(int *data, size_t len)
 
 /*\/ reconhecer o máximo de forma linear; */
 int indice_sub_array(int array1[], int len_array1, int array2[], int len_array2){
-    int min = 3; // << tamanho mínimo do padrão;
-	int ind_pri = -1;
 	for(int i = 0; i<len_array1; i++){
         int con = 0;
 		for(int j = 0; j<len_array2; j++){
 			int k = i+j;
 			if(k < len_array1 && array1[k] == array2[j]){
                 con++;
-				// printf("[%d = %d]\n", array1[k], array2[j]);
-				// if(ind_pri == -1) ind_pri = k;
-                // if(j == (len_array2-1)) return ind_pri;
-			}else{
-				// break;
-                if(con >= min) {
-                    return k-con;
-                }
+				// printf("[%d = %d] t %d %d\n", array1[k], array2[j], k, con );
+                if(con == len_array2) return (k-con)+1;
 			}
 		}
 	}
-	return ind_pri;
+	return -1;
 }
 
 /*\/ obter os indices de acada padrão reconhecido; */
