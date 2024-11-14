@@ -140,7 +140,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ ; */
 	// verify(gsymbols, tree, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
 	gerate_txt_tree(gsymbols, tree);
-	verify(gsymbols, tree, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
+	verify(gsymbols, tree, tokensFileCode, tokensRules, file_code);
 
 
 	free(treeFileRules);

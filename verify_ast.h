@@ -25,6 +25,23 @@ int adler32_wiki(int *data, size_t len)
     return (b << 16) | a;
 }
 
+int indice_sub_array(int array1[], int len_array1, int array2[], int len_array2){
+	int ind_pri = -1;
+	for(int i = 0; i<len_array1; i++){
+		for(int j = 0; j<len_array2; j++){
+			int k = i+j;
+			if(array1[k] == array2[j]){
+				// printf("[%d = %d]\n", array1[k], array2[j]);
+				if(ind_pri == -1) ind_pri = k;
+                if(j == (len_array2-1)) return ind_pri;
+			}else{
+				break;
+			}
+		}
+	}
+	return ind_pri;
+}
+
 int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int src, int dest, int caminhos[], int len_caminhos) {
     struct NodeDLL* origNode = searchNodeByKey(head, src);
     struct NodeDLL* destNode = searchNodeByKey(head, dest);
@@ -52,7 +69,7 @@ int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int 
 
                         int caminho = adler32_wiki(visited, nthp);
                         int same_path = 0;
-                        printf("Path: [%d]\n", caminho);
+                        // printf("Path: [%d]\n", caminho);
                         int ult=0;
                         for(int i=0; i<len_caminhos; i++){
                             if(caminhos[i] == 0){
@@ -96,12 +113,12 @@ int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int 
 }
 
 /*\/ criar exemplos de verificação de regras; */
-void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensRules, int sizeTokens){
+void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
 
     /** ... */
     int n_path = 0;
-    if(sizeTokens > 0){
-        int tk1 = tokensRules[0];
+    if(tokensRules->sizePtokenTypes > 0){
+        int tk1 = tokensRules->pTokenTypes[0];
         if(!isNonTerm(gsymbols, tk1)){// << terminal;
             struct NodeDLL* nodeNonTerm = searchNodeByChildren(tree, tk1);
             if(nodeNonTerm){
@@ -110,21 +127,21 @@ void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensR
             }
         }
 
-        int len_caminhos = 1000;
+        int len_caminhos = 300;
         int caminhos[len_caminhos];
         for(int i=0; i<len_caminhos; i++){
             caminhos[i] = 0;
         }
 
-        for(int i=1; i<sizeTokens; i++){
-            int tk2 = tokensRules[i];
+        for(int i=1; i<tokensRules->sizePtokenTypes; i++){
+            int tk2 = tokensRules->pTokenTypes[i];
 
             int is_path = isPathInDLL_ret(gsymbols, tree, tk1, tk2, caminhos, len_caminhos);
             if(is_path == 1){
-                printf("[%s - %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
+                printf("[%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
                 n_path++;
             }else{
-                printf("NO [%s - %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
+                printf("NO [%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
                 n_path--;
             }
         }
@@ -136,8 +153,10 @@ void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, int *tokensR
         // is_path = isPathInDLL_ret(gsymbols, tree, paiteste, literal, caminhos, len_caminhos);
         // printf("is_path[%d]\n", is_path);
     }
-    printf("n_path: [%d][%d]\n", n_path, sizeTokens);
-    if(n_path == sizeTokens){
-        printf("[Padrão reconhecido];\n");
+    printf("n_path: [%d][%d]\n", n_path, tokensRules->sizePtokenTypes);
+    if(n_path == tokensRules->sizePtokenTypes){
+        int ind_sub = indice_sub_array(tokensFileCode->pTokenTypes, tokensFileCode->sizePtokenTypes, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
+        int line_ini = tokensFileCode->lineTokens[ind_sub];
+        printf("[Padrão reconhecido; [%s] linha: %d];\n", file_code, line_ini);
     }
 }
