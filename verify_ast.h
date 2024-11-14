@@ -25,21 +25,62 @@ int adler32_wiki(int *data, size_t len)
     return (b << 16) | a;
 }
 
+/*\/ reconhecer o máximo de forma linear; */
 int indice_sub_array(int array1[], int len_array1, int array2[], int len_array2){
+    int min = 3; // << tamanho mínimo do padrão;
 	int ind_pri = -1;
 	for(int i = 0; i<len_array1; i++){
+        int con = 0;
 		for(int j = 0; j<len_array2; j++){
 			int k = i+j;
-			if(array1[k] == array2[j]){
+			if(k < len_array1 && array1[k] == array2[j]){
+                con++;
 				// printf("[%d = %d]\n", array1[k], array2[j]);
-				if(ind_pri == -1) ind_pri = k;
-                if(j == (len_array2-1)) return ind_pri;
+				// if(ind_pri == -1) ind_pri = k;
+                // if(j == (len_array2-1)) return ind_pri;
 			}else{
-				break;
+				// break;
+                if(con >= min) {
+                    return k-con;
+                }
 			}
 		}
 	}
 	return ind_pri;
+}
+
+/*\/ obter os indices de acada padrão reconhecido; */
+void indice_sub_array_parcial(int array1[], int len_array1, int array2[], int len_array2, int* indices, int* len_indices){
+    int min = 3; // << tamanho mínimo do padrão;
+	int aux = 0;
+	for(int i = 0; i<len_array1; i++){
+        int fin = 0, con = 0;
+		for(int j = 0; j<len_array2; j++){
+			int k = i+j;
+			if(k < len_array1 && array1[k] == array2[j]){
+                // printf("[%d = %d]\n", array1[k], array2[j]);
+                con++;
+                if(con == min) {
+                    for(int r = min-1; r>=0; r--){
+                        indices[aux] = k-r;
+                        // printf("<< [%d - %d]\n", k, r);
+                        // printf("<< [%d]\n", array1[k-r]);
+                        aux++;
+                    }
+                }else if(con > min){
+                    indices[aux] = k;
+                    aux++;
+                }
+                fin=1;
+			}else{
+                if(fin > 0){
+                    indices[aux] = -1; aux++;
+                    fin = 0;
+                }
+            }
+		}
+	}
+    *len_indices = aux;
 }
 
 int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int src, int dest, int caminhos[], int len_caminhos) {
