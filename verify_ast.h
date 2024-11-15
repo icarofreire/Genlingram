@@ -25,8 +25,9 @@ int adler32_wiki(int *data, size_t len)
     return (b << 16) | a;
 }
 
-/*\/ reconhecer o máximo de forma linear; */
+/*\/ obter o indice de padrão reconhecido; */
 int indice_sub_array(int array1[], int len_array1, int array2[], int len_array2){
+    if(len_array2 > len_array1) return -1;
 	for(int i = 0; i<len_array1; i++){
         int con = 0;
 		for(int j = 0; j<len_array2; j++){
@@ -42,37 +43,50 @@ int indice_sub_array(int array1[], int len_array1, int array2[], int len_array2)
 }
 
 /*\/ obter os indices de acada padrão reconhecido; */
-void indice_sub_array_parcial(int array1[], int len_array1, int array2[], int len_array2, int* indices, int* len_indices){
-    int min = 3; // << tamanho mínimo do padrão;
-	int aux = 0;
+int indice_sub_array_parcial(int array1[], int len_array1, int array2[], int len_array2, int* indices, int* len_indices){
+    if(len_array2 > len_array1) return -1;
+    int aux = 0;
 	for(int i = 0; i<len_array1; i++){
-        int fin = 0, con = 0;
+        int con = 0;
 		for(int j = 0; j<len_array2; j++){
 			int k = i+j;
 			if(k < len_array1 && array1[k] == array2[j]){
-                // printf("[%d = %d]\n", array1[k], array2[j]);
                 con++;
-                if(con == min) {
-                    for(int r = min-1; r>=0; r--){
-                        indices[aux] = k-r;
-                        // printf("<< [%d - %d]\n", k, r);
-                        // printf("<< [%d]\n", array1[k-r]);
-                        aux++;
-                    }
-                }else if(con > min){
-                    indices[aux] = k;
+				// printf("[%d = %d] t %d %d %d\n", array1[k], array2[j], k, con, (k-con)+1 );
+                if(con == len_array2){
+                    indices[aux] = (k-con)+1;
                     aux++;
+                    break;
                 }
-                fin=1;
-			}else{
-                if(fin > 0){
-                    indices[aux] = -1; aux++;
-                    fin = 0;
-                }
-            }
+			}
 		}
 	}
     *len_indices = aux;
+	return -1;
+}
+
+/*\/ verificar nos tokens, onde os padrões correspondem linearmente; */
+void verificar_trechos_lineares(struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code)
+{
+    int len_indices = 0;
+    int max_len = (tokensFileCode->sizePtokenTypes > tokensRules->sizePtokenTypes) ?
+        (tokensFileCode->sizePtokenTypes) :
+        (tokensRules->sizePtokenTypes);
+    int* indices = (int*)malloc((max_len) * sizeof(int));
+
+	indice_sub_array_parcial(
+        tokensFileCode->pTokenTypes,
+        tokensFileCode->sizePtokenTypes,
+        tokensRules->pTokenTypes,
+        tokensRules->sizePtokenTypes,
+        indices,
+        &len_indices
+    );
+
+	for(int i=0; i<len_indices; i++){
+		int line_ini = tokensFileCode->lineTokens[indices[i]];
+        printf("[Padrão reconhecido; [%s] linha: %d];\n", file_code, line_ini);
+	}
 }
 
 int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int src, int dest, int caminhos[], int len_caminhos) {
