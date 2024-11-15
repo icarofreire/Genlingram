@@ -28,34 +28,7 @@ char* get_extension(const char *file){
   return NULL;
 }
 
-int listdir_ext(const char *path, const char *extension, char **point_files, int* len_point_files) 
-{
-  struct dirent *entry;
-  DIR *dp;
-
-  dp = opendir(path);
-  if (dp == NULL) 
-  {
-    perror("opendir");
-    return -1;
-  }
-
-  int ind = 0;
-  while((entry = readdir(dp))){
-    char* ext = get_extension(entry->d_name);
-    if(ext != NULL && strcmp(ext, extension) == 0){
-      point_files[ind] = entry->d_name;
-      ind++;
-    }
-    free(ext);
-  }
-  *len_point_files = ind;
-
-  closedir(dp);
-  return 0;
-}
-
-int list_files_project(const char *path, const char *extension) 
+int list_files_recursive(const char *path, const char *extension, char** files, int *indice_file_add) 
 {
   struct dirent *entry;
   DIR *dp;
@@ -77,11 +50,23 @@ int list_files_project(const char *path, const char *extension)
           inner_dir[strlen(path)] = separator();
           strcat(inner_dir, entry->d_name);
 
-          list_files_project(inner_dir, extension);
+          list_files_recursive(inner_dir, extension, files, indice_file_add);
         }
     }else{
         char* file = entry->d_name;
-        printf(">> file: [%s]\n", file);
+        char* ext = get_extension(file);
+        if(ext != NULL && strcmp(ext, extension) == 0){
+
+          /*\/ concatenar diretório atual com separador; */
+          char *path_file = (char*)malloc((100) * sizeof(char*));
+          strcpy(path_file, path);
+          path_file[strlen(path)] = separator();
+          strcat(path_file, file);
+
+          files[*indice_file_add] = path_file;
+          (*indice_file_add)++;
+        }
+        free(ext);
     }
   }
 
@@ -89,12 +74,13 @@ int list_files_project(const char *path, const char *extension)
   return 0;
 }
 
-/*\/ obter lista de arquivos de regras; */
-char** get_files_rules(char* dir_rules, int* len_array_files){
-	int len = 0;
+/*\/ obter lista de arquivos de forma recursiva; */
+char** get_files_recursive(char* dir, int* len_array_files, const char *extension){
 	const int ini_max = 100;
   char** files = (char**)malloc((ini_max) * sizeof(char*));
-	listdir_ext(dir_rules, "txt", files, &len);
+
+  int len = 0;
+	list_files_recursive(dir, extension, files, &len);
 
 	*len_array_files = len;
 
