@@ -49,6 +49,7 @@ int list_files_recursive(const char *path, const char *extension, char** files, 
           strcpy(inner_dir, path);
           inner_dir[strlen(path)] = separator();
           strcat(inner_dir, entry->d_name);
+          inner_dir[strlen(path) + strlen(entry->d_name) + 1] = '\0';
 
           list_files_recursive(inner_dir, extension, files, indice_file_add);
         }
@@ -62,6 +63,7 @@ int list_files_recursive(const char *path, const char *extension, char** files, 
           strcpy(path_file, path);
           path_file[strlen(path)] = separator();
           strcat(path_file, file);
+          path_file[strlen(path) + strlen(file) + 1] = '\0';
 
           files[*indice_file_add] = path_file;
           (*indice_file_add)++;
