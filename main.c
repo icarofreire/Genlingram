@@ -131,16 +131,21 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ aplicar earley em arquivo de regras para analise; */
 	struct NodeDLL *treeFileRules = apply_earley_in_code(gsymbols, tokensRules, lang);
 
+
 	/*\/ criando arquivos .dot(graphviz) para analise; */
 	create_file_dot_tree(gsymbols, tree, "ast.dot");
 	struct NodeDLL *reduceTree = reduce_tree_term(tree, tokensFileCode->pTokenTypes, tokensFileCode->sizePtokenTypes);
 	create_file_dot_tree(gsymbols, reduceTree, "tree.dot");
 
-	/*[FAZER] >>> exibir linha onde foi encontrado pardão, dado a estrutura struct tokens_reads* tokensFileCode; */
-	/*\/ ; */
-	// verify(gsymbols, tree, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
+
+	/*\/ criando .txt arvore para analise; */
 	gerate_txt_tree(gsymbols, tree);
+
+	/*\/ verificação por ast; */
 	verify(gsymbols, tree, tokensFileCode, tokensRules, file_code);
+
+	/*\/ verificação por padrões lineares; */
+	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
 
 
 	free(treeFileRules);

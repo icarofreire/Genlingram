@@ -85,8 +85,9 @@ void verificar_trechos_lineares(struct tokens_reads* tokensFileCode, struct toke
 
 	for(int i=0; i<len_indices; i++){
 		int line_ini = tokensFileCode->lineTokens[indices[i]];
-        printf("[Padrão reconhecido; [%s] linha: %d];\n", file_code, line_ini);
+        printf("[Padrão reconhecido(PL); [%s]; L: %d];\n", file_code, line_ini);
 	}
+    free(indices);
 }
 
 int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int src, int dest, int caminhos[], int len_caminhos) {
