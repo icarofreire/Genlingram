@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "dir.h"
 #include "read_file_code.h"
 #include "verify_ast.h"
 
