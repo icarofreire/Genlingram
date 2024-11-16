@@ -54,31 +54,33 @@ int str_lang_to_const_enum(const char* lang){
 	else if(strcmp(lang, "ruby")) return RUBY;
 	else if(strcmp(lang, "js")) return JS;
 	else if(strcmp(lang, "java")) return JAVA;
+	else if(strcmp(lang, "php")) return PHP;
 	return -1;
 }
 
 char* get_extension_lang(const int lang){
 	char* ext = (char *)malloc((10) * sizeof(char));
+	char* ext_lang = NULL;
 	switch(lang){
 		case PYTHON:
-			strcpy(ext, "py");
-			ext[2] = '\0';
+			ext_lang = "py";
+			strcpy(ext, ext_lang);
 			break;
 		case RUBY:
-			strcpy(ext, "rb");
-			ext[2] = '\0';
+			ext_lang = "rb";
+			strcpy(ext, ext_lang);
 			break;
 		case JS:
-			strcpy(ext, "js");
-			ext[2] = '\0';
+			ext_lang = "js";
+			strcpy(ext, ext_lang);
 			break;
 		case JAVA:
-			strcpy(ext, "java");
-			ext[4] = '\0';
+			ext_lang = "java";
+			strcpy(ext, ext_lang);
 			break;
 		case PHP:
-			strcpy(ext, "php");
-			ext[3] = '\0';
+			ext_lang = "php";
+			strcpy(ext, ext_lang);
 			break;
 	}
 	return ext;
