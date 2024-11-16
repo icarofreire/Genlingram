@@ -32,7 +32,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	gerate_txt_tree(gsymbols, tree);
 
 	/*\/ verificação por ast; */
-	verify(gsymbols, tree, tokensFileCode, tokensRules, file_code);
+	verify_by_ast(gsymbols, tree, tokensFileCode, tokensRules, file_code);
 
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
@@ -151,7 +151,6 @@ void filter_commands(int argc, char **argv){
     }
 
 	if(con_opts == min_opts){
-		printf("exec [%s][%s][%s]\n", proj, lang, rules);
 		int lang_num = str_lang_to_const_enum(lang);
 		if(lang_num != -1){
 			apply_rules_in_project(proj, rules, lang_num);

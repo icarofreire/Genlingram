@@ -161,7 +161,7 @@ int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int 
 }
 
 /*\/ criar exemplos de verificação de regras; */
-void verify(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
+void verify_by_ast(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
 
     /** ... */
     int n_path = 0;
