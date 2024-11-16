@@ -3,19 +3,25 @@
 
 const char delimiters_grammar[] = " :|()[]?*+'\"\t";
 
-bool if_non_term(char *s){
-    char *p1 = strstr(s, "::=");
-    char *p2 = strstr(s, ":");
-
-    int idx1 = (p1 != NULL) ? (p1-s) : (0);
-    int idx2 = (p2 != NULL) ? (p2-s) : (0);
-    int idx_priori = 0;
-
-    if(idx1 > 0){
-        idx_priori = idx1;
-    }else if(idx2 > 0){
-        idx_priori = idx2;
+int index_opr_grammar(const char* str, int* ref_tam_str_opr){
+    int tam = 3;
+    /*\/ tipos conhecidos de operadores de gramáticas; */
+    const char* opr[] = {"::=", ":", "="};
+    for (int i = 0; i < tam; i++){
+        char *p = strstr(str, opr[i]);
+        if(p != NULL){
+            if(ref_tam_str_opr != NULL) *ref_tam_str_opr = strlen(opr[i]);
+            return (p-str);
+        }
     }
+    if(ref_tam_str_opr != NULL) *ref_tam_str_opr = 0;
+    return -1;
+}
+
+bool if_non_term(char *s){
+
+    int idx = index_opr_grammar(s, NULL);
+    int idx_priori = (idx != -1) ? (idx) : (0);
 
     int ini = 0;
     int fim = idx_priori-1;
@@ -33,19 +39,11 @@ bool if_non_term(char *s){
 }
 
 char *get_non_term(char *s){
-    char *p1 = strstr(s, "::=");
-    char *p2 = strstr(s, ":");
-
-    int idx1 = (p1 != NULL) ? (p1-s) : (0);
-    int idx2 = (p2 != NULL) ? (p2-s) : (0);
-
+    int idx_priori = index_opr_grammar(s, NULL);
     char *sub = (char*)malloc((50)* sizeof(char));
     if(sub != NULL){
-        if(idx1 > 0){
-            get_substring(s, sub, 0, idx1); trim(sub);
-            return (only_alphabets(sub) ? (sub) : (NULL));
-        }else if(idx2 > 0){
-            get_substring(s, sub, 0, idx2); trim(sub);
+        if(idx_priori != -1){
+            get_substring(s, sub, 0, idx_priori); trim(sub);
             return (only_alphabets(sub) ? (sub) : (NULL));
         }
     }
@@ -53,19 +51,13 @@ char *get_non_term(char *s){
 }
 
 char *get_production(char *s){
-    char *p1 = strstr(s, "::=");
-    char *p2 = strstr(s, ":");
-
-    int idx1 = (p1 != NULL) ? (p1-s) : (0);
-    int idx2 = (p2 != NULL) ? (p2-s) : (0);
+    int len = 0;
+    int idx_priori = index_opr_grammar(s, &len);
 
     char *sub = (char*)malloc((300)* sizeof(char));
     if(sub != NULL){
-        if(idx1 > 0){
-            get_substring(s, sub, idx1+3, strlen(s));
-            trim(sub);
-        }else if(idx2 > 0){
-            get_substring(s, sub, idx2+1, strlen(s));
+        if(idx_priori != -1){
+            get_substring(s, sub, idx_priori+len, strlen(s));
             trim(sub);
         }
     }
