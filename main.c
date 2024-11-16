@@ -118,6 +118,8 @@ void filter_commands(int argc, char **argv){
 	char proj[100];
 	char lang[50];
 	char rules[100];
+	int con_opts = 0;
+	const int min_opts = 3;
 	for (int i = 0; i < argc; i++) {
 
 		char* opt = "-proj=";
@@ -126,6 +128,7 @@ void filter_commands(int argc, char **argv){
 			int len = strlen(argv[i]) - strlen(opt);
 			memcpy(proj, argv[i]+strlen(opt), len);
 			proj[len] = '\0';
+			con_opts++;
 		}
 
 		opt = "-rules=";
@@ -134,6 +137,7 @@ void filter_commands(int argc, char **argv){
 			int len = strlen(argv[i]) - strlen(opt);
 			memcpy(rules, argv[i]+strlen(opt), len);
 			rules[len] = '\0';
+			con_opts++;
 		}
 
 		opt = "-lang=";
@@ -142,14 +146,12 @@ void filter_commands(int argc, char **argv){
 			int len = strlen(argv[i]) - strlen(opt);
 			memcpy(lang, argv[i]+strlen(opt), len);
 			lang[len] = '\0';
+			con_opts++;
 		}
     }
 
-	if(
-		strcmp(proj, "") != 0 &&
-		strcmp(lang, "") != 0 &&
-		strcmp(rules, "") != 0
-	){
+	if(con_opts == min_opts){
+		printf("exec [%s][%s][%s]\n", proj, lang, rules);
 		int lang_num = str_lang_to_const_enum(lang);
 		if(lang_num != -1){
 			apply_rules_in_project(proj, rules, lang_num);
