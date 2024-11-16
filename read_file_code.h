@@ -93,6 +93,7 @@ int get_ini_nonTerm_grammar(struct grammar_symbols* gsymbols, const int lang){
 		case PYTHON: ini_grammar = get(gsymbols->nonTerminals, "statements"); break;
 		case JS: ini_grammar = get(gsymbols->nonTerminals, "Program"); break;
 		case JAVA: ini_grammar = get(gsymbols->nonTerminals, "compilation_unit"); break;
+		case PHP: ini_grammar = get(gsymbols->nonTerminals, "PHP_SOURCE_TEXT"); break;
 	}
 	return ini_grammar;
 }

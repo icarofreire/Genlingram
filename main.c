@@ -76,6 +76,10 @@ char* get_extension_lang(const int lang){
 			strcpy(ext, "java");
 			ext[4] = '\0';
 			break;
+		case PHP:
+			strcpy(ext, "php");
+			ext[3] = '\0';
+			break;
 	}
 	return ext;
 }

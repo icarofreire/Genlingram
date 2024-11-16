@@ -21,7 +21,8 @@ enum languages{
     PYTHON,
     RUBY,
     JS,
-    JAVA
+    JAVA,
+    PHP
 };
 
 /*\/ free dates for struct grammar_symbols; */

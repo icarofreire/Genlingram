@@ -7,6 +7,7 @@ int literal_tokenType_grammar_lang(struct grammar_symbols* gsymbols, const int l
 		case PYTHON: tokenType = get(gsymbols->symbolNum, "literal_pattern"); break;
 		case JS: tokenType = get(gsymbols->symbolNum, "Literal"); break;
 		case JAVA: tokenType = get(gsymbols->symbolNum, "literal"); break;
+		case PHP: tokenType = get(gsymbols->symbolNum, "LITERAL"); break;
 	}
 	return tokenType;
 }
@@ -41,6 +42,7 @@ int get_identifier_tokenType_lang(struct grammar_symbols* gsymbols, char *token,
 				case PYTHON: tokenType = get(gsymbols->symbolNum, "NAME"); break;
 				case JS: tokenType = get(gsymbols->symbolNum, "Identifier"); break;
 				case JAVA: tokenType = get(gsymbols->symbolNum, "identifier"); break;
+				case PHP: tokenType = get(gsymbols->symbolNum, "IDENTIFIER"); break;
 			}
 		}
 	}

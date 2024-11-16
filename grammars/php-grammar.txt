@@ -342,3 +342,7 @@ NEWLINE = "\r"|"\n"|"\r\n";
 
 T_END_HEREDOC = "FIXME: here at the beginning of the line"
 	LABEL [";"] NEWLINE;
+
+#\/ inserido por mim;
+LITERAL = T_LNUMBER | T_NUM_STRING | T_STRING | T_CONSTANT_ENCAPSED_STRING
+IDENTIFIER = LABEL
