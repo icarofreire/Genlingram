@@ -49,7 +49,32 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	free_dates_grammar_symbols(gsymbols);
 }
 
-void apply_rules_in_project(char* dir_project, char* dir_rules, const char *extension, const int lang){
+char* get_extension_lang(const int lang){
+	char* ext = (char *)malloc((10) * sizeof(char));
+	switch(lang){
+		case PYTHON:
+			strcpy(ext, "py");
+			ext[2] = '\0';
+			break;
+		case RUBY:
+			strcpy(ext, "rb");
+			ext[2] = '\0';
+			break;
+		case JS:
+			strcpy(ext, "js");
+			ext[2] = '\0';
+			break;
+		case JAVA:
+			strcpy(ext, "java");
+			ext[4] = '\0';
+			break;
+	}
+	return ext;
+}
+
+void apply_rules_in_project(char* dir_project, char* dir_rules, const int lang){
+
+	char* extension = get_extension_lang(lang);
 
 	int len_array_files = 0;
 	char** files = get_files_recursive(dir_project, &len_array_files, extension);
@@ -60,16 +85,18 @@ void apply_rules_in_project(char* dir_project, char* dir_rules, const char *exte
 	if(len_array_files_rules > 0 && len_array_files > 0){
 		for(int i=0; i<len_array_files; i++){
 			char* file_code = files[i];
+
 			for(int j=0; j<len_array_files_rules; j++){
 				char* file_rule = files_rules[j];
 				// printf(">> file: [%s] -> [%s]\n", file_code, file_rule);
-				// apply_files_rule(file_code, file_rule, lang);
+				apply_files_rule(file_code, file_rule, lang);
 			}
 		}
 	}
 
 	free_strings(files_rules, len_array_files_rules);
 	free_strings(files, len_array_files);
+	free(extension);
 }
 
 // DRIVER FUNCTION
@@ -84,15 +111,8 @@ int main()
 	// char *file_code = "testes/code-example-js.txt";
 	// apply_files_rule("testes/code-example-js.txt", "rules/code-example-js.txt", JS);
 
-	// get_files_rules("rules");
-	// list_files_project("rules", "txt");
-	apply_rules_in_project("rules", "rules", "txt", JS);
-	
-	// int len_array_files = 0;
-	// char** files = get_files_recursive("rules", &len_array_files, "txt");
-	// for(int i=0; i<len_array_files; i++){
-	// 	printf(">> [%s]\n", files[i]);
-	// }
+	apply_rules_in_project("rules", "rules", JS);
+
 
 	return (0);
 }
