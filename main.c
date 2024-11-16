@@ -96,7 +96,6 @@ void apply_rules_in_project(char* dir_project, char* dir_rules, const int lang){
 
 			for(int j=0; j<len_array_files_rules; j++){
 				char* file_rule = files_rules[j];
-				// printf(">> file: [%s] -> [%s]\n", file_code, file_rule);
 				apply_files_rule(file_code, file_rule, lang);
 			}
 		}
@@ -107,6 +106,7 @@ void apply_rules_in_project(char* dir_project, char* dir_rules, const int lang){
 	free(extension);
 }
 
+/*\/ filtrar argumentos para exercer no projeto; */
 void filter_commands(int argc, char **argv){
 	char *cmd = NULL;
 	char proj[100];

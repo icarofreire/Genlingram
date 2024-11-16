@@ -3,34 +3,7 @@
 #include <ctype.h>
 #include "str.h"
 
-const char delimiters[] = {
-' ', /* espaço em branco; */
-'=', /* EQ */
-'+', /* ADD */
-'-', /* SUB */
-'!', /* NOT */
-'&', /* AND */
-'*', /* MUL */
-'/', /* DIV */
-'(', /* LPAREN */
-')', /* RPAREN */
-'.', /* DOT */
-',', /* COMMA */
-'?', /* QUESTION */
-'~', /* TILDE */
-':', /* COLON */
-';', /* SEMICOLON */
-'{', /* LBRACE */
-'}', /* RBRACE */
-'[', /* LBRACK */
-']', /* RBRACK */
-'<', /* LESSER */
-'|', /* OR */
-'^', /* XOR */
-'%', /* MOD */
-'>', /* GREATER */
-'\0'
-};
+const char delimiters[] = " =+-!&*/().,?~:;{}[]<|^%>";
 
 /**
  * @brief Call a function for each token found in the input string.

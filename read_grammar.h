@@ -22,8 +22,6 @@ bool if_non_term(char *s){
     while(ini<idx_priori && isspace(s[++ini]));
     while(fim >= 0 && isspace(s[--fim]));
 
-    // printf("f: [%d - %d]\n", ini, fim);
-
     int onlyLetOrUnder = 1;
     for(int i=ini; i<=fim; i++){
         if(!isalpha(s[i]) && s[i] != '_' && s[i] != '-'){
@@ -92,7 +90,6 @@ void tokenize_and_reg(struct grammar_symbols* gsymbols, char *linha){
                 trim(strings[i]);
                 toLower(strings[i]);
                 if(
-                    // (get(gsymbols->symbolNum, strings[i]) == -1) &&
                     (!if_string_reg(gsymbols, strings[i]))
                 ){
                     gsymbols->tokenType++;
