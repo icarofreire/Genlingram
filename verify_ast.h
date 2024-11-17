@@ -259,12 +259,12 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
         // Output data of the current node
         // printf("%d <- ", curr->data);
 
-        int nchils = numChildrens(curr);
-        if(nchils > 0){
+        int nchils_node_rule = numChildrens(curr);
+        if(nchils_node_rule > 0){
             struct NodeDLL* nodeSimiTree = searchBackwardNodeByKey(tail_tree, curr->data);
             if(nodeSimiTree){
-                int nchils_tree = numChildrens(nodeSimiTree);
-                if(nchils_tree > 0){
+                int nchils_tree_code = numChildrens(nodeSimiTree);
+                if(nchils_tree_code > 0){
                     /*\/ se um nó contém os mesmos filhos que o outro nó possui; */
                     bool contem = ele_array_contains_in(
                         nodeSimiTree->children_datas,
@@ -274,11 +274,14 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
                     );
                     if(contem){
                         parid++;
+
+                        // if(nchils_node_rule == nchils_tree_code){}
+
                         printf("NO SIMI: [%s][%d][%s][%d]\n",
                         getKeyByValue(gsymbols->symbolNum, nodeSimiTree->data),
-                        nchils_tree,
+                        nchils_tree_code,
                         getKeyByValue(gsymbols->symbolNum, curr->data),
-                        nchils
+                        nchils_node_rule
                         );
                     }
                 }

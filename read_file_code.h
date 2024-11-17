@@ -99,10 +99,10 @@ int get_ini_nonTerm_grammar(struct grammar_symbols* gsymbols, const int lang){
 }
 
 /*\/ exibindo a arvore para verificar a ordem dos tokens inseridos; */
-void gerate_txt_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head) {
+void gerate_txt_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head, char* nome_arquivo) {
 
 	FILE *fptr;
-   	fptr = fopen("tree.txt","w");
+   	fptr = fopen(nome_arquivo,"w");
 	if(fptr == NULL) return;
 
     struct NodeDLL *curr = head;
