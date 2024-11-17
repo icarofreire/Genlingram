@@ -33,6 +33,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 
 	/*\/ verificação por ast; */
 	verify_by_ast(gsymbols, tree, tokensFileCode, tokensRules, file_code);
+	verificacao_sub_grafo_tails(tree, treeFileRules);
 
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
@@ -170,7 +171,7 @@ int main(int argc, char **argv)
 	// char *file_code = "testes/code-js-2.txt";
 	// char *file_code = "testes/prisioners-js.txt";
 	// char *file_code = "testes/code-example-js.txt";
-	// apply_files_rule("testes/code-example-js.txt", "rules/code-example-js.txt", JS);
+	apply_files_rule("testes/code-example-js.txt", "rules/code-example-js.txt", JS);
 
 	// apply_rules_in_project("rules", "rules", JS);
 
