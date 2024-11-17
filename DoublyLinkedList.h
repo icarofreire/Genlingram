@@ -3,6 +3,8 @@
 
 /* Node Doubly Linked List; */
 struct NodeDLL {
+    /*\/ dado representativo do nó,
+    ou um indice para a nó da Doubly Linked List;*/
     int data;
 
     /*\/ array de dados dinâmico para simular os filhos deste nó; */
@@ -12,7 +14,6 @@ struct NodeDLL {
 
     struct NodeDLL *next;
     struct NodeDLL *prev;
-    int index;
 };
 
 // Function to create a new node
@@ -29,7 +30,6 @@ struct NodeDLL *createNodeDLL(int new_data) {
 
     new_node->next = NULL;
     new_node->prev = NULL;
-    new_node->index = 0;
     return new_node;
 }
 
@@ -253,6 +253,25 @@ struct NodeDLL* searchNodeByKey(struct NodeDLL* head, int key) {
     return NULL;
 }
 
+struct NodeDLL* searchBackwardNodeByKey(struct NodeDLL* tail, int key) {
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = tail;
+
+    // Continue until the current node is not
+    // null (end of list)
+    while (curr != NULL) {
+
+        if (curr->data == key)
+            return curr;
+
+        // Move to the previous node
+        curr = curr->prev;
+    }
+
+    return NULL;
+}
+
 // Function to delete a node at a specific 
 //position in the doubly linked list
 struct NodeDLL * delPos(struct NodeDLL * head, int pos) {
@@ -338,20 +357,6 @@ void printList(struct NodeDLL *head) {
     printf("\n");
 }
 
-void printListAndChildrens(struct NodeDLL *head) {
-    struct NodeDLL *curr = head;
-    while (curr != NULL) {
-        printf("[%d]:\n", curr->data);
-        if(curr->len_children_datas > 0){
-            for(int i=0; i<curr->len_children_datas; i++){
-                if(curr->children_datas[i] != -1) printf("%d -> ", curr->children_datas[i]);
-            }printf("\n");
-        }
-        curr = curr->next;
-    }
-    printf("\n");
-}
-
 // Function to traverse the doubly linked list 
 // in forward direction
 void forwardTraversal(struct NodeDLL* head) {
@@ -396,6 +401,56 @@ void backwardTraversal(struct NodeDLL* tail) {
     printf("\n");
 }
 
+struct NodeDLL* getHead(struct NodeDLL* curr) {
+
+    struct NodeDLL* head = NULL;
+    while (curr != NULL) {
+
+        head = curr;
+
+        // Move to the previous node
+        curr = curr->prev;
+    }
+
+    return head;
+}
+
+struct NodeDLL* getTail(struct NodeDLL* head) {
+
+    struct NodeDLL* curr = head;
+    struct NodeDLL* tail = NULL;
+    while (curr != NULL) {
+
+        tail = curr;
+
+        // Move to the next node
+        curr = curr->next;
+    }
+
+    return tail;
+}
+
+
+/*\/ *** implementações customizadas; *** \/
+* implementações que estão além das realizações
+propícias de uma Doubly Linked List;
+*/
+
+
+void printListAndChildrens(struct NodeDLL *head) {
+    struct NodeDLL *curr = head;
+    while (curr != NULL) {
+        printf("[%d]:\n", curr->data);
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1) printf("%d -> ", curr->children_datas[i]);
+            }printf("\n");
+        }
+        curr = curr->next;
+    }
+    printf("\n");
+}
+
 void add_date_for_array(struct NodeDLL *nodeDLL, int new_data){
     int idx_vago = -1;
     for(int i=0; i<nodeDLL->len_children_datas; i++){
@@ -422,27 +477,6 @@ void add_date_in_array_node(struct NodeDLL* head, int key, int new_data){
     if(node){
         add_date_for_array(node, new_data);
     }
-}
-
-struct NodeDLL* searchForwardNodeByIndex(struct NodeDLL* head, int index) {
-
-    // Start traversal from the tail of the list
-    struct NodeDLL* curr = head;
-
-    // Continue until the current node is not 
-    // null (end of list)
-    while (curr != NULL) {
-
-        if(curr->index == index){
-            return curr;
-        }
-
-        // Move to the next node
-        curr = curr->next;
-    }
-
-    // If there is no node with value as key, return false
-    return NULL;
 }
 
 /*\/ detectar caminho por busca em largura(BFS); */

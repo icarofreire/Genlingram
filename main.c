@@ -33,7 +33,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 
 	/*\/ verificação por ast; */
 	verify_by_ast(gsymbols, tree, tokensFileCode, tokensRules, file_code);
-	verificacao_sub_grafo_tails(tree, treeFileRules);
+	verificacao_sub_tree_tails(gsymbols, tree, treeFileRules);
 
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);

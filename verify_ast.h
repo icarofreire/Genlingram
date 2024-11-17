@@ -209,9 +209,10 @@ void verify_by_ast(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struc
     }
 }
 
+/* ******* */
+
 /*\/ se elementos do array2 contém em array1; */
 bool ele_array_contains_in(int *array1, int len_array1, int* array2, int len_array2){
-
     int con = 0;
     for (int i = 0; i < len_array2; i++){
         int pri = array2[i];
@@ -221,7 +222,6 @@ bool ele_array_contains_in(int *array1, int len_array1, int* array2, int len_arr
             }
         }
     }
-
     return (con == len_array2);
 }
 
@@ -238,44 +238,11 @@ int numChildrens(struct NodeDLL *head) {
     return chils;
 }
 
-struct NodeDLL* getTailDLL(struct NodeDLL* head) {
+/*\/ verificação por sub-arvores filhas, partindo das caudas da arvore(AST); */
+void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL* tree, struct NodeDLL *treeFileRules){
 
-    struct NodeDLL* curr = head;
-    struct NodeDLL* tail = NULL;
-    while (curr != NULL) {
-
-        tail = curr;
-
-        // Move to the next node
-        curr = curr->next;
-    }
-
-    return tail;
-}
-
-struct NodeDLL* searchBackwardNode(struct NodeDLL* tail, int key) {
-
-    // Start traversal from the tail of the list
-    struct NodeDLL* curr = tail;
-
-    // Continue until the current node is not
-    // null (end of list)
-    while (curr != NULL) {
-
-        if (curr->data == key)
-            return curr;
-
-        // Move to the previous node
-        curr = curr->prev;
-    }
-
-    return NULL;
-}
-
-void verificacao_sub_grafo_tails(struct NodeDLL* tree, struct NodeDLL *treeFileRules){
-
-    struct NodeDLL* tail_tree = getTailDLL(tree);
-    struct NodeDLL* tail_rules = getTailDLL(treeFileRules);
+    struct NodeDLL* tail_tree = getTail(tree);
+    struct NodeDLL* tail_rules = getTail(treeFileRules);
 
     printf("tail: %d\n", tail_tree->data);
     printf("tailr: %d\n", tail_rules->data);
@@ -290,15 +257,15 @@ void verificacao_sub_grafo_tails(struct NodeDLL* tree, struct NodeDLL *treeFileR
     while (curr != NULL) {
 
         // Output data of the current node
-        printf("%d <- ", curr->data);
+        // printf("%d <- ", curr->data);
 
         int nchils = numChildrens(curr);
         if(nchils > 0){
-            struct NodeDLL* nodeSimiTree = searchBackwardNode(tail_tree, curr->data);
+            struct NodeDLL* nodeSimiTree = searchBackwardNodeByKey(tail_tree, curr->data);
             if(nodeSimiTree){
                 int nchils_tree = numChildrens(nodeSimiTree);
                 if(nchils_tree > 0){
-
+                    /*\/ se um nó contém os mesmos filhos que o outro nó possui; */
                     bool contem = ele_array_contains_in(
                         nodeSimiTree->children_datas,
                         nodeSimiTree->len_children_datas,
@@ -307,6 +274,12 @@ void verificacao_sub_grafo_tails(struct NodeDLL* tree, struct NodeDLL *treeFileR
                     );
                     if(contem){
                         parid++;
+                        printf("NO SIMI: [%s][%d][%s][%d]\n",
+                        getKeyByValue(gsymbols->symbolNum, nodeSimiTree->data),
+                        nchils_tree,
+                        getKeyByValue(gsymbols->symbolNum, curr->data),
+                        nchils
+                        );
                     }
                 }
             }
