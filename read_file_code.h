@@ -135,7 +135,7 @@ struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct to
 	struct Graph *ast = createGraph();
 	int ini_grammar = get_ini_nonTerm_grammar(gsymbols, lang);
 	if(ini_grammar != -1){
-		EARLEY_PARSE(gsymbols->grammar, tksReads->pTokenTypes, tksReads->sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree);
+		EARLEY_PARSE(gsymbols->grammar, tksReads->pTokenTypes, tksReads->sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree, tksReads);
 	}
 
 	free(pNonTerminals);

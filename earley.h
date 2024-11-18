@@ -126,7 +126,7 @@ void PREDICTOR2(struct Graph* graph, int state_x, int production[], int max_prod
     *idx_production = 0;
 }
 
-void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree) {
+void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree, int indice_terminal, struct tokens_reads* tokensFileCode) {
     // printf("SCANNER: %d\n", state_x);
     struct Node* tempNode = graph->head;
     struct Edge* tempEdge = NULL;
@@ -152,6 +152,14 @@ void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTermi
                     append(&tree, state_x);
                 }
                 add_date_in_array_node(tree, tempNode->val, state_x);
+
+                /*\/ registrar no nó pai, a linha onde o token
+                filho(terminal) foi encontrado; */
+                struct NodeDLL* node = searchNodeByKey(tree, tempNode->val);
+                if(node){
+                    int linha = tokensFileCode->lineTokens[indice_terminal];
+                    node->linha = linha;
+                }
                 /* --- */
             }
             tempEdge = tempEdge->next;
@@ -230,7 +238,7 @@ void get_states_production(struct Graph* graph, int state_x, int production[], i
     }
 }
 
-void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols, struct NodeDLL *tree){
+void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode){
     struct State* state = ini();
 
     add_state(state, state_ini_grammar);
@@ -261,7 +269,7 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
                     PREDICTOR(graph, state, act_state, nonTerminals, max_nonTer, ast, tree); // non_terminal
                     // PREDICTOR2(graph, act_state, production, max_production, &con_std_prod, &s);
                 }else{
-                    SCANNER(graph, state, tokens_input[i], nonTerminals, max_nonTer, ast, tree); // terminal
+                    SCANNER(graph, state, tokens_input[i], nonTerminals, max_nonTer, ast, tree, i, tokensFileCode); // terminal
                 }
 
             }

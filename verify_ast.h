@@ -238,16 +238,25 @@ int numChildrens(struct NodeDLL *head) {
     return chils;
 }
 
+// Custom comparator
+int comp(const void* a, const void* b) {
+      // If a is smaller, positive value will be returned
+    return (*(int*)a - *(int*)b);
+}
+
 /*\/ verificação por sub-arvores filhas, partindo das caudas da arvore(AST); */
-void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL* tree, struct NodeDLL *treeFileRules){
+void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL* tree, struct NodeDLL *treeFileRules, char *file_code){
 
     struct NodeDLL* tail_tree = getTail(tree);
     struct NodeDLL* tail_rules = getTail(treeFileRules);
 
-    printf("tail: %d\n", tail_tree->data);
-    printf("tailr: %d\n", tail_rules->data);
+    /*\/ contar paridades de sub arvores semelantes; */
+    int parid_sub_arvores = 0;
 
-    int parid = 0;
+    int aux_lines = 0;
+    int max_lines = 100;
+    int lines[max_lines];
+    for(int i=0; i<max_lines; i++) lines[i] = -1;
 
     // Start traversal from the tail of the list
     struct NodeDLL* curr = tail_rules;
@@ -255,9 +264,6 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
     // Continue until the current node is not
     // null (end of list)
     while (curr != NULL) {
-
-        // Output data of the current node
-        // printf("%d <- ", curr->data);
 
         int nchils_node_rule = numChildrens(curr);
         if(nchils_node_rule > 0){
@@ -273,16 +279,32 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
                         curr->len_children_datas
                     );
                     if(contem){
-                        parid++;
+                        parid_sub_arvores++;
 
-                        // if(nchils_node_rule == nchils_tree_code){}
+                        if(nchils_node_rule <= nchils_tree_code){
 
-                        printf("NO SIMI: [%s][%d][%s][%d]\n",
-                        getKeyByValue(gsymbols->symbolNum, nodeSimiTree->data),
-                        nchils_tree_code,
-                        getKeyByValue(gsymbols->symbolNum, curr->data),
-                        nchils_node_rule
-                        );
+                            // printf("SUB TREE SIMI: [%s][%d][%s][%d] L:[%d]\n",
+                            // getKeyByValue(gsymbols->symbolNum, nodeSimiTree->data),
+                            // nchils_tree_code,
+                            // getKeyByValue(gsymbols->symbolNum, curr->data),
+                            // nchils_node_rule,
+                            // nodeSimiTree->linha
+                            // );
+
+                            int indfinal = -1;
+                            for(int i=0; i<max_lines; i++){
+                                if(lines[i] == nodeSimiTree->linha){
+                                    break;
+                                }else if(lines[i] == -1){
+                                    indfinal = i; break;
+                                }
+                            }
+                            if(indfinal != -1){
+                                lines[aux_lines] = nodeSimiTree->linha;
+                                aux_lines++;
+                            }
+
+                        }
                     }
                 }
             }
@@ -292,6 +314,13 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
         curr = curr->prev;
     }
 
-    printf("parid [%d]\n", parid);
+    if(parid_sub_arvores > 0){
+        printf("Padrão reconhecido por sub-arvores filhas na AST: [%s]:\n", file_code);
+        qsort(lines, aux_lines, sizeof(int), comp);
+        for(int i=0; i<aux_lines; i++){
+            printf("LL: %d\n", lines[i] );
+        }
+        printf("***\n");
+    }
 
 }

@@ -7,6 +7,12 @@ struct NodeDLL {
     ou um indice para a nó da Doubly Linked List;*/
     int data;
 
+    /*\/ para os nós que são terminais, será registrada
+    linha a qual este terminal foi encontrado;
+    este registro será feito no processo de SCANNER do EARLEY;
+    */
+    int linha;
+
     /*\/ array de dados dinâmico para simular os filhos deste nó; */
     int *children_datas;
     /*\/ tamanho do array; */
@@ -20,6 +26,7 @@ struct NodeDLL {
 struct NodeDLL *createNodeDLL(int new_data) {
     struct NodeDLL *new_node = (struct NodeDLL *)malloc(sizeof(struct NodeDLL));
     new_node->data = new_data;
+    new_node->linha = -1; // << não inserida uma linha encontrada;
 
     /*\/ inicialização do array inicial de cada nó; */
     new_node->len_children_datas = 1;
