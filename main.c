@@ -33,8 +33,8 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	gerate_txt_tree(gsymbols, treeFileRules, "tree-rules.txt");
 	gerate_txt_tree(gsymbols, gsymbols->grammarDLL, "grammar-tree.txt");
 
-	/*\/ verificação por ast; */
-	verify_by_ast(gsymbols, tree, tokensFileCode, tokensRules, file_code);
+	/*\/ verificação por caminhos ligados na arvore(AST); */
+	verificacao_por_caminhos(gsymbols, tree, tokensFileCode, tokensRules, file_code);
 
 	/*\/ verificação por sub-arvores filhas, partindo das caudas da arvore(AST); */
 	verificacao_sub_tree_tails(gsymbols, tree, treeFileRules, file_code);

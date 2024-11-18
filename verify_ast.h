@@ -166,8 +166,8 @@ int comp(const void* a, const void* b) {
     return (*(int*)a - *(int*)b);
 }
 
-/*\/ criar exemplos de verificação de regras; */
-void verify_by_ast(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
+/*\/ verificação por caminhos ligados na arvore(AST); */
+void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
 
     int aux_lines = 0;
     int max_lines = 100;
