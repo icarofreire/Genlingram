@@ -6,6 +6,12 @@ struct grammar_symbols {
     struct hashMap* nonTerminals;
     struct Graph *grammar;
 
+    /*\/ criar arvore da gramática da linguagem inserida;
+    possibilitando nesta arvore, que o nó contenha muitos filhos de mesmo número
+    para compor todas as diferentes formas de avaliação que é estabelecido na gramatica;
+    */
+    struct NodeDLL* grammarDLL;
+
     /*\/ atributo incremental que dará o número
     tokentype para cada token obtido da gramatica; */
     int tokenType;

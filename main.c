@@ -31,6 +31,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ criando .txt arvore para analise; */
 	gerate_txt_tree(gsymbols, tree, "tree.txt");
 	gerate_txt_tree(gsymbols, treeFileRules, "tree-rules.txt");
+	gerate_txt_tree(gsymbols, gsymbols->grammarDLL, "grammar-tree.txt");
 
 	/*\/ verificação por ast; */
 	verify_by_ast(gsymbols, tree, tokensFileCode, tokensRules, file_code);

@@ -115,6 +115,19 @@ void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *lin
             insertNode(gsymbols->grammar, gprod);
             /*\/ criando o vertice do não-terminal para cada simbolo da production; */
             insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
+
+
+            /*\/ criando arvore da gramática da linguagem inserida;
+            possibilitando nesta arvore, que o nó contenha muitos filhos de mesmo número
+            para compor todas as diferentes formas de avaliação que é estabelecido na gramatica;
+            */
+            struct NodeDLL* nodeNonTerm = searchNodeByKey(gsymbols->grammarDLL, idx_nonTerm);
+            if(!nodeNonTerm){
+                append(&gsymbols->grammarDLL, idx_nonTerm);
+            }else{
+                add_last_for_array(nodeNonTerm, gprod);
+            }
+
         }
     }
     free_strings(tokens_prod, tam_prod);
@@ -157,6 +170,7 @@ struct grammar_symbols* read_file_grammar(char* arquivo, const int lang){
         gsymbols->symbolNum = ini_hashMap();
         gsymbols->nonTerminals = ini_hashMap();
         gsymbols->grammar = createGraph();
+        gsymbols->grammarDLL = createNodeDLL(0);
         gsymbols->tokenType = 0;
 
         /*\/ registrar primeiro as keywords; */

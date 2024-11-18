@@ -472,6 +472,25 @@ void add_date_for_array(struct NodeDLL *nodeDLL, int new_data){
     }
 }
 
+void add_last_for_array(struct NodeDLL *nodeDLL, int new_data){
+    int idx_vago = -1;
+    for(int i=0; i<nodeDLL->len_children_datas; i++){
+        if(nodeDLL->children_datas[i] == -1){
+            idx_vago = i; break;
+        }
+    }
+
+    if(idx_vago != -1){
+        /*\/ add se existir indice vago; */
+        nodeDLL->children_datas[idx_vago] = new_data;
+    }else{
+        /*\/ adicionar mais 1 capacidade ao array; */
+        array_plus_size(&nodeDLL->children_datas, &nodeDLL->len_children_datas, 1);
+        /*\/ add o dado como o ultimo; */
+        nodeDLL->children_datas[nodeDLL->len_children_datas-1] = new_data;
+    }
+}
+
 void add_date_in_array_node(struct NodeDLL* head, int key, int new_data){
     struct NodeDLL* node = searchNodeByKey(head, key);
     if(node){
