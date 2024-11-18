@@ -189,7 +189,7 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 					}
 
 					if(take > 0){
-						printf("tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, take));
+						// printf("tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, take));
 					}
 
 				}// fim if;

@@ -160,8 +160,19 @@ int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int 
     return -1;
 }
 
+// Custom comparator
+int comp(const void* a, const void* b) {
+      // If a is smaller, positive value will be returned
+    return (*(int*)a - *(int*)b);
+}
+
 /*\/ criar exemplos de verificação de regras; */
 void verify_by_ast(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
+
+    int aux_lines = 0;
+    int max_lines = 100;
+    int lines[max_lines];
+    for(int i=0; i<max_lines; i++) lines[i] = -1;
 
     /** ... */
     int n_path = 0;
@@ -186,26 +197,38 @@ void verify_by_ast(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struc
 
             int is_path = isPathInDLL_ret(gsymbols, tree, tk1, tk2, caminhos, len_caminhos);
             if(is_path == 1){
-                printf("[%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
+                struct NodeDLL* node = searchNodeByKey(tree, tk2);
+                if(node){
+
+                    int indfinal = -1;
+                    for(int i=0; i<max_lines; i++){
+                        if(lines[i] == node->linha){
+                            break;
+                        }else if(lines[i] == -1){
+                            indfinal = i; break;
+                        }
+                    }
+                    if(indfinal != -1){
+                        lines[aux_lines] = node->linha;
+                        aux_lines++;
+                    }
+                }
+                // printf("[%s -> %s] = %d; L: %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path, linha);
                 n_path++;
             }else{
-                printf("NO [%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
+                // printf("NO [%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
                 n_path--;
             }
         }
-
-        // int paiteste = 213;//221;
-        // int literal = 78;
-        // int is_path = isPathInDLL_ret(gsymbols, tree, paiteste, literal, caminhos, len_caminhos);
-        // printf("is_path[%d]\n", is_path);
-        // is_path = isPathInDLL_ret(gsymbols, tree, paiteste, literal, caminhos, len_caminhos);
-        // printf("is_path[%d]\n", is_path);
     }
-    printf("n_path: [%d][%d]\n", n_path, tokensRules->sizePtokenTypes);
+
     if(n_path == tokensRules->sizePtokenTypes){
-        int ind_sub = indice_sub_array(tokensFileCode->pTokenTypes, tokensFileCode->sizePtokenTypes, tokensRules->pTokenTypes, tokensRules->sizePtokenTypes);
-        int line_ini = tokensFileCode->lineTokens[ind_sub];
-        printf("[Padrão reconhecido; [%s] linha: %d];\n", file_code, line_ini);
+        printf("Padrão reconhecido; [%s]:\n", file_code);
+        qsort(lines, aux_lines, sizeof(int), comp);
+        for(int i=0; i<aux_lines; i++){
+            printf("L: %d\n", lines[i] );
+        }
+        printf("***\n");
     }
 }
 
@@ -236,12 +259,6 @@ int numChildrens(struct NodeDLL *head) {
         }
     }
     return chils;
-}
-
-// Custom comparator
-int comp(const void* a, const void* b) {
-      // If a is smaller, positive value will be returned
-    return (*(int*)a - *(int*)b);
 }
 
 /*\/ verificação por sub-arvores filhas, partindo das caudas da arvore(AST); */
@@ -318,9 +335,8 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
         printf("Padrão reconhecido por sub-arvores filhas na AST: [%s]:\n", file_code);
         qsort(lines, aux_lines, sizeof(int), comp);
         for(int i=0; i<aux_lines; i++){
-            printf("LL: %d\n", lines[i] );
+            printf("L: %d\n", lines[i] );
         }
         printf("***\n");
     }
-
 }
