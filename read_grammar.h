@@ -112,10 +112,7 @@ void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *lin
         int gprod = get(gsymbols->symbolNum, tokens_prod[i]);
         if(gprod != -1){
             /*\/ criar vertice dos simbolos da production; */
-            insertNode(gsymbols->grammar, gprod);
             /*\/ criando o vertice do não-terminal para cada simbolo da production; */
-            insertEdge(gsymbols->grammar, idx_nonTerm, gprod);
-
 
             /*\/ criando arvore da gramática da linguagem inserida;
             possibilitando nesta arvore, que o nó contenha muitos filhos de mesmo número
@@ -124,7 +121,10 @@ void create_vertices_for_nonterminal(struct grammar_symbols* gsymbols, char *lin
             struct NodeDLL* nodeNonTerm = searchNodeByKey(gsymbols->grammarDLL, idx_nonTerm);
             if(!nodeNonTerm){
                 append(&gsymbols->grammarDLL, idx_nonTerm);
-            }else{
+            }
+
+            nodeNonTerm = searchNodeByKey(gsymbols->grammarDLL, idx_nonTerm);
+            if(nodeNonTerm){
                 add_last_for_array(nodeNonTerm, gprod);
             }
 
@@ -169,7 +169,6 @@ struct grammar_symbols* read_file_grammar(char* arquivo, const int lang){
         struct grammar_symbols* gsymbols = (struct grammar_symbols*)malloc(sizeof(struct grammar_symbols));
         gsymbols->symbolNum = ini_hashMap();
         gsymbols->nonTerminals = ini_hashMap();
-        gsymbols->grammar = createGraph();
         gsymbols->grammarDLL = createNodeDLL(0);
         gsymbols->tokenType = 0;
 
@@ -222,7 +221,6 @@ struct grammar_symbols* read_file_grammar(char* arquivo, const int lang){
                     if(idx_nonTerm != -1){
                         insert(gsymbols->nonTerminals, non_term, idx_nonTerm);
                         /*\/ criar vertice do não-terminal; */
-                        insertNode(gsymbols->grammar, idx_nonTerm);
 
                         char *prod = get_production(line);
                         if(prod != NULL){
@@ -236,7 +234,6 @@ struct grammar_symbols* read_file_grammar(char* arquivo, const int lang){
         }
         // printMap(gsymbols->symbolNum);
         // printMap(gsymbols->nonTerminals);
-        // printGraph(gsymbols->grammar);
         // Close the file stream once all lines have been
         // read.
         fclose(file);

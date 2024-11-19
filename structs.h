@@ -4,7 +4,6 @@
 struct grammar_symbols {
     struct hashMap* symbolNum;
     struct hashMap* nonTerminals;
-    struct Graph *grammar;
 
     /*\/ criar arvore da gramática da linguagem inserida;
     possibilitando nesta arvore, que o nó contenha muitos filhos de mesmo número
@@ -35,9 +34,8 @@ enum languages{
 void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
 	free_map(gsymbols->symbolNum);
 	free_map(gsymbols->nonTerminals);
-	deleteAllGraph(gsymbols->grammar);
 	free_strings(gsymbols->keywords_lang, gsymbols->len_keywords);
-	free(gsymbols->grammar);
+    deleteAllNodes(&gsymbols->grammarDLL);
 }
 
 /*\/ estrutura de tokens lidos no arquivo de código; */

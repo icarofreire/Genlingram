@@ -56,189 +56,95 @@ int state_is_a_nonterminal(int nonTerminals[], int max_nonTer, int state_x){
     return -1;
 }
 
-void PREDICTOR(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree) {
-    // printf("PREDICTOR: %d\n", state_x);
-    struct Node* tempNode = graph->head;
-    struct Edge* tempEdge = NULL;
+void PREDICTOR(struct NodeDLL *grammarDLL, struct State *state, int state_x, struct NodeDLL *tree) {
+    int child = state_x;
+    struct NodeDLL *curr = grammarDLL;
+    while (curr != NULL) {
+        int pai = curr->data;
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1 && curr->children_datas[i] == child){
+                    
+                    add_state(state, pai);
 
-    while (tempNode != NULL) {
-        // printf("\nNodo %d: ", tempNode->val);
-        tempEdge = tempNode->edges;
-        while (tempEdge) {
-            // printf(" -> %d", tempEdge->dest->val);
-            if( tempEdge->dest->val == state_x && state_is_a_nonterminal(nonTerminals, max_nonTer, tempNode->val) == 1){
-                // printf("PREDICTOR %d to %d;\n", state_x, tempNode->val);
-                add_state(state, tempNode->val);
-
-                /*\/ criando os vertices e arestas do ast; */
-                insertNode(ast, state_x);
-                insertNode(ast, tempNode->val);
-                insertEdge(ast, tempNode->val, state_x);
-
-                /*\/ tree; */
-                if(!searchNodeByKey(tree, tempNode->val)){
-                    append(&tree, tempNode->val);
+                    /*\/ tree; */
+                    if(!searchNodeByKey(tree, pai)){
+                        append(&tree, pai);
+                    }
+                    if(!searchNodeByKey(tree, child)){
+                        append(&tree, child);
+                    }
+                    add_date_in_array_node(tree, pai, child);
+                    /* --- */
                 }
-                if(!searchNodeByKey(tree, state_x)){
-                    append(&tree, state_x);
-                }
-                add_date_in_array_node(tree, tempNode->val, state_x);
-                /* --- */
             }
-            tempEdge = tempEdge->next;
         }
-        tempNode = tempNode->next;
+        curr = curr->next;
     }
 }
 
-void PREDICTOR_COMPLETE(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast) {
-    // printf("PREDICTOR: %d\n", state_x);
-    struct Node* tempNode = graph->head;
-    struct Edge* tempEdge = NULL;
+void SCANNER(struct NodeDLL *grammarDLL, struct State *state, int state_x, struct NodeDLL *tree, int indice_terminal, struct tokens_reads* tokensFileCode) {
+    int child = state_x;
+    struct NodeDLL *curr = grammarDLL;
+    while (curr != NULL) {
+        int pai = curr->data;
+        if(curr->len_children_datas > 0){
+            for(int i=0; i<curr->len_children_datas; i++){
+                if(curr->children_datas[i] != -1 && curr->children_datas[i] == child){
+                    
+                    add_state(state, child);
 
-    while (tempNode != NULL) {
-        // printf("\nNodo %d: ", tempNode->val);
-        tempEdge = tempNode->edges;
-        while (tempEdge) {
-            // printf(" -> %d", tempEdge->dest->val);
-            if( tempEdge->dest->val == state_x && state_is_a_nonterminal(nonTerminals, max_nonTer, tempNode->val) == 1){
-                // printf("PREDICTOR %d to %d;\n", state_x, tempNode->val);
-                // add_state(state, tempNode->val);
+                    /*\/ tree; */
+                    if(!searchNodeByKey(tree, pai)){
+                        append(&tree, pai);
+                    }
+                    if(!searchNodeByKey(tree, child)){
+                        append(&tree, child);
+                    }
+                    add_date_in_array_node(tree, pai, child);
 
-                /*\/ criando os vertices e arestas do ast; */
-                insertNode(ast, state_x);
-                insertNode(ast, tempNode->val);
-                insertEdge(ast, tempNode->val, state_x);
+                    /*\/ registrar no nó pai, a linha onde o token
+                    filho(terminal) foi encontrado; */
+                    struct NodeDLL* node = searchNodeByKey(tree, pai);
+                    if(node){
+                        int linha = tokensFileCode->lineTokens[indice_terminal];
+                        node->linha = linha;
+                    }
+                    /* --- */
+                }
             }
-            tempEdge = tempEdge->next;
         }
-        tempNode = tempNode->next;
+        curr = curr->next;
     }
 }
 
-void get_states_production(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod);
-
-void PREDICTOR2(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod, int *idx_production) {
-    // printf("PREDICTOR: %d;\n", state_x);
-    /*\/ apagar dados da production anterior; */
-    for(int s=0; s<*con_std_prod; s++) production[s] = -1;
-    get_states_production(graph, state_x, production, max_production, con_std_prod);
-    *idx_production = 0;
-}
-
-void SCANNER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree, int indice_terminal, struct tokens_reads* tokensFileCode) {
-    // printf("SCANNER: %d\n", state_x);
-    struct Node* tempNode = graph->head;
-    struct Edge* tempEdge = NULL;
-
-    while (tempNode != NULL) {
-        // printf("\nNodo %d: ", tempNode->val);
-        tempEdge = tempNode->edges;
-        while (tempEdge) {
-            // printf(" -> %d", tempEdge->dest->val);
-            if( tempEdge->dest->val == state_x /*&& state_is_a_nonterminal(nonTerminals, max_nonTer, state_x) == -1*/){
-                add_state(state, state_x);
-
-                /*\/ criando os vertices e arestas do ast; */
-                insertNode(ast, state_x);
-                insertNode(ast, tempNode->val);
-                insertEdge(ast, tempNode->val, state_x);
-
-                /*\/ tree; */
-                if(!searchNodeByKey(tree, tempNode->val)){
-                    append(&tree, tempNode->val);
-                }
-                if(!searchNodeByKey(tree, state_x)){
-                    append(&tree, state_x);
-                }
-                add_date_in_array_node(tree, tempNode->val, state_x);
-
-                /*\/ registrar no nó pai, a linha onde o token
-                filho(terminal) foi encontrado; */
-                struct NodeDLL* node = searchNodeByKey(tree, tempNode->val);
-                if(node){
-                    int linha = tokensFileCode->lineTokens[indice_terminal];
-                    node->linha = linha;
-                }
-                /* --- */
-            }
-            tempEdge = tempEdge->next;
-        }
-        tempNode = tempNode->next;
-    }
-}
-
-int get_NonTerm(struct Graph* graph, int state_x) {
-    struct Node* tempNode = graph->head;
-    struct Edge* tempEdge = NULL;
-
-    while (tempNode != NULL) {
-        // printf("\nNodo %d: ", tempNode->val);
-        tempEdge = tempNode->edges;
-        while (tempEdge) {
-            // printf(" -> %d", tempEdge->dest->val);
-            if( tempEdge->dest->val == state_x){
-                return tempNode->val;
-            }
-            tempEdge = tempEdge->next;
-        }
-        tempNode = tempNode->next;
-    }
-    return -1;
-}
-
-void COMPLETER(struct Graph* graph, struct State *state, int state_x, int nonTerminals[], int max_nonTer, struct Graph *ast, struct NodeDLL *tree) {
-    // printf("COMPLETER:\n");
+void COMPLETER(struct NodeDLL *grammarDLL, struct State *state, struct NodeDLL *tree) {
     for(int i=1; i<state->max; i++){
         if(state->states[i] != state->vzero){
-            PREDICTOR(graph, state, state->states[i], nonTerminals, max_nonTer, ast, tree);
+            PREDICTOR(grammarDLL, state, state->states[i], tree);
         }
     }
 }
 
-void COMPLETER2(struct Graph* graph, struct State *state, int *colum, int production[], int con_std_prod, int nonTerminals[], int max_nonTer, struct Graph *ast) {
-    for(int j=*colum; j<state->max; j++){
-        if(state->states[j] != state->vzero){
-            PREDICTOR_COMPLETE(graph, state, state->states[j], nonTerminals, max_nonTer, ast);
-            *colum=j;
-        }
-    }
-}
-
-void get_states_production(struct Graph* graph, int state_x, int production[], int max_production, int *con_std_prod) {
-    struct Node* tempNode = graph->head;
-    struct Edge* tempEdge = NULL;
-
+void get_states_production(struct NodeDLL *grammarDLL, int state_x, int production[], int max_production, int *con_std_prod) {
     int ind = 0;
+    struct NodeDLL* nodePai = searchNodeByChildren(grammarDLL, state_x);
+    if(nodePai){
+        production[ind] = nodePai->data;
+        ind++;
+        (*con_std_prod)++;
 
-    int nonTerm = get_NonTerm(graph, state_x);
-    if(nonTerm != -1){
-        while (tempNode != NULL) {
-            // printf("\nNodo %d: ", tempNode->val);
-            tempEdge = tempNode->edges;
-            while (tempEdge) {
-                // printf(" -> %d", tempEdge->dest->val);
-                if( tempNode->val == nonTerm ){
-
-                    if(ind == 0){
-                        production[ind] = tempNode->val;
-                        ind++;
-                        (*con_std_prod)++;
-                    }
-                    if(ind > 0 && ind < max_production){
-                        production[ind] = tempEdge->dest->val;
-                        ind++;
-                        (*con_std_prod)++;
-                    }
-                }
-                tempEdge = tempEdge->next;
+        for(int i=0; i<nodePai->len_children_datas; i++){
+            if(nodePai->children_datas[i] != -1 && ind < max_production){
+                production[ind] = nodePai->children_datas[i];
+                ind++;
+                (*con_std_prod)++;
             }
-            tempNode = tempNode->next;
         }
     }
 }
 
-void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode){
+void EARLEY_PARSE(struct NodeDLL *grammarDLL, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode){
     struct State* state = ini();
 
     add_state(state, state_ini_grammar);
@@ -247,10 +153,10 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
     int production[max_production];
     int con_std_prod = 0;
     for(int i=0; i<max_production; i++) production[i] = -1;
-    int k = 0;
+
     for(int i=0; i<len_tokens_input; i++){
 
-        get_states_production(graph, tokens_input[i], production, max_production, &con_std_prod);
+        get_states_production(grammarDLL, tokens_input[i], production, max_production, &con_std_prod);
         // printf("token: %d;\n", tokens_input[i]);
 
         int colum = 0;
@@ -266,10 +172,9 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
                 // printf("std: %d\n", act_state);
 
                 if(state_is_a_nonterminal(nonTerminals, max_nonTer, act_state) != -1){
-                    PREDICTOR(graph, state, act_state, nonTerminals, max_nonTer, ast, tree); // non_terminal
-                    // PREDICTOR2(graph, act_state, production, max_production, &con_std_prod, &s);
+                    PREDICTOR(grammarDLL, state, act_state, tree); // non_terminal
                 }else{
-                    SCANNER(graph, state, tokens_input[i], nonTerminals, max_nonTer, ast, tree, i, tokensFileCode); // terminal
+                    SCANNER(grammarDLL, state, tokens_input[i], tree, i, tokensFileCode); // terminal
                 }
 
             }
@@ -284,8 +189,7 @@ void EARLEY_PARSE(struct Graph* graph, int tokens_input[], int len_tokens_input,
         // print_all_states(state);
 
         /*\/ utilizando esta forma de complete para obter uma maior amplitude de reduce dos tokens da production; */
-        COMPLETER(graph, state, act_state, nonTerminals, max_nonTer, ast, tree);
-        // COMPLETER2(graph, state, &k, production, con_std_prod, nonTerminals, max_nonTer, ast);
+        COMPLETER(grammarDLL, state, tree);
         // print_all_states(state);
 
         // printf("***\n\n");

@@ -216,7 +216,7 @@ void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *
                 if(node){
                     append_array(lines, max_lines, node->linha, &aux_lines);
                 }
-                // printf("[%s -> %s] = %d; L: %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path, linha);
+                // printf("[%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
                 n_path++;
             }else{
                 // printf("NO [%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);

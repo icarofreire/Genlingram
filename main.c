@@ -24,9 +24,6 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 
 	/*\/ criando arquivos .dot(graphviz) para analise; */
 	create_file_dot_tree(gsymbols, tree, "ast.dot");
-	struct NodeDLL *reduceTree = reduce_tree_term(tree, tokensFileCode->pTokenTypes, tokensFileCode->sizePtokenTypes);
-	create_file_dot_tree(gsymbols, reduceTree, "tree.dot");
-
 
 	/*\/ criando .txt arvore para analise; */
 	gerate_txt_tree(gsymbols, tree, "tree.txt");
