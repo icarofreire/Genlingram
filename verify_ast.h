@@ -25,6 +25,7 @@ int adler32_wiki(int *data, size_t len)
     return (b << 16) | a;
 }
 
+/*\/ se elementos do array2 contém em array1 de forma contígua(sequencialmente idêntica); */
 /*\/ obter o indice de padrão reconhecido; */
 int indice_sub_array(int array1[], int len_array1, int array2[], int len_array2){
     if(len_array2 > len_array1) return -1;
@@ -237,7 +238,8 @@ void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *
 
 /* ******* */
 
-/*\/ se elementos do array2 contém em array1; */
+/*\/ se elementos do array2 contém em array1;
+de forma NÃO contígua(NÃO sequencialmente idêntica); */
 bool ele_array_contains_in(int *array1, int len_array1, int* array2, int len_array2){
     int con = 0;
     for (int i = 0; i < len_array2; i++){
@@ -331,4 +333,40 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
         }
         printf("***\n");
     }
+}
+
+/*\/ verificação por nós completos para a gramática; [EM FASE DE TESTES]; */
+void verificacao_por_nos_completos_tree(struct grammar_symbols* gsymbols, struct NodeDLL* tree, struct NodeDLL *treeFileRules, char *file_code){
+
+    // struct NodeDLL* tail_tree = getTail(tree);
+    // struct NodeDLL* tail_rules = getTail(treeFileRules);
+
+    int nos_completos = 0;
+
+    // Start traversal from the tail of the list
+    struct NodeDLL* curr = tree;
+
+    // Continue until the current node is not
+    // null (end of list)
+    while (curr != NULL) {
+        int valor_no_pai = curr->data;
+        struct NodeDLL* node_in_grammar = searchNodeByKey(gsymbols->grammarDLL, valor_no_pai);
+        if(node_in_grammar){
+
+            int indice = indice_sub_array(
+                node_in_grammar->children_datas,
+                node_in_grammar->len_children_datas,
+                curr->children_datas,
+                curr->len_children_datas
+            );
+            if(indice != -1){
+                nos_completos++;
+                printf("[NO FULL; %d (%s)]\n", valor_no_pai, getKeyByValue(gsymbols->symbolNum, valor_no_pai));
+            }
+        }
+
+
+        curr = curr->next;
+    }
+
 }

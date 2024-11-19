@@ -39,6 +39,9 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
 
+	/*\/ [EM FASE DE TESTES]; */
+	verificacao_por_nos_completos_tree(gsymbols, tree, treeFileRules, file_code);
+
 
 	free(treeFileRules);
 	free_tokens_reads(tokensRules);
