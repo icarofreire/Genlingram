@@ -160,6 +160,21 @@ int isPathInDLL_ret(struct grammar_symbols* gsymbols, struct NodeDLL* head, int 
     return -1;
 }
 
+void append_array(int *array, int max_lines, int dado, int* reftam){
+    int indfinal = -1;
+    for(int i=0; i<max_lines; i++){
+        if(array[i] == dado){
+            break;
+        }else if(array[i] == -1){
+            indfinal = i; break;
+        }
+    }
+    if(indfinal != -1){
+        array[*reftam] = dado;
+        (*reftam)++;
+    }
+}
+
 // Custom comparator
 int comp(const void* a, const void* b) {
       // If a is smaller, positive value will be returned
@@ -199,19 +214,7 @@ void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *
             if(is_path == 1){
                 struct NodeDLL* node = searchNodeByKey(tree, tk2);
                 if(node){
-
-                    int indfinal = -1;
-                    for(int i=0; i<max_lines; i++){
-                        if(lines[i] == node->linha){
-                            break;
-                        }else if(lines[i] == -1){
-                            indfinal = i; break;
-                        }
-                    }
-                    if(indfinal != -1){
-                        lines[aux_lines] = node->linha;
-                        aux_lines++;
-                    }
+                    append_array(lines, max_lines, node->linha, &aux_lines);
                 }
                 // printf("[%s -> %s] = %d; L: %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path, linha);
                 n_path++;
@@ -308,18 +311,7 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
                             // nodeSimiTree->linha
                             // );
 
-                            int indfinal = -1;
-                            for(int i=0; i<max_lines; i++){
-                                if(lines[i] == nodeSimiTree->linha){
-                                    break;
-                                }else if(lines[i] == -1){
-                                    indfinal = i; break;
-                                }
-                            }
-                            if(indfinal != -1){
-                                lines[aux_lines] = nodeSimiTree->linha;
-                                aux_lines++;
-                            }
+                            append_array(lines, max_lines, nodeSimiTree->linha, &aux_lines);
 
                         }
                     }
