@@ -86,6 +86,17 @@ void array_add_size(int **items, int *capacity, int plus) {
 	}
 }
 
+void add_struc_token_in_list(struct Tokens* struc_tokens, int tokenType, int linha, char* str_token){
+	struct Tokens* token = (struct Tokens*)malloc(sizeof(struct Tokens));
+	token->TokenType = tokenType;
+	token->linha = linha;
+	token->value = (char*)malloc((100)* sizeof(char));
+	strcpy(token->value, str_token);
+
+	token->link = createListDLL();
+	list_append(&struc_tokens->link, token->link);
+}
+
 struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* gsymbols, const int lang){
 	// Create a file pointer and open the file "GFG.txt" in
 	// read mode.
@@ -102,6 +113,14 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 
 		int sizeLineTokens = 1;
 		int *lineTokens = (int*)malloc((sizeLineTokens) * sizeof(int));
+
+		/*\/ raiz da estrutura de tokens com sua propriedade de dll(Doubly Linked List),
+		para registrar a sequência de tokens lidos; */
+		struct Tokens* struc_tokens = (struct Tokens*)malloc(sizeof(struct Tokens));
+		struc_tokens->TokenType = 0;
+		struc_tokens->linha = 0;
+		struc_tokens->value = NULL;
+		struc_tokens->link = createListDLL();
 
 		// Read each line from the file and store it in the
 		// 'line' buffer.
@@ -140,6 +159,8 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 								idx_reg++;
 								// printf("4tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
 								take = tokenType_literal;
+
+								add_struc_token_in_list(struc_tokens, tokenType_literal, con_lines, tokens[i]);
 							}
 						}
 					}
@@ -161,6 +182,8 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 							idx_reg++;
 							// printf("1tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_literal));
 							take = tokenType_literal;
+
+							add_struc_token_in_list(struc_tokens, tokenType_literal, con_lines, tokens[i]);
 						}
 					}
 
@@ -173,6 +196,8 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 							idx_reg++;
 							// printf("2tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, tokenType_identifier));
 							take = tokenType_identifier;
+
+							add_struc_token_in_list(struc_tokens, tokenType_identifier, con_lines, tokens[i]);
 						}
 					}
 
@@ -185,6 +210,8 @@ struct tokens_reads* read_code_tokenize(char* arquivo, struct grammar_symbols* g
 							idx_reg++;
 							// printf("3tk: [%s] = [%s]\n", tokens[i], getKeyByValue(gsymbols->symbolNum, sym));
 							take = sym;
+
+							add_struc_token_in_list(struc_tokens, sym, con_lines, tokens[i]);
 						}
 					}
 

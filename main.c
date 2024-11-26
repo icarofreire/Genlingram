@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "generic_list.h"
 #include "dir.h"
 #include "read_file_code.h"
 #include "verify_ast.h"
@@ -38,9 +39,6 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
-
-	/*\/ [EM FASE DE TESTES]; */
-	verificacao_por_nos_completos_tree(gsymbols, tree, treeFileRules, file_code);
 
 
 	free(treeFileRules);

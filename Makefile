@@ -27,6 +27,7 @@ FLAGS = -Wall -o
 
 DEPS = \
 	earley.h \
+	generic_list.h \
 	structs.h \
 	read_grammar.h \
 	str.h \

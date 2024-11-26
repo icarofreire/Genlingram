@@ -334,39 +334,3 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
         printf("***\n");
     }
 }
-
-/*\/ verificação por nós completos para a gramática; [EM FASE DE TESTES]; */
-void verificacao_por_nos_completos_tree(struct grammar_symbols* gsymbols, struct NodeDLL* tree, struct NodeDLL *treeFileRules, char *file_code){
-
-    // struct NodeDLL* tail_tree = getTail(tree);
-    // struct NodeDLL* tail_rules = getTail(treeFileRules);
-
-    int nos_completos = 0;
-
-    // Start traversal from the tail of the list
-    struct NodeDLL* curr = tree;
-
-    // Continue until the current node is not
-    // null (end of list)
-    while (curr != NULL) {
-        int valor_no_pai = curr->data;
-        struct NodeDLL* node_in_grammar = searchNodeByKey(gsymbols->grammarDLL, valor_no_pai);
-        if(node_in_grammar){
-
-            int indice = indice_sub_array(
-                node_in_grammar->children_datas,
-                node_in_grammar->len_children_datas,
-                curr->children_datas,
-                curr->len_children_datas
-            );
-            if(indice != -1){
-                nos_completos++;
-                printf("[NO FULL; %d (%s)]\n", valor_no_pai, getKeyByValue(gsymbols->symbolNum, valor_no_pai));
-            }
-        }
-
-
-        curr = curr->next;
-    }
-
-}
