@@ -11,7 +11,6 @@
 #include "read_grammar.h"
 #include "scan_spaced_things.h"
 #include "tokenize_code.h"
-#include "read_file_rules.h"
 
 
 /*\/ Criar arquivo .dot com dados do grafo para
@@ -122,9 +121,7 @@ void gerate_txt_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head, cha
 }
 
 /*\/ ; */
-struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct tokens_reads* tokensFileCode, const int lang){
-
-	struct tokens_reads* tksReads = tokensFileCode;
+struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct Tokens* list_tokens, const int lang){
 
 	int sizeNonTerm = 0;
 	int *pNonTerminals = getValues(gsymbols->nonTerminals, &sizeNonTerm);
@@ -132,15 +129,12 @@ struct NodeDLL* apply_earley_in_code(struct grammar_symbols* gsymbols, struct to
 	/*\/ tree; */
 	struct NodeDLL *tree = createNodeDLL(0);
 
-	struct Graph *ast = createGraph();
 	int ini_grammar = get_ini_nonTerm_grammar(gsymbols, lang);
 	if(ini_grammar != -1){
-		EARLEY_PARSE(gsymbols->grammarDLL, tksReads->pTokenTypes, tksReads->sizePtokenTypes, pNonTerminals, sizeNonTerm, ini_grammar, ast, gsymbols, tree, tksReads);
+		EARLEY_PARSE(gsymbols->grammarDLL, pNonTerminals, sizeNonTerm, ini_grammar, tree, list_tokens);
 	}
 
 	free(pNonTerminals);
-	deleteAllGraph(ast);
-	free(ast);
 
 	return tree;
 }

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "utils.h"
 #include "generic_list.h"
 #include "dir.h"
 #include "read_file_code.h"
@@ -12,15 +13,31 @@
 void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	struct grammar_symbols* gsymbols = read_grammar(lang);
 
-	/*\/ read e apply in file code; */
-	struct tokens_reads* tokensFileCode = read_code_tokenize(file_code, gsymbols, lang);
-	struct NodeDLL *tree = apply_earley_in_code(gsymbols, tokensFileCode, lang);
+	/*\/ raiz da estrutura de tokens com sua propriedade de dll(Doubly Linked List),
+	para registrar a sequência de tokens lidos; */
+	struct Tokens* listTokensFileCode = (struct Tokens*)malloc(sizeof(struct Tokens));
+	listTokensFileCode->TokenType = 0;
+	listTokensFileCode->linha = 0;
+	listTokensFileCode->value = NULL;
+	listTokensFileCode->list = createListDLL();
 
+	/*\/ read e apply in file code; */
+	struct tokens_reads* tokensFileCode = read_code_tokenize(file_code, gsymbols, lang, listTokensFileCode);
+	struct NodeDLL *tree = apply_earley_in_code(gsymbols, listTokensFileCode, lang);
+
+
+	/*\/ raiz da estrutura de tokens com sua propriedade de dll(Doubly Linked List),
+	para registrar a sequência de tokens lidos; */
+	struct Tokens* listTokensRules = (struct Tokens*)malloc(sizeof(struct Tokens));
+	listTokensRules->TokenType = 0;
+	listTokensRules->linha = 0;
+	listTokensRules->value = NULL;
+	listTokensRules->list = createListDLL();
 
 	/*\/ read e apply in file rules; */
-	struct tokens_reads* tokensRules = read_file_rules(file_rules, lang);
+	struct tokens_reads* tokensRules = read_code_tokenize(file_rules, gsymbols, lang, listTokensRules);
 	/*\/ aplicar earley em arquivo de regras para analise; */
-	struct NodeDLL *treeFileRules = apply_earley_in_code(gsymbols, tokensRules, lang);
+	struct NodeDLL *treeFileRules = apply_earley_in_code(gsymbols, listTokensRules, lang);
 
 
 	/*\/ criando arquivos .dot(graphviz) para analise; */
@@ -32,7 +49,7 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	gerate_txt_tree(gsymbols, gsymbols->grammarDLL, "grammar-tree.txt");
 
 	/*\/ verificação por caminhos ligados na arvore(AST); */
-	verificacao_por_caminhos(gsymbols, tree, tokensFileCode, tokensRules, file_code);
+	verificacao_por_caminhos(gsymbols, tree, tokensRules, listTokensRules, file_code);
 
 	/*\/ verificação por sub-arvores filhas, partindo das caudas da arvore(AST); */
 	verificacao_sub_tree_tails(gsymbols, tree, treeFileRules, file_code);

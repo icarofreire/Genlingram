@@ -83,7 +83,7 @@ void PREDICTOR(struct NodeDLL *grammarDLL, struct State *state, int state_x, str
     }
 }
 
-void SCANNER(struct NodeDLL *grammarDLL, struct State *state, int state_x, struct NodeDLL *tree, int indice_terminal, struct tokens_reads* tokensFileCode) {
+void SCANNER(struct NodeDLL *grammarDLL, struct State *state, int state_x, struct NodeDLL *tree, struct Tokens *stru_token) {
     int child = state_x;
     struct NodeDLL *curr = grammarDLL;
     while (curr != NULL) {
@@ -107,8 +107,7 @@ void SCANNER(struct NodeDLL *grammarDLL, struct State *state, int state_x, struc
                     filho(terminal) foi encontrado; */
                     struct NodeDLL* node = searchNodeByKey(tree, pai);
                     if(node){
-                        int linha = tokensFileCode->lineTokens[indice_terminal];
-                        node->linha = linha;
+                        node->token = stru_token;
                     }
                     /* --- */
                 }
@@ -144,7 +143,7 @@ void get_states_production(struct NodeDLL *grammarDLL, int state_x, int producti
     }
 }
 
-void EARLEY_PARSE(struct NodeDLL *grammarDLL, int tokens_input[], int len_tokens_input, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct Graph *ast, struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode){
+void EARLEY_PARSE(struct NodeDLL *grammarDLL, int nonTerminals[], int max_nonTer, int state_ini_grammar, struct NodeDLL *tree, struct Tokens* list_tokens){
     struct State* state = ini();
 
     add_state(state, state_ini_grammar);
@@ -154,13 +153,17 @@ void EARLEY_PARSE(struct NodeDLL *grammarDLL, int tokens_input[], int len_tokens
     int con_std_prod = 0;
     for(int i=0; i<max_production; i++) production[i] = -1;
 
-    for(int i=0; i<len_tokens_input; i++){
 
-        get_states_production(grammarDLL, tokens_input[i], production, max_production, &con_std_prod);
-        // printf("token: %d;\n", tokens_input[i]);
+    struct ListDLL* el;
+	list_forward(el, list_tokens->list){
+		struct Tokens *stru_token = (struct Tokens*)el->__struct;
+        int token_input = stru_token->TokenType;
+
+        get_states_production(grammarDLL, token_input, production, max_production, &con_std_prod);
+        // printf("token: %d;\n", token_input);
 
         int colum = 0;
-        while(production[colum] != tokens_input[i] && colum < con_std_prod){
+        while(production[colum] != token_input && colum < con_std_prod){
             colum++;
         }
         // printf("colum: %d\n", colum);
@@ -174,7 +177,7 @@ void EARLEY_PARSE(struct NodeDLL *grammarDLL, int tokens_input[], int len_tokens
                 if(state_is_a_nonterminal(nonTerminals, max_nonTer, act_state) != -1){
                     PREDICTOR(grammarDLL, state, act_state, tree); // non_terminal
                 }else{
-                    SCANNER(grammarDLL, state, tokens_input[i], tree, i, tokensFileCode); // terminal
+                    SCANNER(grammarDLL, state, token_input, tree, stru_token); // terminal
                 }
 
             }

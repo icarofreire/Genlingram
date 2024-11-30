@@ -183,7 +183,7 @@ int comp(const void* a, const void* b) {
 }
 
 /*\/ verificação por caminhos ligados na arvore(AST); */
-void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensFileCode, struct tokens_reads* tokensRules, char *file_code){
+void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *tree, struct tokens_reads* tokensRules, struct Tokens* listTokensRules, char *file_code){
 
     int aux_lines = 0;
     int max_lines = 100;
@@ -214,8 +214,8 @@ void verificacao_por_caminhos(struct grammar_symbols* gsymbols, struct NodeDLL *
             int is_path = isPathInDLL_ret(gsymbols, tree, tk1, tk2, caminhos, len_caminhos);
             if(is_path == 1){
                 struct NodeDLL* node = searchNodeByKey(tree, tk2);
-                if(node){
-                    append_array(lines, max_lines, node->linha, &aux_lines);
+                if(node && node->token){
+                    append_array(lines, max_lines, node->token->linha, &aux_lines);
                 }
                 // printf("[%s -> %s] = %d;\n", getKeyByValue(gsymbols->symbolNum, tk1), getKeyByValue(gsymbols->symbolNum, tk2), is_path);
                 n_path++;
@@ -313,7 +313,9 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
                             // nodeSimiTree->linha
                             // );
 
-                            append_array(lines, max_lines, nodeSimiTree->linha, &aux_lines);
+                            if(nodeSimiTree->token) {
+                                append_array(lines, max_lines, nodeSimiTree->token->linha, &aux_lines);
+                            }
 
                         }
                     }

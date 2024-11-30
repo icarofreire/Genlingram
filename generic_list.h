@@ -5,6 +5,9 @@
 struct ListDLL {
     struct ListDLL *next;
     struct ListDLL *prev;
+    /*\/ ponteiro para a estrutura pai
+    que utiliza a Doubly Linked List como estrutura filha; */
+    void* __struct;
 };
 
 // Function to create a new node

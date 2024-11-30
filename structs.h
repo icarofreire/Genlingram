@@ -50,13 +50,13 @@ struct tokens_reads {
     int *lineTokens;
 };
 
-/*\/ estrutura de tokens lidos no arquivo de código; */
+/*\/ estrutura de tokens lidos no arquivo de código(Doubly Linked List); */
 struct Tokens {
     int TokenType;
     int linha;
     char *value;
     /*\/ ligação para uma estrutura de Doubly Linked List; */
-    struct ListDLL* link;
+    struct ListDLL* list;
 };
 
 /*\/ free dates for struct grammar_symbols; */
