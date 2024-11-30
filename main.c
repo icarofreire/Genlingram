@@ -57,6 +57,11 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
 
+	list_delete_all_nodes(&listTokensFileCode->list);
+	free(listTokensFileCode);
+
+	list_delete_all_nodes(&listTokensRules->list);
+	free(listTokensRules);
 
 	free(treeFileRules);
 	free_tokens_reads(tokensRules);

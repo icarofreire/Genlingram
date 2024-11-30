@@ -38,7 +38,10 @@ void free_dates_grammar_symbols(struct grammar_symbols* gsymbols){
     deleteAllNodes(&gsymbols->grammarDLL);
 }
 
-/*\/ estrutura de tokens lidos no arquivo de código; */
+/*\/ estrutura de tokens lidos no arquivo de código;
+esta estrutura armazenará por array, somente os tokentypes
+representativos do código;
+*/
 struct tokens_reads {
     int sizePtokenTypes;
 	int *pTokenTypes;
@@ -50,7 +53,10 @@ struct tokens_reads {
     int *lineTokens;
 };
 
-/*\/ estrutura de tokens lidos no arquivo de código(Doubly Linked List); */
+/*\/ estrutura de tokens lidos no arquivo de código(Doubly Linked List);
+esta estrutura armazenará por Doubly Linked List, mais detalhes dos tokens
+representativos do código;
+*/
 struct Tokens {
     int TokenType;
     int linha;
