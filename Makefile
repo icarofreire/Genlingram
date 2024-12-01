@@ -40,7 +40,6 @@ DEPS = \
 	dir.h \
 	read_file_code.h \
 	tokenize_code.h \
-	read_file_rules.h \
 	verify_ast.h \
 	read_file_keywords.h
 
