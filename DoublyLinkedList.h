@@ -13,6 +13,14 @@ struct NodeDLL {
     */
     struct Tokens *token;
 
+    /*\/ muitos valores de tokens, podem pertencer ao mesmo tokentype;
+    Ex: o tokentype identifier, podem ter muitos tipos de valores de tokens, ex: "x", "y", "z";
+    este array armazenará os ponteiros de outras estruturas tokens, se estes tokens
+    estiverem vinculados ao mesmo tokentype;
+    */
+    int max_array_stru_tokens;
+    struct Tokens *array_tokens[100];
+
     /*\/ array de dados dinâmico para simular os filhos deste nó; */
     int *children_datas;
     /*\/ tamanho do array; */
@@ -27,6 +35,12 @@ struct NodeDLL *createNodeDLL(int new_data) {
     struct NodeDLL *new_node = (struct NodeDLL *)malloc(sizeof(struct NodeDLL));
     new_node->data = new_data;
     new_node->token = NULL; // << inicialmente, não inserido uma estrutura de token encontrada;
+
+    /*\/ inicializando o array de estruturas tokens; */
+    new_node->max_array_stru_tokens = 100;
+    for(int i=0; i<new_node->max_array_stru_tokens; i++){
+        new_node->array_tokens[i] = NULL;
+    }
 
     /*\/ inicialização do array inicial de cada nó; */
     new_node->len_children_datas = 1;
