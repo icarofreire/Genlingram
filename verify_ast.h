@@ -313,8 +313,20 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
                             // nodeSimiTree->linha
                             // );
 
-                            if(nodeSimiTree->token) {
-                                append_array(lines, max_lines, nodeSimiTree->token->linha, &aux_lines);
+                            /*\/ obter as linhas pertencentes a cada token,
+                            cujos tokentypes correspondem a cada nó de ambas as arvores; */
+                            for(int r = 0; r<curr->len_children_datas; r++){
+                                if(curr->token && curr->children_datas[r] != -1){
+
+                                    for(int j = 0; j<nodeSimiTree->len_children_datas; j++){
+                                        if(nodeSimiTree->token && nodeSimiTree->children_datas[j] != -1){
+
+                                            if(nodeSimiTree->children_datas[j] == curr->children_datas[r]){
+                                                append_array(lines, max_lines, nodeSimiTree->token->linha, &aux_lines);
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
                         }

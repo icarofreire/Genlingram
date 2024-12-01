@@ -111,7 +111,20 @@ void gerate_txt_tree(struct grammar_symbols* gsymbols, struct NodeDLL *head, cha
 			fprintf(fptr, "\t");
             for(int i=0; i<curr->len_children_datas; i++){
                 if(curr->children_datas[i] != -1) {
-					fprintf(fptr, "[%d](%s) -> ", curr->children_datas[i], getKeyByValue(gsymbols->symbolNum, curr->children_datas[i]));
+
+					/*\/ exibir valor do token; */
+					char* token_value = "";
+					struct NodeDLL* node = searchNodeByKey(head, curr->children_datas[i]);
+					if(node && node->token){
+						token_value = node->token->value;
+					}
+
+					fprintf(
+						fptr, "[%d](%s)(%s) -> ",
+						curr->children_datas[i],
+						getKeyByValue(gsymbols->symbolNum, curr->children_datas[i]),
+						token_value
+					);
                 }
             }fprintf(fptr, "\n\n");
         }

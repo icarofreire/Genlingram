@@ -56,7 +56,7 @@ int state_is_a_nonterminal(int nonTerminals[], int max_nonTer, int state_x){
     return -1;
 }
 
-void PREDICTOR(struct NodeDLL *grammarDLL, struct State *state, int state_x, struct NodeDLL *tree) {
+void PREDICTOR(struct NodeDLL *grammarDLL, struct State *state, int state_x, struct NodeDLL *tree, struct Tokens *stru_token) {
     int child = state_x;
     struct NodeDLL *curr = grammarDLL;
     while (curr != NULL) {
@@ -76,6 +76,15 @@ void PREDICTOR(struct NodeDLL *grammarDLL, struct State *state, int state_x, str
                     }
                     add_date_in_array_node(tree, pai, child);
                     /* --- */
+
+                    if(stru_token){
+                        /*\/ registrar no nó pai, a linha onde o token
+                        filho(terminal) foi encontrado; */
+                        struct NodeDLL* node = searchNodeByKey(tree, child);
+                        if(node){
+                            node->token = stru_token;
+                        }
+                    }
                 }
             }
         }
@@ -105,7 +114,7 @@ void SCANNER(struct NodeDLL *grammarDLL, struct State *state, int state_x, struc
 
                     /*\/ registrar no nó pai, a linha onde o token
                     filho(terminal) foi encontrado; */
-                    struct NodeDLL* node = searchNodeByKey(tree, pai);
+                    struct NodeDLL* node = searchNodeByKey(tree, child);
                     if(node){
                         node->token = stru_token;
                     }
@@ -120,7 +129,7 @@ void SCANNER(struct NodeDLL *grammarDLL, struct State *state, int state_x, struc
 void COMPLETER(struct NodeDLL *grammarDLL, struct State *state, struct NodeDLL *tree) {
     for(int i=1; i<state->max; i++){
         if(state->states[i] != state->vzero){
-            PREDICTOR(grammarDLL, state, state->states[i], tree);
+            PREDICTOR(grammarDLL, state, state->states[i], tree, NULL);
         }
     }
 }
@@ -175,7 +184,7 @@ void EARLEY_PARSE(struct NodeDLL *grammarDLL, int nonTerminals[], int max_nonTer
                 // printf("std: %d\n", act_state);
 
                 if(state_is_a_nonterminal(nonTerminals, max_nonTer, act_state) != -1){
-                    PREDICTOR(grammarDLL, state, act_state, tree); // non_terminal
+                    PREDICTOR(grammarDLL, state, act_state, tree, stru_token); // non_terminal
                 }else{
                     SCANNER(grammarDLL, state, token_input, tree, stru_token); // terminal
                 }
