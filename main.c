@@ -57,6 +57,9 @@ void apply_files_rule(char *file_code, char *file_rules, const int lang){
 	/*\/ verificação por padrões lineares; */
 	verificar_trechos_lineares(tokensFileCode, tokensRules, file_code);
 
+	/*\/ verificação por declarações de identificadores não utilizados no código; */
+	verificar_identificadores_inutilizados(gsymbols, listTokensFileCode, lang);
+
 	list_delete_all_nodes(&listTokensFileCode->list);
 	free(listTokensFileCode);
 

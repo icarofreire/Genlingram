@@ -348,3 +348,67 @@ void verificacao_sub_tree_tails(struct grammar_symbols* gsymbols, struct NodeDLL
         printf("***\n");
     }
 }
+
+int get_tokenType_identifier(struct grammar_symbols* gsymbols, const int lang){
+    int tokenType_identifier = -1;
+    switch(lang){
+        case RUBY: tokenType_identifier = get(gsymbols->symbolNum, "IDENTIFIER"); break;
+        case PYTHON: tokenType_identifier = get(gsymbols->symbolNum, "NAME"); break;
+        case JS: tokenType_identifier = get(gsymbols->symbolNum, "Identifier"); break;
+        case JAVA: tokenType_identifier = get(gsymbols->symbolNum, "identifier"); break;
+        case PHP: tokenType_identifier = get(gsymbols->symbolNum, "IDENTIFIER"); break;
+    }
+    return tokenType_identifier;
+}
+
+unsigned long hash_string(char *str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
+
+/*\/ verificação por declarações de identificadores não utilizados no código; */
+void verificar_identificadores_inutilizados(struct grammar_symbols* gsymbols, struct Tokens* list_tokens, const int lang){
+
+    int aux = 0;
+    const int max = 100;
+    int hashs_valores_tokens[max];
+    int con_hashs[max];
+    struct Tokens tokens_used[max];
+    for(int i=0; i<max; i++) {
+        hashs_valores_tokens[i] = -1;
+        con_hashs[i] = 0;
+    }
+
+    int tokenType_identifier = get_tokenType_identifier(gsymbols, lang);
+    if(tokenType_identifier != -1){
+
+        struct ListDLL* el;
+        list_forward(el, list_tokens->list){
+            struct Tokens *stru_token = (struct Tokens*)el->__struct;
+            if(stru_token->TokenType == tokenType_identifier){
+
+                int hash_token = hash_string(stru_token->value);
+                append_array(hashs_valores_tokens, max, hash_token, &aux);
+
+                for(int i = 0; i<aux; i++){
+                    if(hashs_valores_tokens[i] == hash_token){
+                        con_hashs[i]++;
+                        tokens_used[i] = *stru_token;
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i<aux; i++){
+            if(con_hashs[i] == 1){
+                printf(">> identificador não utilizado: \"%s\"; L: %d;\n", tokens_used[i].value, tokens_used[i].linha );
+            }
+        }
+    }
+}
